@@ -102,7 +102,7 @@ export const Walkthrough: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
             })}
           </div>
           {acts.length > 0 && (
-            <svg width={44 * s} height={44 * s} viewBox="0 0 24 24" style={{ position: "absolute", left: `${cx * 100}%`, top: `${cy * 100}%`, filter: "drop-shadow(0 2px 3px rgba(0,0,0,.35))", scale: click.some((c) => c > 0 && c < 0.4) ? 0.85 : 1 }}>
+            <svg width={44 * s} height={44 * s} viewBox="0 0 24 24" style={{ position: "absolute", left: `${(zx + (cx - zx) * zs) * 100}%`, top: `${(zy + (cy - zy) * zs) * 100}%`, filter: "drop-shadow(0 2px 3px rgba(0,0,0,.35))", scale: click.some((c) => c > 0 && c < 0.4) ? 0.85 : 1 }}>
               <path d="M3 2l7.5 19 2.6-7.6L21 10.8z" fill={t.dark ? "#fff" : "#111"} stroke={t.dark ? "#111" : "#fff"} strokeWidth="1.4" />
             </svg>
           )}

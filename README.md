@@ -29,22 +29,22 @@ Every topic gets the full table of creation modes with a line about what *that t
 
 <table>
   <tr>
-    <td align="center"><img src="docs/media/mode-kinetic.gif" width="200"><br><b>Kinetic Explainer</b><br><sub>faceless motion graphics,<br>one composition per sentence</sub></td>
-    <td align="center"><img src="docs/media/mode-newsroom.gif" width="200"><br><b>Newsroom Brief</b><br><sub>BREAKING banner, headlines<br>highlighted as they're read</sub></td>
-    <td align="center"><img src="docs/media/mode-receipts.gif" width="200"><br><b>Receipts</b><br><sub>primary sources highlighted<br>line by line → verdict</sub></td>
-    <td align="center"><img src="docs/media/mode-catalog.gif" width="200"><br><b>Rapid Catalog</b><br><sub>i/N carousel, progress,<br>cheat-sheet end frame</sub></td>
+    <td align="center"><img src="docs/media/mode-kinetic.gif" width="170"><br><b>Kinetic Explainer</b><br><sub>faceless motion graphics,<br>one composition per sentence</sub></td>
+    <td align="center"><img src="docs/media/mode-newsroom.gif" width="170"><br><b>Newsroom Brief</b><br><sub>BREAKING banner, headlines<br>highlighted as they're read</sub></td>
+    <td align="center"><img src="docs/media/mode-receipts.gif" width="170"><br><b>Receipts</b><br><sub>primary sources highlighted<br>line by line → verdict</sub></td>
+    <td align="center"><img src="docs/media/mode-catalog.gif" width="170"><br><b>Rapid Catalog</b><br><sub>i/N carousel, progress,<br>cheat-sheet end frame</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/media/mode-walkthrough.gif" width="200"><br><b>Screen Walkthrough</b><br><sub>cursor types, clicks, points<br>and zooms through the steps</sub></td>
-    <td align="center"><img src="docs/media/mode-cinematic.gif" width="200"><br><b>Cinematic Hype</b><br><sub>film-slate HUD, condensed caps,<br>generated hero shots</sub></td>
-    <td align="center"><img src="docs/media/mode-silent.gif" width="200"><br><b>Silent Showcase</b><br><sub>no voice, text cut on<br>the music's beat, loops</sub></td>
-    <td align="center"><img src="docs/media/mode-story.gif" width="200"><br><b>Illustrated Story</b><br><sub>a character fails and learns,<br>with a growing progress stack</sub></td>
+    <td align="center"><img src="docs/media/mode-walkthrough.gif" width="170"><br><b>Screen Walkthrough</b><br><sub>cursor types, points and zooms<br>(shown on this repo's own page)</sub></td>
+    <td align="center"><img src="docs/media/mode-cinematic.gif" width="170"><br><b>Cinematic Hype</b><br><sub>film-slate HUD, condensed caps,<br>generated hero shots</sub></td>
+    <td align="center"><img src="docs/media/mode-silent.gif" width="170"><br><b>Silent Showcase</b><br><sub>no voice, text cut on<br>the music's beat, loops</sub></td>
+    <td align="center"><img src="docs/media/mode-story.gif" width="170"><br><b>Illustrated Story</b><br><sub>a character fails and learns,<br>with a growing progress stack</sub></td>
   </tr>
 </table>
 
 Plus **Presenter + Board** (your own recorded clip, or an AI avatar, under a motion-graphics board) and **Quick Take** (a headline sticker over the source itself, made the same day). Mode playbooks live in [`references/modes/`](plugins/reel-factory/skills/reel-factory/references/modes/INDEX.md).
 
-<sub>The mode demos above are rendered by the plugin's own engine from fictional example content.</sub>
+<sub>The mode demos above are rendered by the plugin's own engine. The walkthrough uses screenshots of this repository; the others use fictional example content.</sub>
 
 ## How it works
 
