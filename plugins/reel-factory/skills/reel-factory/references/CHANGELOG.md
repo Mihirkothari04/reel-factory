@@ -1,5 +1,26 @@
 # Knowledge-base changelog
 
+## 1.3.0 (2026-11-12): real sources are shown as real screenshots (hard rule)
+
+- **Rule** (`playbook.md` › Credibility): headlines, social posts, blog/press/help lines and README lines appear as the **actual page**, highlighted where the voice-over reads it. Retyped text cards are only a logged fallback.
+  - Editing is limited to *around* the content: crop, erase banners and ads, add overlays.
+  - The outlet's words, layout and numbers are never altered.
+  - The rule is enforced in the agents: researcher, fact-checker, script-critic, qa-reviewer. It is also in qa-rubric A (Credibility) and B9, the newsroom/receipts/quicktake playbooks, research.md, art-direction.md and SKILL.md stage 7.
+- **`rf shot`** turns a capture into a source shot. It:
+  - erases banners (`--erase`) and auto-crops around the phrases, keeping the masthead;
+  - finds the exact phrases with free local OCR (RapidOCR, now in the runtime venv), splitting lines into words from pixel gaps and handling glued OCR words;
+  - writes `shot-<name>.{png,json}`.
+  - `--selftest` covers it.
+- **New `source` scene:** the real page in a styled window, with a slow push toward the phrase (auto-capped so the words stay in frame).
+  - It has a highlighter sweep synced to the VO: a multiply marker on light pages, an underline marker on dark pages (chosen automatically).
+  - It has an optional outlet/date chip.
+  - `rf build` merges the shot JSON, syncs `highlightAt` from the VO, and falls back to a title card if the capture is missing.
+- **Capture path:**
+  1. Firecrawl `firecrawl_scrape` (`formats: ["screenshot"]`, `mobile: true`).
+  2. Otherwise agent-browser on public pages at a phone viewport. It asks the owner first, unless the new config key `source_shots_browser` is true.
+  3. Otherwise the logged text-card fallback.
+  - Sites behind Cloudflare may also block headed capture; that is a valid logged fallback.
+
 ## 1.2.1 (2026-11-12): bug fixes from production #2 (walkthrough)
 
 - **Walkthrough window fits the stage and the screenshot.** `rf build` reads the `src` image's aspect when none is set. The engine caps the content box to the stage height, after the title bar and caption, and shrinks the width rather than cropping. Before this, screenshots lost about 7.5% on each side and the bottom ~14% was hidden.

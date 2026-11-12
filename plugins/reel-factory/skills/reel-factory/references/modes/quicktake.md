@@ -3,6 +3,7 @@
 **Identity:** same-day reaction. A persistent headline sticker over the source itself (the official launch video, the README, the post), zoomed to what matters, plus one sharp insight and a verdict, in 20–35 s. The fastest mode to produce. (Recordly: cut-out presenter over a README that zooms to each section as it's read; Creator 39/Creator 42 source frames; Creator 53's blog pick.)
 
 ## Construction
+- **Real-page rule:** headlines, posts and quotes appear as `source` screenshots (`rf shot`) with the spoken words highlighted; `headline`/`quote` text cards only as a logged fallback.
 - **Hook sticker for the whole reel:** `meta.hookTitle = {"text": "This repo makes ANY screen recording look *edited*", "untilScene": "<last scene id>"}`.
 - **Source on stage:** `walkthrough` with `src` = the README/page screenshot (`RF sources repo`, `RF sources og`) and `zoom`/`arrow` actions keyed to `say` words, so the camera moves to each section as it is mentioned; the official video as `video` (`fit: "contain"`) credited in the caption; `quote` for the post.
 - **The insight:** one thing the press release doesn't say (who it's really for, the catch), or a price comparison shown as a real receipt (the competitor's pricing page screenshot, never a made-up number).

@@ -28,3 +28,8 @@ FIXES (exact, by scene id → prop change; or build/render flags):
 NICE-TO-HAVE: …
 ```
 Only `REDO` when the structure fails (hook doesn't land, story doesn't pay off). Never ask for paid regeneration unless an asset is clearly broken.
+
+## Source shots (rubric B9)
+- Confirm that each `source` scene shows the real page and is legible at phone size.
+- Banners and ads must be removed.
+- The highlight must land on exactly the spoken words, at the moment they are spoken.

@@ -17,6 +17,12 @@ Run two `topic-researcher` agents **in parallel**:
 
 Each writes into `<prod>/research/` and returns a compact brief.
 
+- **Source screenshots (both researchers):** for every headline, post or quote you expect on screen, capture the real page.
+  - Use Firecrawl `firecrawl_scrape` with `formats: ["screenshot"]`, `mobile: true` and `screenshotOptions: {fullPage: false}`.
+  - Then run `rf shot <screenshot-url-or-file> --prod P --name <id> --find "<exact on-page phrase>"`.
+  - If Firecrawl is unavailable, list the page URLs under `## Screenshots to capture` in your research file. The Creative Director captures them with agent-browser, asking the owner first unless `config.source_shots_browser` is true.
+  - Quote the exact on-page wording so `--find` matches.
+
 ## facts.md format (single source for the script)
 
 ```
@@ -38,5 +44,6 @@ Each writes into `<prod>/research/` and returns a compact brief.
 - Numbers need a primary source or two independent secondary sources. Star counts come live from the API on production day.
 - Dates must be absolute. Write "announced 10 Nov 2026", never "recently".
 - Quotes must be verbatim with a link. Paraphrases are labelled as such.
+- A source shown on screen is the real page: the highlighted words in the screenshot match facts.md word for word.
 - Mark low-confidence claims as attribution ("the team claims…") or drop them.
 - People and news: reputable outlets only, use the allegation language the outlet used, and include the counter-statement if one exists.

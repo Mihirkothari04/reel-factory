@@ -42,6 +42,10 @@ Safe zones (the engine enforces them): key content sits 200–1290 px vertically
 
 ## Visual sourcing priority (cheapest and most truthful first)
 
+0. **Real screenshots of web sources** (`rf shot`, `source` scene): **required** whenever a headline, post, blog/press/help line or README line is on screen.
+   - Capture: Firecrawl `firecrawl_scrape` with `formats: ["screenshot"]` and `mobile: true` (phone layout, legible at reel size).
+   - Otherwise agent-browser on the public URL, **after asking the owner with the exact URLs** (no asking when `config.source_shots_browser` or `browser_capture` is true).
+   - Otherwise the text-card fallback, logged in brief.md.
 1. **Rebuilt UI from real strings**: the repo card from the GitHub API, a terminal with the real install command, a chat with a real prompt, a `quote` of the real README or tweet sentence. Free, legible, accurate.
 2. **og:images** of the official page or repo (`rf sources og|repo`). Free.
 3. **Diagrams**: `flow`, `hub`, `bars`, `versus`, `grid` drawn by the engine. Free.

@@ -14,7 +14,7 @@ Score each 1–5. **Ship threshold: no score below 3, and an average of at least
 | Specificity | Concrete numbers, names, and examples in most sentences; nothing generic |
 | Visual variety | No more than 2 consecutive scenes of the same type; demo/proof visuals, not just logos |
 | On-screen text | Complements (doesn't duplicate) the VO; ≤7 words per headline; one emphasis per line |
-| Credibility | Every claim maps to facts.md; honesty beat present; sources on screen where useful |
+| Credibility | Every claim maps to facts.md; honesty beat present; sources on screen where useful. Every on-screen web source is a real `source` screenshot; a `headline`/`quote` text card for a web source without a logged fallback reason caps this at 2 |
 | CTA | Fits the format; shows the action; keyword is short and topical |
 | Voice-readiness | Sentences are speakable, no tongue-twisters, numbers written how they should be said |
 | **Mode fidelity** | The storyboard is genuinely built the way the chosen mode's playbook (`modes/<id>.md`) describes: its stage, devices, pacing and audio, not a kinetic reel with a different theme |
@@ -44,6 +44,10 @@ Visual (read `out/qa/sheet.jpg`; for doubts render stills with `ffmpeg -ss T -i 
 5. **Consistency**: one theme and accent; generated images match each other and the palette.
 6. **Sync**: visuals change when the VO changes topic (spot-check 3 scene boundaries against words.json).
 7. **Mode devices render**: banner/slate/progress/hook sticker visible where intended and not colliding with scene content; walkthrough cursor/arrow lands on the element the VO names.
-8. **Ending**: the CTA is readable for at least 1.5 s, and the comment mock or final frame isn't cut off.
+8. **Source shots**:
+   - The screenshot is the real page, not retyped text.
+   - The crop is legible at phone size and banners are removed.
+   - The highlight sits exactly on the spoken words and sweeps when they are said.
+9. **Ending**: the CTA is readable for at least 1.5 s, and the comment mock or final frame isn't cut off.
 
 Verdict: `SHIP`, `FIX` (with an exact list of edits to storyboard.json, each tied to a scene id and prop), or `REDO` (structural; go back to the storyboard). Allow at most 2 fix loops, then ship the best version and record the open issues.

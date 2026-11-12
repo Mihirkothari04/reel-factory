@@ -25,3 +25,10 @@ Inputs in your prompt: topic, focus (A or B), today's date, production path `P`,
 
 ## Output
 Write `P/research/<A|B>-<focus>.md` using the facts.md structure from the plugin's `skills/reel-factory/references/research.md` (claims table with ids prefixed `A`/`B`, mechanism, numbers, angles, surprising facts, caveats, visual assets with local paths, do-not-say). Then return a compact brief of 15 lines or fewer: the 5 most script-worthy facts with ids, the best angle, the best visual asset, and the biggest caveat.
+
+## Source screenshots (hard rule)
+For every headline, post or official quote likely to appear on screen:
+- Capture the real page with Firecrawl (`firecrawl_scrape`, `formats: ["screenshot"]`, `mobile: true`).
+- Turn it into a source shot with `rf shot <url-or-file> --prod P --name <id> --find "<exact on-page phrase>"`.
+- If capture isn't possible, list the URLs under `## Screenshots to capture` (the Creative Director captures them with agent-browser: asking the owner first unless `config.source_shots_browser` is true).
+- Never retype a page as if it were a screenshot.

@@ -21,3 +21,8 @@ VERDICT: CLEAR | FIX
 LIVE NUMBERS: <repo stars etc. with timestamp>
 ```
 List only problems plus the live-number updates. Keep it short.
+
+## Source screenshots
+- For every `source` scene, check that each highlighted phrase is verbatim on the captured page and supports the spoken claim.
+- Flag a web source shown as a `headline`/`quote` text card unless brief.md logs why no screenshot was possible.
+- Flag any edit that changes the page's own words or numbers.

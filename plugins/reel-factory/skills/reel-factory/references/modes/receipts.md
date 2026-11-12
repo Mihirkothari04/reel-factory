@@ -3,6 +3,7 @@
 **Identity:** the primary sources are the stage. Tweets, blog posts, papers, READMEs and fine print appear and get highlighted line by line as the voice reads them, building to an honest verdict. Trust is the product. (Creator 32' claim → test → verdict; Creator 05's synced tweet highlights; Creator 66's Karpathy bridge.)
 
 ## Construction
+- **Real-page rule:** headlines, posts and quotes appear as `source` screenshots (`rf shot`) with the spoken words highlighted; `headline`/`quote` text cards only as a logged fallback.
 - **Cards:** `quote` (posts: author, handle), `headline` (articles, blogs), `code` (README/config lines with `highlight`), `image` with `box` (screenshots), `bars` (third-party tests).
 - **Highlight sync:** put the exact substring in `highlight`; build.py times each sweep to the first spoken key word. The VO must actually say (or closely paraphrase) the highlighted words.
 - **Zoom-to-line:** for long pages use `walkthrough` with a screenshot `src` and `zoom`/`arrow` actions whose `say` is the word that triggers them.

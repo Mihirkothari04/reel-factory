@@ -38,7 +38,7 @@ Full evidence: `corpus-analysis.md` (synthesis) and `corpus-notes.md` (one secti
 - Explain mechanisms with **one analogy** (elephant vs goldfish, short- vs long-term memory, "like the Matrix").
 - Follow the technical part with a **"what this means for you"** sentence.
 - Use **concrete scenarios** over spec lists: "drop in a 40-page contract → clean structured text."
-- **Primary source on screen**: the README line, tweet, or blog sentence, highlighted as it's read (`quote`, `repo.highlight`).
+- **Primary source on screen**: the README line, tweet, or blog sentence, highlighted as it's read: the **real screenshot** in a `source` scene (hard rule below); `repo.highlight` for GitHub cards.
 - **Rebuild UI instead of screenshotting dense pages.** The top creators redraw product UI so it's legible at phone size. Use `terminal`, `chat`, `repo`, and `list` scenes with the real strings.
 
 ## Psychology toolkit (choose deliberately, don't stack them all)
@@ -47,6 +47,10 @@ Curiosity gap · loss aversion (paid → free, "$1,000+/mo" struck through) · a
 
 ## Credibility and ethics (hard rules)
 
+- **Real source, real screenshot.** Whenever the reel shows an article headline, a social post (X, Reddit, LinkedIn, HN), an official blog, press or help-center line, or a README line, it shows the **actual page** as a cleaned screenshot in a `source` scene, with the spoken words highlighted (`rf shot` finds them by OCR). Never retype a web source into a text card: a text card reads as a claim, the real page reads as proof.
+  - Edit only *around* the content: crop, erase cookie/paywall banners and ads, and add overlays (highlighter, arrow, outlet + date chip).
+  - Never alter the outlet's words, layout or numbers, and never build a mock that imitates a screenshot.
+  - `headline` / `quote` text cards are fallbacks only when capture fails (paywall, block, no capture tool); log the reason in brief.md.
 - Every factual claim (numbers, dates, who built what, benchmarks) must trace to a source in `research/facts.md`. The fact-checker blocks unsourced claims.
 - Attribute claims you can't verify ("the team says…", "reportedly"). Never invent stats, testimonials, comments, or star counts.
 - **Real people:** never generate their likeness, never put words in their mouth, and never stage them endorsing anything. Show headlines, documents, logos, or neutral imagery. For news about real people, use "reports say", cite the outlet, and include the "not proven" balance beat.

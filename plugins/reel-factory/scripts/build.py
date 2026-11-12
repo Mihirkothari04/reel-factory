@@ -170,6 +170,15 @@ def main():
         if dur < 0.6:
             log(prod, f"build WARNING: scene {sc['id']} only {dur:.2f}s — consider merging its VO into a neighbour")
         p = dict(sc.get("props", {}))
+        if sc["type"] == "source":  # real screenshot from `rf shot`: merge its JSON (storyboard props win)
+            shot = prod / "public" / p["shot"] if p.get("shot") else None
+            if shot and shot.exists():
+                p = {**{k: v for k, v in load_json(shot).items() if k not in ("w", "h")}, **{k: v for k, v in p.items() if k != "shot"}}
+            if not p.get("src") or not (prod / "public" / p["src"]).exists():
+                log(prod, f"build WARNING: scene {sc['id']} source screenshot missing — falling back to a title card (log why in brief.md)")
+                sc["type"], p = "title", {"lines": [p.get("fallback") or (p.get("marks") or [{"text": sc.get("vo", "")}])[0]["text"]]}
+            elif "aspect" not in p:
+                p["aspect"] = img_aspect(prod / "public" / p["src"]) or 1.0
         sw = [w for w in words if w["scene"] == sc["id"]]
         if sw:
             if sc["type"] in ("list", "flow") and "revealAt" not in p:
@@ -184,6 +193,10 @@ def main():
                     p["revealAt"] = [0.0] + ra[1:]  # first card is on screen from the cut
             if sc["type"] in ("quote", "headline") and p.get("highlight") and "highlightAt" not in p:
                 ha = speech_sync(p["highlight"], sw, start, dur, min_hits=1)
+                if ha:
+                    p["highlightAt"] = ha
+            if sc["type"] == "source" and p.get("marks") and "highlightAt" not in p:
+                ha = speech_sync([m["text"] for m in p["marks"]], sw, start, dur, min_hits=1)
                 if ha:
                     p["highlightAt"] = ha
             if sc["type"] == "walkthrough" and p.get("actions"):

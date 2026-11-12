@@ -8,7 +8,7 @@ export type SceneType =
   | "title" | "punch" | "stat" | "list" | "quote"
   | "repo" | "terminal" | "code" | "chat" | "image" | "video" | "cta"
   | "item" | "bars" | "flow" | "hub" | "versus" | "grid"
-  | "walkthrough" | "headline" | "carousel" | "sheet";
+  | "walkthrough" | "headline" | "carousel" | "sheet" | "source";
 
 export type Scene = {
   id: string;

@@ -1,7 +1,7 @@
 ---
 name: reel-factory
 description: "Produce a complete, publish-ready Instagram Reel (1080x1920 MP4 + cover + caption) end-to-end — trend discovery or a given topic → multi-agent research → creation-mode selection (10 modes — kinetic explainer, presenter, illustrated story, newsroom, receipts, rapid catalog, screen walkthrough, cinematic, silent showcase, quick take; user picks or AI Select) → script → storyboard → ElevenLabs voice/music + generated visuals → Remotion render → automated + visual QA. Adapts to the machine it runs on. Use when the user runs /reel, asks to make/create/produce a reel, short, TikTok or vertical video, wants a trending topic turned into a reel, or wants to analyse reference reels to improve the system."
-version: 1.2.1
+version: 1.3.0
 ---
 
 # Reel Factory: autonomous reel production
@@ -67,7 +67,12 @@ Write the full storyboard per storyboard-schema.md **and the mode playbook**: `m
 Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode fidelity**) and `reel-factory:fact-checker` (every claim vs facts.md and sources). Apply all blocking fixes and any improvement that raises a score. If the critic's average is below 4 or any score is below 3, revise and run the critic once more (max 2 rounds). Log the changes in brief.md.
 
 ### 7. Assets, voice and music
-1. Free assets first: `RF sources repo <owner/name> --prod P`, `RF sources og <url> --prod P` (screenshots for walkthrough/quicktake/receipts zooms). Update the storyboard with live numbers and paths. For walkthrough actions, open each screenshot and set coordinates on the real element.
+1. **Real sources as real screenshots (hard rule, playbook.md):**
+   - Every web source shown on screen (headline, post, blog/press/help line, README line) becomes a `source` scene.
+   - Build it with `RF shot <capture> --prod P --name <id> --find "<spoken phrase>"`.
+   - Capture with Firecrawl (`firecrawl_scrape`, `formats: ["screenshot"]`, `mobile: true`). If Firecrawl is unavailable, use agent-browser on the public URLs after asking the owner with the exact list (no asking when `config.source_shots_browser` or `browser_capture` is true).
+   - Text cards are only a logged fallback.
+   Then free assets: `RF sources repo <owner/name> --prod P`, `RF sources og <url> --prod P` (screenshots for walkthrough/quicktake/receipts zooms). Update the storyboard with live numbers and paths. For walkthrough actions, open each screenshot and set coordinates on the real element.
 2. Generated visuals: `RF image P` (budget-aware; the story and cinematic modes may raise the budget for this reel: say so). Avatar/b-roll only if enabled and the brief justifies it (state the credit cost first).
 3. **Voice, by mode:**
    - narrated modes: `RF voice P` (ElevenLabs with exact timing, or the free fallback; it cuts dead air and retimes toward 200 wpm; story mode can target 190 via `voice.target_wpm`). Check the reported wpm. Re-tune pacing without new TTS via `RF voice P --retime`. Regenerate TTS only when `vo` text changed.
@@ -90,5 +95,5 @@ Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode f
 - **Truth:** no claim without a facts.md source; never fabricate numbers, quotes, comments, or star counts; use absolute dates. Receipts and newsroom modes show the source on screen.
 - **People:** no generated likeness of real people and no fake endorsements; news about people uses reputable outlets and allegation language. Story protagonists are always fictional.
 - **Media rights:** never repost another creator's video; official press/launch media only, credited; no movie or TV frames as reaction clips.
-- **Browser automation** (agent-browser) only when `config.browser_capture` is true, and only for public, read-only pages. Otherwise use APIs, og:images, and rebuilt UI.
+- **Browser automation** (agent-browser) only when `config.browser_capture` is true, or for source screenshots of public pages after the owner approves the exact URL list (pre-approved when `config.source_shots_browser` is true), and only for public, read-only pages. Otherwise use APIs, og:images, and rebuilt UI.
 - **Files:** everything lives inside `P`. Never write into the plugin folder during `/reel` (learnings go to `~/.reel-factory`); the knowledge base is edited only by `/reel-learn`.

@@ -63,4 +63,4 @@ Windows, macOS, or Linux with Python 3.10+, Node 20+, and ffmpeg on PATH. Option
 
 ## Preferences (`/reel-setup set <key> <value>`)
 
-`brand.handle` · `brand.accent` · `voice.voice_id` / `voice.speed` · `images.max_per_reel` · `video_gen.enabled` · `avatar.enabled` + `avatar.image` · `modes.ask` (false = always AI Select) · `output_dir` · `browser_capture` (off by default; agent-browser is only used when enabled).
+`brand.handle` · `brand.accent` · `voice.voice_id` / `voice.speed` · `images.max_per_reel` · `video_gen.enabled` · `avatar.enabled` + `avatar.image` · `modes.ask` (false = always AI Select) · `output_dir` · `browser_capture` (off by default; agent-browser is only used when enabled) · `source_shots_browser` (true = read-only screenshots of public pages for on-screen sources without a prompt).

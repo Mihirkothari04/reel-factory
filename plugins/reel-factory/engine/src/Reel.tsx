@@ -3,7 +3,7 @@ import { AbsoluteFill, interpolate, Sequence, staticFile, useCurrentFrame, useVi
 import { Audio, Video } from "@remotion/media";
 import { OUT } from "./anim";
 import { Banner, Captions, Handle, HookTitle, HudLabel, Progress, Slate } from "./overlays";
-import { Carousel, Headline, Sheet, Walkthrough } from "./scenes/modes";
+import { Carousel, Headline, Sheet, Source, Walkthrough } from "./scenes/modes";
 import { Bars, Flow, Grid, Hub, Item, Versus } from "./scenes/diagram";
 import { List, Punch, Quote, Stat, Title } from "./scenes/text";
 import { Chat, Code, Cta, ImageScene, Repo, src, Terminal, VideoScene } from "./scenes/ui";
@@ -14,7 +14,7 @@ const REGISTRY: Record<string, React.FC<{ p: any; dur: number }>> = {
   title: Title, punch: Punch, stat: Stat, list: List, quote: Quote,
   repo: Repo, terminal: Terminal, code: Code, chat: Chat, image: ImageScene, video: VideoScene, cta: Cta,
   item: Item, bars: Bars, flow: Flow, hub: Hub, versus: Versus, grid: Grid,
-  walkthrough: Walkthrough, headline: Headline, carousel: Carousel, sheet: Sheet,
+  walkthrough: Walkthrough, headline: Headline, carousel: Carousel, sheet: Sheet, source: Source,
 };
 
 const fullBleed = (sc: Scene) => sc.type === "video" || (sc.type === "image" && sc.props.frame === "full");

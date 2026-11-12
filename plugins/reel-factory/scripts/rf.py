@@ -5,7 +5,7 @@
   python rf.py doctor           check every tool / credential the pipeline can use
   python rf.py probe [--json]   system probe (works before setup): capabilities, per-stage plan, blockers, asks
   python rf.py <tool> [args]    run scripts/<tool>.py inside the runtime venv
-                                tools: trends, sources, modes, voice, music, image, build, render, qa,
+                                tools: trends, sources, shot, modes, voice, music, image, build, render, qa,
                                        analyze, ingest, kb, sfx_kit, config
 
 Runtime home: $REEL_FACTORY_HOME or ~/.reel-factory  (kept outside the plugin so plugin updates never wipe it)
@@ -17,7 +17,7 @@ PLUGIN = Path(__file__).resolve().parent.parent
 HOME = Path(os.environ.get("REEL_FACTORY_HOME", Path.home() / ".reel-factory"))
 WIN = os.name == "nt"
 VPY = HOME / "venv" / ("Scripts/python.exe" if WIN else "bin/python")
-REQS = ["faster-whisper", "edge-tts", "numpy", "pillow", "soundfile", "requests"]
+REQS = ["faster-whisper", "edge-tts", "numpy", "pillow", "soundfile", "requests", "rapidocr-onnxruntime"]
 GPU_REQS = ["nvidia-cublas-cu12", "nvidia-cudnn-cu12==9.*"]
 
 DEFAULT_CONFIG = {
@@ -31,6 +31,7 @@ DEFAULT_CONFIG = {
     "brand": {"handle": "", "default_theme": None, "accent": None, "cta": "comment"},
     "language": "en",
     "browser_capture": False,  # agent-browser use needs explicit opt-in
+    "source_shots_browser": False,  # true = read-only agent-browser screenshots of public pages for source shots need no prompt
     "modes": {"ask": True},  # ask which creation mode to use (False = AI Select every time)
     "whisper": {"model": "small"},  # tiny | base | small | medium (local transcription for alignment, QA, analysis)
 }

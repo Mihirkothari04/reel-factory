@@ -107,7 +107,7 @@ claude plugin install reel-factory@reel-factory --scope user
 
 ## Responsible use
 
-reel-factory won't fabricate quotes, numbers, comments or endorsements. It won't generate likenesses of real people, won't repost other creators' videos, and uses allegation language with cited outlets for news about people. Review every reel before you publish: you're responsible for what you post.
+reel-factory won't fabricate quotes, numbers, comments or endorsements. When a reel cites an article, a post or an official statement, it shows a cleaned screenshot of the real page, with the quoted words highlighted as they're spoken, never a retyped text box. It won't generate likenesses of real people, won't repost other creators' videos, and uses allegation language with cited outlets for news about people. Review every reel before you publish: you're responsible for what you post.
 
 ## License
 

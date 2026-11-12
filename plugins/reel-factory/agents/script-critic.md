@@ -32,3 +32,6 @@ FIXES (exact, by scene id):
 HOOK ALTERNATIVES: 1) "…" 2) "…"
 ```
 Be specific enough that every fix can be applied mechanically. Don't praise.
+
+## Source screenshots
+Web sources (headlines, posts, blog/press/help lines, README lines) must be `source` scenes built from real screenshots. A text card for a web source without a logged fallback reason caps Credibility at 2.

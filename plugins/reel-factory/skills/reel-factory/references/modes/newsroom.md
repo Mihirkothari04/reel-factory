@@ -3,6 +3,7 @@
 **Identity:** it looks and sounds like news. A persistent BREAKING banner, real headlines highlighted as they are read, a fast chronology, escalation, balance, stakes. (Creator 54's big-tech CEO scandal story; Creator 02's ticker; Creator 12's red news banner; Creator 36's launch takes.)
 
 ## Construction
+- **Real-page rule:** headlines, posts and quotes appear as `source` screenshots (`rf shot`) with the spoken words highlighted; `headline`/`quote` text cards only as a logged fallback.
 - **Theme:** `signal` (condensed caps display, red accent); captions `pill`.
 - **Banner:** `meta.banner = {"kicker": "BREAKING", "text": "Cloudflare ships a *browser* for AI agents"}`. It stays the whole reel (the stage shrinks to make room). Kickers: BREAKING, JUST IN, UPDATE, EXPLAINED.
 - **Evidence cards:** `headline` (outlet, date, headline, `highlight` phrases; build.py syncs each sweep to the moment the VO says it), `quote` for statements, `image` for og/press images, `stat` for the key number, `punch` stamps on the turns.

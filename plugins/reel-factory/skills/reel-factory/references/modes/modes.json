@@ -1,5 +1,5 @@
 {
-  "version": "1.2.1",
+  "version": "1.3.0",
   "note": "Creation modes = HOW a reel is constructed (stage, presenter, visual source, voice, pacing, audio, toolchain). Story skeletons (formats.md) are chosen inside a mode. Derived from 90 analysed reels (batch-01: 88, batch-02: 2 new of 21). Playbook per mode: modes/<id>.md. Scripts read: defaults, qa, requires, fallback.",
   "modes": [
     {
@@ -163,7 +163,7 @@
       "id": "newsroom",
       "name": "Newsroom Brief",
       "one_liner": "Breaking-news treatment: persistent banner, real headlines highlighted as they are read, a fast chronology, then 'here's where it gets crazy' and 'but here's the catch'.",
-      "construction": "Signal theme, red BREAKING lower-third banner for the whole reel, headline/article cards with outlet + date and black highlighter sweep synced to VO, date stamps, official logos/og images, tense pulse music, cuts every ~1.8 s. Allegation language for people; outlets cited on screen.",
+      "construction": "Signal theme, red BREAKING lower-third banner for the whole reel, real article screenshots (`source` scenes) with outlet + date chip and highlighter sweep synced to VO, date stamps, official logos/og images, tense pulse music, cuts every ~1.8 s. Allegation language for people; outlets cited on screen.",
       "skeletons": [
         "news",
         "action-reaction",
@@ -213,7 +213,7 @@
       "id": "receipts",
       "name": "Receipts (Evidence Read-along)",
       "one_liner": "The primary sources are the stage: tweets, blog posts, papers and READMEs appear and get highlighted line by line as the voice reads them, building to an honest verdict.",
-      "construction": "Quote/headline/code cards with highlights timed to the spoken words, zoom to the exact line, skeptical journalist voice, third-party tests and fine print, verdict pill at the end. Every claim is on screen with its source.",
+      "construction": "Real-page screenshots (`source`) and code cards with highlights timed to the spoken words, zoom to the exact line, skeptical journalist voice, third-party tests and fine print, verdict pill at the end. Every claim is on screen with its source.",
       "skeletons": [
         "claim-test",
         "news",

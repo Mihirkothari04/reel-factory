@@ -7,13 +7,15 @@ RF="python ${CLAUDE_PLUGIN_ROOT}/scripts/rf.py"
 $RF probe [--json]               # system probe (no venv needed): capabilities, per-stage plan, blockers, asks → ~/.reel-factory/profile.json
 $RF doctor                       # health + ElevenLabs credits
 $RF setup                        # (re)install runtime at ~/.reel-factory (idempotent)
-$RF config [set key value]       # preferences (voice, brand, budgets, output_dir, browser_capture)
+$RF config [set key value]       # preferences (voice, brand, budgets, output_dir, browser_capture, source_shots_browser)
 $RF new "<title>" [--root DIR]   # → prints production dir (default <cwd>/reel-productions/<date>-<slug>)
 $RF modes [--json]               # creation-mode catalog with live availability + recent production history
 $RF trends --days 7 --out F      # free trend scan (GitHub, HN, HF, Lobsters)
 $RF sources repo owner/name --prod P   # GitHub facts + README excerpt + og image → public/img/
 $RF sources og <url> --prod P [--name x]
 $RF sources hn "<query>" [--days 14]
+$RF shot <img|url> --prod P --name x --find "exact phrase" [--find …] [--erase x,y,w,h] [--crop x,y,w,h | --aspect 1.0]
+                                 # real-page screenshot → cleaned crop + local-OCR highlight boxes → public/img/shot-x.{png,json} (`source` scene)
 $RF image P [--dry-run]          # generate scenes[].assets (budgeted)
 $RF voice P [--provider edge]    # VO + exact word timing → public/vo.mp3, words.json (silent mode: writes empty words)
 $RF voice P --footage clip.mp4   # presenter mode with the user's own recording: its audio = VO, aligned, never cut

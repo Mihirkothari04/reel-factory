@@ -117,7 +117,71 @@ export const Walkthrough: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
   );
 };
 
-/** props: outlet, date?, headline, highlight?: string[], highlightAt?: number[], dek?, image?, author? */
+/**
+ * The real page as proof (rule: web sources are shown as their actual screenshot, never retyped).
+ * props (mostly from `rf shot` JSON via build): src, aspect, marks: [{text, rects:[{x,y,w,h}]}] (0..1 of the image),
+ * focus?: {x,y,w,h}, highlightAt? (from VO), url? (title bar), outlet?, date? (chip; omit when the page already shows them), chipAt? ("bottom"|"top"),
+ * zoom? (end scale, default 1.14, auto-capped so the highlighted text stays in frame),
+ * markColor? (default highlighter yellow), caption?
+ */
+export const Source: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
+  const t = useTheme();
+  const { s, h, first } = useStage();
+  const now = useT();
+  const k0 = useSpring(0, 18);
+  const k = first ? 1 : k0;
+  const aspect = p.aspect ?? 1;
+  const maxH = Math.min(1060 * s, h - 70 * s - (p.caption ? 110 : 0) * s - 24);
+  const H = Math.min(940 / aspect, maxH);
+  const W = Math.round(H * aspect);
+  const marks: { text: string; rects: { x: number; y: number; w: number; h: number }[] }[] = p.marks ?? [];
+  const at: number[] = p.highlightAt ?? marks.map((_, i) => 0.5 + i * Math.min(0.9, dur / (marks.length + 1)));
+  const f = p.focus ?? { x: 0.25, y: 0.25, w: 0.5, h: 0.5 };
+  // slow camera push toward the highlighted words, capped so the highlighted text never leaves the frame
+  const cx = f.x + f.w / 2, cy = f.y + f.h / 2, mg = 0.02;
+  const fit = Math.min(
+    cx / Math.max(1e-3, cx - f.x + mg), (1 - cx) / Math.max(1e-3, f.x + f.w - cx + mg),
+    cy / Math.max(1e-3, cy - f.y + mg), (1 - cy) / Math.max(1e-3, f.y + f.h - cy + mg),
+  );
+  const zEnd = Math.max(1, Math.min(Number(p.zoom ?? 1.14), fit));
+  const z: number = interpolate(now, [0, Math.max(1, dur)], [1, zEnd], { extrapolateRight: "clamp" });
+  const chip = [p.outlet, p.date].filter(Boolean).join(" · ");
+  return (
+    <Center>
+      <Window title={p.url ?? ""} width={W} style={{ opacity: k, scale: interpolate(k, [0, 1], [0.95, 1]) }}>
+        <div style={{ position: "relative", width: W, height: H, overflow: "hidden", background: "#fff" }}>
+          <div style={{ position: "absolute", inset: 0, scale: z, transformOrigin: `${cx * 100}% ${cy * 100}%` }}>
+            <Img src={src(p.src)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
+            {marks.map((m, i) => {
+              // the sweep runs across the mark's line rects in reading order, like a real highlighter
+              const e = OUT(clamp01((now - at[i]) / Math.max(0.35, 0.18 * m.rects.length + 0.3)));
+              const total = m.rects.reduce((a, r) => a + r.w, 0) || 1;
+              let done = 0;
+              return m.rects.map((r, j) => {
+                const share = clamp01((e * total - done) / r.w);
+                done += r.w;
+                if (share <= 0) return null;
+                const col = p.markColor ?? "#FFE14D";
+                return (m as any).style === "underline" ? (
+                  // dark page: thick marker stroke under the words (multiply would vanish on dark backgrounds)
+                  <div key={`${i}-${j}`} style={{ position: "absolute", left: `${r.x * 100}%`, top: `${(r.y + r.h * 0.9) * 100}%`, width: `${r.w * share * 100}%`, height: `${Math.max(0.012, r.h * 0.16) * 100}%`, background: col, borderRadius: 6, boxShadow: "0 2px 0 rgba(0,0,0,.25)" }} />
+                ) : (
+                  <div key={`${i}-${j}`} style={{ position: "absolute", left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.w * share * 100}%`, height: `${r.h * 100}%`, background: col, mixBlendMode: "multiply", borderRadius: 4 }} />
+                );
+              });
+            })}
+          </div>
+          {chip && (
+            <div style={{ position: "absolute", right: 18 * s, ...(p.chipAt === "top" ? { top: 18 * s } : { bottom: 18 * s }), background: t.accent, color: t.accentInk, fontFamily: t.mono, fontSize: 24 * s, fontWeight: 700, padding: `${8 * s}px ${16 * s}px`, borderRadius: 8, opacity: clamp01((now - 0.25) / 0.3) }}>{chip}</div>
+          )}
+        </div>
+      </Window>
+      {p.caption && <div style={{ fontFamily: t.sans, fontWeight: 700, fontSize: 46 * s, color: t.ink, maxWidth: 900 }}><Rich text={p.caption} /></div>}
+    </Center>
+  );
+};
+
+/** Text card fallback when no real screenshot could be captured (log why in brief.md). props: outlet, date?, headline, highlight?: string[], highlightAt?: number[], dek?, image?, author? */
 export const Headline: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
   const t = useTheme();
   const { s } = useStage();
