@@ -77,11 +77,6 @@ Every render is re-measured the way the reference reels were measured (loudness,
 
 ## Install
 
-<p align="center">
-  <img src="docs/media/walkthrough-github-install.gif" width="300" alt="Screen Walkthrough mode demo: a cursor finds this repo, zooms to the install commands and types /reel-setup">
-  <br><sub>Made by the plugin's Screen Walkthrough mode from screenshots of this repository.</sub>
-</p>
-
 ```bash
 claude plugin marketplace add Mihirkothari04/reel-factory
 claude plugin install reel-factory@reel-factory --scope user
