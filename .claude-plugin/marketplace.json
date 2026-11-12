@@ -1,0 +1,14 @@
+{
+  "name": "reel-factory",
+  "owner": {
+    "name": "Mihirkothari04",
+    "url": "https://github.com/Mihirkothari04"
+  },
+  "plugins": [
+    {
+      "name": "reel-factory",
+      "source": "./plugins/reel-factory",
+      "description": "Autonomous Instagram Reel production: 10 creation modes, multi-agent research and review, Remotion render, automated QA, and a learning loop that evolves from your reference reels."
+    }
+  ]
+}

@@ -1,0 +1,544 @@
+{
+  "version": "1.2.0",
+  "note": "Creation modes = HOW a reel is constructed (stage, presenter, visual source, voice, pacing, audio, toolchain). Story skeletons (formats.md) are chosen inside a mode. Derived from 90 analysed reels (batch-01: 88, batch-02: 2 new of 21). Playbook per mode: modes/<id>.md. Scripts read: defaults, qa, requires, fallback.",
+  "modes": [
+    {
+      "id": "kinetic",
+      "name": "Kinetic Explainer",
+      "one_liner": "Faceless motion graphics: every sentence gets its own designed composition (rebuilt UI, numbers, diagrams, kinetic headlines).",
+      "construction": "No presenter. Stage = full frame of designed scenes that change every 1.5-3 s, locked to a fast TTS voice-over; kinetic headline or word-synced captions; music bed + functional SFX.",
+      "skeletons": [
+        "spotlight",
+        "framework",
+        "claim-test",
+        "comparison",
+        "tier-list",
+        "action-reaction",
+        "stack-roadmap",
+        "listicle"
+      ],
+      "best_for": [
+        "a tool/repo/feature with a mechanism to show",
+        "concepts that diagram well",
+        "anything with numbers"
+      ],
+      "avoid_when": [
+        "the payoff is a real-world visual we cannot rebuild",
+        "pure opinion with no visualisable claims"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "pill",
+        "themes": [
+          "night",
+          "paper",
+          "swiss",
+          "terminal"
+        ],
+        "length": [
+          35,
+          60
+        ],
+        "voice": "tts",
+        "music": "bed"
+      },
+      "qa": {},
+      "cost": "low",
+      "evidence": [
+        "Creator 30 Cloudflare Day 5",
+        "Creator 63 7 repos",
+        "Creator 32 Desert Ant Labs",
+        "Piyush Google Android skills"
+      ]
+    },
+    {
+      "id": "presenter",
+      "name": "Presenter + Board",
+      "one_liner": "A face anchors trust: presenter in the bottom half, motion-graphics board on top; the face returns full-frame for emphasis and the CTA.",
+      "construction": "Split layout (board top ~55%, presenter bottom). Presenter = AI avatar (Creatify Aurora from a consented portrait) or the user's own recorded clip (--footage). Board scenes as in kinetic. Push-in close-up for CTA.",
+      "skeletons": [
+        "spotlight",
+        "listicle",
+        "tutorial",
+        "comparison",
+        "tier-list",
+        "news"
+      ],
+      "best_for": [
+        "opinion, verdicts and first-person trials",
+        "personal-brand channels",
+        "topics where trust matters (security, money)"
+      ],
+      "avoid_when": [
+        "no avatar configured and no footage supplied (falls back to kinetic)"
+      ],
+      "requires": [
+        "avatar_or_footage"
+      ],
+      "fallback": "kinetic",
+      "defaults": {
+        "layout": "split-avatar",
+        "captionStyle": "pill",
+        "themes": [
+          "paper",
+          "night",
+          "swiss"
+        ],
+        "length": [
+          35,
+          60
+        ],
+        "voice": "tts_or_footage",
+        "music": "bed"
+      },
+      "qa": {},
+      "cost": "high (avatar credits) / free (own footage)",
+      "evidence": [
+        "Creator 37 x7",
+        "Creator 22 x6",
+        "Creator 05 x6",
+        "Creator 12 x4",
+        "Creator 58 avatar"
+      ]
+    },
+    {
+      "id": "story",
+      "name": "Illustrated Story",
+      "one_liner": "A named character keeps failing and each fix teaches one concept; illustrated chapters, a growing progress stack, and a callback twist at the end.",
+      "construction": "Problem-ladder narrative with a fictional protagonist (never a real person). Consistent illustration style (generated with one locked style prompt + a character reference) or diagram scenes; mono chapter labels; persistent progress tracker; calm 180-200 wpm VO; quiet bed; ends on a punchline, soft or no CTA.",
+      "skeletons": [
+        "problem-ladder"
+      ],
+      "best_for": [
+        "teaching 4-8 connected concepts",
+        "evergreen explainers",
+        "abstract systems (AI engineering, security layers, money flows)"
+      ],
+      "avoid_when": [
+        "breaking news",
+        "a single-tool spotlight",
+        "under 45 s"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "serif",
+        "themes": [
+          "paper"
+        ],
+        "length": [
+          60,
+          120
+        ],
+        "voice": "tts",
+        "music": "quiet",
+        "musicVolume": 0.18,
+        "duckTo": 0.06
+      },
+      "qa": {
+        "dur": [
+          45,
+          135
+        ],
+        "wpm": [
+          160,
+          225
+        ],
+        "avg_scene": [
+          1.8,
+          5.0
+        ],
+        "max_scene": 7.5
+      },
+      "cost": "medium (6-10 illustrations)",
+      "evidence": [
+        "Creator 25 — The 8 Layers of AI Engineering (best storytelling in corpus)",
+        "Creator 19 illustrated explainers"
+      ]
+    },
+    {
+      "id": "newsroom",
+      "name": "Newsroom Brief",
+      "one_liner": "Breaking-news treatment: persistent banner, real headlines highlighted as they are read, a fast chronology, then 'here's where it gets crazy' and 'but here's the catch'.",
+      "construction": "Signal theme, red BREAKING lower-third banner for the whole reel, headline/article cards with outlet + date and black highlighter sweep synced to VO, date stamps, official logos/og images, tense pulse music, cuts every ~1.8 s. Allegation language for people; outlets cited on screen.",
+      "skeletons": [
+        "news",
+        "action-reaction",
+        "comparison"
+      ],
+      "best_for": [
+        "launches, acquisitions, lawsuits, policy, outages",
+        "rivalries between big players",
+        "anything with a timeline"
+      ],
+      "avoid_when": [
+        "evergreen how-to content",
+        "no reputable outlet has covered it yet (use receipts or quicktake)"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "pill",
+        "themes": [
+          "signal"
+        ],
+        "length": [
+          45,
+          80
+        ],
+        "voice": "tts",
+        "music": "tense",
+        "musicVolume": 0.34,
+        "duckTo": 0.13
+      },
+      "qa": {
+        "avg_scene": [
+          1.2,
+          3.0
+        ]
+      },
+      "cost": "low",
+      "evidence": [
+        "Creator 54 — big-tech CEO scandal story",
+        "Creator 02 headline ticker",
+        "Creator 12 — Google news banner",
+        "Creator 36 — Grok Bot"
+      ]
+    },
+    {
+      "id": "receipts",
+      "name": "Receipts (Evidence Read-along)",
+      "one_liner": "The primary sources are the stage: tweets, blog posts, papers and READMEs appear and get highlighted line by line as the voice reads them, building to an honest verdict.",
+      "construction": "Quote/headline/code cards with highlights timed to the spoken words, zoom to the exact line, skeptical journalist voice, third-party tests and fine print, verdict pill at the end. Every claim is on screen with its source.",
+      "skeletons": [
+        "claim-test",
+        "news",
+        "spotlight"
+      ],
+      "best_for": [
+        "bold claims (speed, benchmarks, 'beats X')",
+        "controversies with a paper trail",
+        "announcements best explained by their own words"
+      ],
+      "avoid_when": [
+        "no quotable primary source exists",
+        "highly visual products (use walkthrough or cinematic)"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "highlight",
+        "themes": [
+          "night",
+          "paper"
+        ],
+        "length": [
+          40,
+          60
+        ],
+        "voice": "tts",
+        "music": "bed"
+      },
+      "qa": {},
+      "cost": "low",
+      "evidence": [
+        "Creator 32 — Desert Ant Labs claim/test/verdict",
+        "Creator 05 — tweet highlights synced to VO (shadcn, Andrew Ng, Vercel)",
+        "Creator 66 — Karpathy quote bridge"
+      ]
+    },
+    {
+      "id": "catalog",
+      "name": "Rapid Catalog",
+      "one_liner": "High-density list: a preview grid of everything up front, then items fly past with an i/N counter, ending on a screenshot-worthy cheat sheet.",
+      "construction": "ToC/grid preview hook (open loop), carousel or item cards with i/N and a progress bar, 1-3 s per item (deep list: one demo per item, 5-8 s), restraint advice, final dense sheet with a 'Screenshot this' stamp, save/share or withheld-bonus CTA.",
+      "skeletons": [
+        "listicle",
+        "tier-list",
+        "stack-roadmap"
+      ],
+      "best_for": [
+        "N tools/repos/sites/prompts",
+        "resource roundups",
+        "launch directories, cheat sheets"
+      ],
+      "avoid_when": [
+        "one product",
+        "a narrative with stakes"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "highlight",
+        "themes": [
+          "swiss",
+          "night"
+        ],
+        "length": [
+          30,
+          60
+        ],
+        "voice": "tts",
+        "music": "bed"
+      },
+      "qa": {
+        "avg_scene": [
+          0.9,
+          3.2
+        ],
+        "wpm": [
+          150,
+          255
+        ]
+      },
+      "cost": "low",
+      "evidence": [
+        "Creator 63 — 30 best Claude plugins (carousel + progress dots)",
+        "Creator 62 — 45 places to launch (quiz counter + cheat sheet)",
+        "Creator 48 — 20 repos",
+        "Creator 20 micro-list"
+      ]
+    },
+    {
+      "id": "walkthrough",
+      "name": "Screen Walkthrough",
+      "one_liner": "Show, don't tell: one app window where a cursor types, clicks and zooms through the exact steps, before-and-after, 'Step 1… Step 5'.",
+      "construction": "Before→after hook, then a persistent styled app frame (wallpaper, rounded corners, shadow) with a gliding cursor, typing, click pulses and auto-zoom to each action; spoken 'Step N' signposts; recap of why it works; CTA for the full guide. Visual source: rebuilt UI or real screenshots; real capture only when browser_capture is enabled.",
+      "skeletons": [
+        "tutorial",
+        "stack-roadmap",
+        "spotlight"
+      ],
+      "best_for": [
+        "how-to workflows",
+        "prompts and settings",
+        "tool A + tool B = result",
+        "'do this right after X' checklists"
+      ],
+      "avoid_when": [
+        "news or opinion",
+        "steps that happen off-screen"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "pill",
+        "themes": [
+          "paper",
+          "night",
+          "swiss"
+        ],
+        "length": [
+          35,
+          60
+        ],
+        "voice": "tts",
+        "music": "bed"
+      },
+      "qa": {
+        "avg_scene": [
+          1.4,
+          4.5
+        ],
+        "max_scene": 7.0
+      },
+      "cost": "low",
+      "evidence": [
+        "Humanize AI text (screen-rec steps)",
+        "Creator 22 — Connect Claude to Framer (Step 1..5)",
+        "Creator 11 — Render cron (annotated steps)",
+        "Recordly (auto-zoom/cursor grammar)",
+        "Creator 14 — Mobbin + Replit"
+      ]
+    },
+    {
+      "id": "cinematic",
+      "name": "Cinematic Hype",
+      "one_liner": "Spectacle first: AI-generated hero shots, film-slate HUD, condensed caps type and cuts every 1-2 s on a loud bed.",
+      "construction": "Generated video b-roll (Seedance/Veo) or generated stills with camera moves, slate HUD (corner brackets, timecode, scene n/N), big condensed uppercase headlines, count-ups, risers and impacts, loud music bed; VO stays fast and continuous.",
+      "skeletons": [
+        "spotlight",
+        "listicle",
+        "action-reaction"
+      ],
+      "best_for": [
+        "AI video/image/3D tools whose output IS the hook",
+        "sci-fi framed tech (simulations, robotics, world models)",
+        "launch hype"
+      ],
+      "avoid_when": [
+        "dense technical teaching",
+        "security/finance topics that need sobriety",
+        "no video_gen or image budget (falls back to kinetic with stills)"
+      ],
+      "requires": [
+        "video_gen_or_images"
+      ],
+      "fallback": "kinetic",
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "caps",
+        "themes": [
+          "noir",
+          "signal"
+        ],
+        "length": [
+          30,
+          50
+        ],
+        "voice": "tts",
+        "music": "loud",
+        "musicVolume": 0.42,
+        "duckTo": 0.17
+      },
+      "qa": {
+        "avg_scene": [
+          0.9,
+          2.6
+        ]
+      },
+      "cost": "high",
+      "evidence": [
+        "Creator 18 (film-slate HUD, 1.4 s cuts)",
+        "Creator 22 — Wan2GP (AI-generated cold open)",
+        "MotionSites (3D card swarm)",
+        "Creator 59 — MiroFish (Matrix city)"
+      ]
+    },
+    {
+      "id": "silent",
+      "name": "Silent Showcase",
+      "one_liner": "No voice at all: a stunning result on screen, three to six text beats cut on the music's beat, built to loop.",
+      "construction": "Music-only (beat-synced cuts from detected beats), on-screen text carries the whole message in short lines, result shown in the first second, 12-25 s so it loops, end card with the comment keyword. Strong visual required (generated, captured or rebuilt).",
+      "skeletons": [
+        "spotlight",
+        "listicle",
+        "tutorial"
+      ],
+      "best_for": [
+        "visually stunning outputs (sites, animations, designs)",
+        "'model + 1 prompt = this' formulas",
+        "flashcard resource lists"
+      ],
+      "avoid_when": [
+        "anything that needs explanation or nuance",
+        "news, security, money"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "none",
+        "themes": [
+          "night",
+          "swiss",
+          "noir"
+        ],
+        "length": [
+          12,
+          25
+        ],
+        "voice": "none",
+        "music": "loud",
+        "musicVolume": 0.85,
+        "duckTo": 0.85
+      },
+      "qa": {
+        "dur": [
+          10,
+          32
+        ],
+        "skip": [
+          "vo_starts_immediately",
+          "pace",
+          "vo_intelligible"
+        ],
+        "avg_scene": [
+          0.7,
+          3.5
+        ],
+        "require_music": true
+      },
+      "cost": "low",
+      "evidence": [
+        "Creator 15 — 'Model + 1 prompt = this site'",
+        "Creator 40 — flashcard websites",
+        "Creator 42 — M3E Canvas silent demo (batch-02)"
+      ]
+    },
+    {
+      "id": "quicktake",
+      "name": "Quick Take (Source Frame)",
+      "one_liner": "Same-day reaction: a persistent headline sticker over the source itself (launch video, README, post), zoomed to what matters, plus one sharp insight and a verdict.",
+      "construction": "Hook sticker stays the whole reel; the source media (official video/og image/README screenshot) sits on stage with zoom-to-section synced to VO; 20-35 s; one non-obvious insight beyond the press release; keyword CTA. Can be silent (music + headline) when speed matters most.",
+      "skeletons": [
+        "spotlight",
+        "news",
+        "action-reaction"
+      ],
+      "best_for": [
+        "breaking launches within hours",
+        "repos trending today",
+        "when official media already shows the product well"
+      ],
+      "avoid_when": [
+        "nothing official to show",
+        "the topic needs teaching"
+      ],
+      "requires": [],
+      "fallback": null,
+      "defaults": {
+        "layout": "faceless",
+        "captionStyle": "pill",
+        "themes": [
+          "night",
+          "paper"
+        ],
+        "length": [
+          20,
+          35
+        ],
+        "voice": "tts",
+        "music": "bed"
+      },
+      "qa": {
+        "avg_scene": [
+          1.4,
+          5.0
+        ],
+        "max_scene": 7.5,
+        "dur": [
+          15,
+          45
+        ]
+      },
+      "cost": "minimal",
+      "evidence": [
+        "Recordly — cut-out presenter over README zoom-to-section (batch-02)",
+        "Creator 39/Creator 42 source frames",
+        "Creator 53 — blog recommendation",
+        "Creator 57 greenscreen"
+      ]
+    }
+  ],
+  "skeleton_names": {
+    "spotlight": "Tool spotlight",
+    "listicle": "Listicle N",
+    "tutorial": "Step tutorial",
+    "news": "News explainer",
+    "claim-test": "Claim → test → verdict",
+    "problem-ladder": "Problem-ladder story",
+    "framework": "Framework reduction",
+    "tier-list": "Tier list / ranking",
+    "comparison": "Comparison + verdict",
+    "action-reaction": "Action → reaction",
+    "stack-roadmap": "Stack roadmap"
+  }
+}

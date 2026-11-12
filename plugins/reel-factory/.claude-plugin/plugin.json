@@ -1,0 +1,25 @@
+{
+  "name": "reel-factory",
+  "version": "1.2.0",
+  "description": "Autonomous Instagram Reel production: trend discovery or your topic -> research -> creation mode (10 modes, or AI Select) -> script -> storyboard -> voice, music, SFX, visuals -> Remotion render -> QA -> 1080x1920 reel. Adapts to the machine it runs on (probe + free fallbacks). Built from a study of 105 AI/tech reels.",
+  "author": {
+    "name": "Mihirkothari04",
+    "url": "https://github.com/Mihirkothari04"
+  },
+  "license": "MIT",
+  "keywords": [
+    "instagram",
+    "reels",
+    "video",
+    "remotion",
+    "elevenlabs",
+    "content",
+    "short-form",
+    "tiktok",
+    "youtube-shorts",
+    "motion-graphics",
+    "automation"
+  ],
+  "homepage": "https://github.com/Mihirkothari04/reel-factory",
+  "repository": "https://github.com/Mihirkothari04/reel-factory"
+}
