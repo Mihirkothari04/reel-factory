@@ -63,7 +63,7 @@ The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voi
 | type | use it for | props |
 |---|---|---|
 | `title` | hook headline, section headers, kinetic statements | `lines: string[]` (1–3 lines, ≤4 words each ideal), `kicker?` (mono line above), `sub?`, `size?` (default 104), `align?: "center"\|"left"` |
-| `punch` | pattern interrupt, 1–3 big words; stamps ("HUGE", "VULNERABLE") | `text`, `style?: "big"\|"stamp"`, `sub?`, `size?` (default 150) |
+| `punch` | pattern interrupt, 1–3 big words; stamps ("HUGE", "VULNERABLE") | `text`, `style?: "big"\|"stamp"`, `sub?`, `size?` (default 150), `tone?: "accent"` (accent slab / accent stamp, the cinematic signature) |
 | `stat` | one big number with count-up | `value: number`, `from?`, `prefix?`, `suffix?` (e.g. "%", "★", "x"), `decimals?`, `label`, `sub?`, `source?` |
 | `list` | progressive checklist / numbered list (screenshot-worthy) | `title?`, `items: string[]` (≤6 ideal), `check?: bool`, `revealAt?: number[]` (sec from scene start) |
 | `quote` | tweet / blog / README line with highlighter sweep | `text`, `highlight: string[]` (exact substrings), `author?`, `handle?`, `source?`, `size?` |

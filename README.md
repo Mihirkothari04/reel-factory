@@ -29,16 +29,16 @@ Every topic gets the full table of creation modes with a line about what *that t
 
 <table>
   <tr>
-    <td align="center"><img src="docs/media/mode-kinetic.gif" width="170"><br><b>Kinetic Explainer</b><br><sub>faceless motion graphics,<br>one composition per sentence</sub></td>
-    <td align="center"><img src="docs/media/mode-newsroom.gif" width="170"><br><b>Newsroom Brief</b><br><sub>BREAKING banner, headlines<br>highlighted as they're read</sub></td>
-    <td align="center"><img src="docs/media/mode-receipts.gif" width="170"><br><b>Receipts</b><br><sub>primary sources highlighted<br>line by line → verdict</sub></td>
-    <td align="center"><img src="docs/media/mode-catalog.gif" width="170"><br><b>Rapid Catalog</b><br><sub>i/N carousel, progress,<br>cheat-sheet end frame</sub></td>
+    <td align="center"><img src="docs/media/demo-kinetic.gif" width="170"><br><b>Kinetic Explainer</b><br><sub>faceless motion graphics,<br>one composition per sentence</sub></td>
+    <td align="center"><img src="docs/media/demo-newsroom.gif" width="170"><br><b>Newsroom Brief</b><br><sub>BREAKING banner, headlines<br>highlighted as they're read</sub></td>
+    <td align="center"><img src="docs/media/demo-receipts.gif" width="170"><br><b>Receipts</b><br><sub>primary sources highlighted<br>line by line → verdict</sub></td>
+    <td align="center"><img src="docs/media/demo-catalog.gif" width="170"><br><b>Rapid Catalog</b><br><sub>i/N carousel, progress,<br>cheat-sheet end frame</sub></td>
   </tr>
   <tr>
     <td align="center"><img src="docs/media/walkthrough-github-install.gif" width="170"><br><b>Screen Walkthrough</b><br><sub>cursor types, points and zooms<br>(shown on this repo's own page)</sub></td>
-    <td align="center"><img src="docs/media/mode-cinematic.gif" width="170"><br><b>Cinematic Hype</b><br><sub>film-slate HUD, condensed caps,<br>generated hero shots</sub></td>
-    <td align="center"><img src="docs/media/mode-silent.gif" width="170"><br><b>Silent Showcase</b><br><sub>no voice, text cut on<br>the music's beat, loops</sub></td>
-    <td align="center"><img src="docs/media/mode-story.gif" width="170"><br><b>Illustrated Story</b><br><sub>a character fails and learns,<br>with a growing progress stack</sub></td>
+    <td align="center"><img src="docs/media/demo-cinematic.gif" width="170"><br><b>Cinematic Hype</b><br><sub>film-slate HUD, accent slabs,<br>cuts every ~0.8 s</sub></td>
+    <td align="center"><img src="docs/media/demo-silent.gif" width="170"><br><b>Silent Showcase</b><br><sub>no voice: huge text cut<br>on the music's beat</sub></td>
+    <td align="center"><img src="docs/media/demo-story.gif" width="170"><br><b>Illustrated Story</b><br><sub>a character fails and learns,<br>chapter by chapter</sub></td>
   </tr>
 </table>
 
