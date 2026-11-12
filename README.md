@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="plugins/reel-factory/.claude-plugin/icon.png" width="140" alt="reel-factory icon">
+  <img src="docs/media/logo.png" width="140" alt="reel-factory icon">
 </p>
 
 <h1 align="center">reel-factory</h1>
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/media/hero-sample-reel.gif" width="300" alt="First seconds of a reel produced end to end by reel-factory">
+  <img src="docs/media/hero-hd.gif" width="300" alt="First seconds of a reel produced end to end by reel-factory">
   <br><sub>The opening of a reel reel-factory produced end to end from trend discovery, shown in the <code>ink</code> theme. No manual edits.</sub>
 </p>
 
@@ -29,16 +29,16 @@ Every topic gets the full table of creation modes with a line about what *that t
 
 <table>
   <tr>
-    <td align="center"><img src="docs/media/demo-kinetic.gif" width="170"><br><b>Kinetic Explainer</b><br><sub>faceless motion graphics,<br>one composition per sentence</sub></td>
-    <td align="center"><img src="docs/media/demo-newsroom.gif" width="170"><br><b>Newsroom Brief</b><br><sub>BREAKING banner, headlines<br>highlighted as they're read</sub></td>
-    <td align="center"><img src="docs/media/demo-receipts.gif" width="170"><br><b>Receipts</b><br><sub>primary sources highlighted<br>line by line → verdict</sub></td>
-    <td align="center"><img src="docs/media/demo-catalog.gif" width="170"><br><b>Rapid Catalog</b><br><sub>i/N carousel, progress,<br>cheat-sheet end frame</sub></td>
+    <td align="center"><img src="docs/media/mode-kinetic-hd.gif" width="170"><br><b>Kinetic Explainer</b><br><sub>faceless motion graphics,<br>one composition per sentence</sub></td>
+    <td align="center"><img src="docs/media/mode-newsroom-hd.gif" width="170"><br><b>Newsroom Brief</b><br><sub>BREAKING banner, headlines<br>highlighted as they're read</sub></td>
+    <td align="center"><img src="docs/media/mode-receipts-hd.gif" width="170"><br><b>Receipts</b><br><sub>primary sources highlighted<br>line by line → verdict</sub></td>
+    <td align="center"><img src="docs/media/mode-catalog-hd.gif" width="170"><br><b>Rapid Catalog</b><br><sub>i/N carousel, progress,<br>cheat-sheet end frame</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/media/walkthrough-github-install.gif" width="170"><br><b>Screen Walkthrough</b><br><sub>cursor types, points and zooms<br>(shown on this repo's own page)</sub></td>
-    <td align="center"><img src="docs/media/demo-cinematic.gif" width="170"><br><b>Cinematic Hype</b><br><sub>film-slate HUD, accent slabs,<br>cuts every ~0.8 s</sub></td>
-    <td align="center"><img src="docs/media/demo-silent.gif" width="170"><br><b>Silent Showcase</b><br><sub>no voice: huge text cut<br>on the music's beat</sub></td>
-    <td align="center"><img src="docs/media/demo-story.gif" width="170"><br><b>Illustrated Story</b><br><sub>a character fails and learns,<br>chapter by chapter</sub></td>
+    <td align="center"><img src="docs/media/walkthrough-hd.gif" width="170"><br><b>Screen Walkthrough</b><br><sub>cursor types, points and zooms<br>(shown on this repo's own page)</sub></td>
+    <td align="center"><img src="docs/media/mode-cinematic-hd.gif" width="170"><br><b>Cinematic Hype</b><br><sub>film-slate HUD, accent slabs,<br>cuts every ~0.8 s</sub></td>
+    <td align="center"><img src="docs/media/mode-silent-hd.gif" width="170"><br><b>Silent Showcase</b><br><sub>no voice: huge text cut<br>on the music's beat</sub></td>
+    <td align="center"><img src="docs/media/mode-story-hd.gif" width="170"><br><b>Illustrated Story</b><br><sub>a character fails and learns,<br>chapter by chapter</sub></td>
   </tr>
 </table>
 
@@ -73,12 +73,12 @@ Not everyone has a GPU or an ElevenLabs account. Before anything runs, a probe c
 
 Every render is re-measured the way the reference reels were measured (loudness, pace, cadence, black and frozen frames, Whisper intelligibility), then reviewed visually from a contact sheet:
 
-<p align="center"><img src="docs/media/qa-contact-sheet.jpg" width="620" alt="QA contact sheet of a rendered reel"></p>
+<p align="center"><img src="docs/media/qa-sheet-hd.jpg" width="620" alt="QA contact sheet of a rendered reel"></p>
 
 ## Install
 
 <p align="center">
-  <img src="docs/media/walkthrough-github-install.gif" width="300" alt="Screen Walkthrough mode demo: a cursor finds this repo, zooms to the install commands and types /reel-setup">
+  <img src="docs/media/walkthrough-hd.gif" width="300" alt="Screen Walkthrough mode demo: a cursor finds this repo, zooms to the install commands and types /reel-setup">
   <br><sub>Made by the plugin's Screen Walkthrough mode from screenshots of this repository.</sub>
 </p>
 
