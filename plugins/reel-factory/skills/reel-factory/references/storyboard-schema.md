@@ -77,15 +77,15 @@ The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voi
 | `bars` | before/after, A vs B, benchmark | `title?`, `bars: [{label, value, highlight?}]`, `unit?`, `decimals?`, `note?` (source) |
 | `flow` | pipeline / steps / how it works | `title?`, `nodes: string[]` (3–6) |
 | `hub` | one thing connects to many | `center`, `spokes: string[]` (3–7) |
-| `versus` | old way vs new way, myth vs reality | `left: {title, points[]}`, `right: {title, points[]}`, `leftTag?` (default OLD), `rightTag?` (default NEW) |
+| `versus` | old way vs new way, myth vs reality | `left: {title, points[]}`, `right: {title, points[]}`, `leftTag?` (default OLD), `rightTag?` (default NEW). Left points get ✗, right points get ✓: put the negative side ("isn't", old way, myth) on the **left** |
 | `grid` | "works with…", N tools at a glance | `title?`, `items: [{label}]`, `highlight?: number[]`, `cols?` |
 | `cta` | closing call to action (shows the action) | `kind: "comment"\|"follow"\|"save"`, `keyword?`, `line?`, `headline?`, `sent?` |
-| `walkthrough` | one app window; cursor types, clicks, arrows and zooms through steps (walkthrough, quicktake zoom-to-source, receipts zoom-to-line) | `url?`, `src?` (screenshot in public/) or `rows?: string[]` (rebuilt app text), `aspect?` (w/h, default 0.75), `actions: [{type:"move"\|"click"\|"type"\|"zoom"\|"box"\|"arrow", x, y, w?, h?, text? (type), scale? (zoom), from? (arrow: top\|left\|right\|bottom), until?, say? (VO word that triggers it) \| at? (s)}]`, `caption?` |
+| `walkthrough` | one app window; cursor types, clicks, arrows and zooms through steps (walkthrough, quicktake zoom-to-source, receipts zoom-to-line) | `url?`, `src?` (screenshot in public/) or `rows?: string[]` (rebuilt app text), `aspect?` (w/h; auto-filled from the `src` image size by `rf build`, else 0.75: crop screenshots to the region you need, ~0.9–1.15 reads best), `actions: [{type:"move"\|"click"\|"type"\|"zoom"\|"box"\|"arrow", x, y, w?, h?, text? (type), scale? (zoom), from? (arrow: top\|left\|right\|bottom), until?, say? (VO word that triggers it) \| at? (s)}]`, `caption?` |
 | `headline` | article/blog/press card with outlet, date and highlighter synced to VO | `outlet`, `date?`, `headline`, `highlight?: string[]`, `dek?`, `image?`, `author?`, `size?` |
 | `carousel` | many items flying past, focused card sharp, i/N counter | `items: [{name, desc?, tag?, meta?}]` (3–6 per scene), `total?`, `offset?` (index of the first item in the full list), `revealAt?` (auto from VO) |
 | `sheet` | dense cheat-sheet end frame (screenshot bait) | `title`, `items: string[] \| [{name, tag?}]`, `cols?` (auto 2 past 8), `note?` (e.g. "checked 12 Nov 2026"), `stamp?` (e.g. "Screenshot this") |
 
-**Speech-synced props** (filled by `rf build` from the VO, unless set): `list.revealAt`, `flow.revealAt`, `carousel.revealAt`, `quote.highlightAt`, `headline.highlightAt`, walkthrough `actions[].at` (from `say`). **Title extras:** `typewriter: true` types the lines letter by letter with an underscore cursor.
+**Speech-synced props** (filled by `rf build` from the VO, unless set): `list.revealAt`, `flow.revealAt`, `carousel.revealAt`, `quote.highlightAt`, `headline.highlightAt`, walkthrough `actions[].at` (from `say`; consecutive actions with the same `say` word share one cue, e.g. move + zoom; zooms are pulled to ≥ 1 s before the cut so they hold). **Title extras:** `typewriter: true` types the lines letter by letter with an underscore cursor.
 
 ## Scene-type cadence
 

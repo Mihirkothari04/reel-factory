@@ -1,5 +1,15 @@
 # Knowledge-base changelog
 
+## 1.2.1 (2026-11-12): bug fixes from production #2 (walkthrough)
+
+- **Walkthrough window fits the stage and the screenshot.** `rf build` reads the `src` image's aspect when none is set. The engine caps the content box to the stage height, after the title bar and caption, and shrinks the width rather than cropping. Before this, screenshots lost about 7.5% on each side and the bottom ~14% was hidden.
+- **The cursor follows the zoom.** It is drawn in zoomed coordinates, so it stays on the element it clicked.
+- **Speech-sync cues:** consecutive actions with the same `say` word share one cue (for example move + zoom). Zooms are pulled to at least 1 s before the cut so the ease finishes and holds. `build.py --selftest` covers both.
+- **The first frame is never empty.** Walkthrough and image scenes skip their entrance fade when they start the reel (the hook frame).
+- **`image.box` rides the Ken Burns layer,** so the highlight stays on its element while the image moves.
+- **`rf sources og` decodes HTML entities** (`&amp;`) in og:image URLs; these used to fail with HTTP 400.
+- **Docs:** `versus` marks the left column ✗ and the right ✓ (put "isn't" on the left); the walkthrough coordinates note.
+
 ## 1.2.0 (2026-11-12): public release, machine-adaptive setup
 
 - `rf probe` (stdlib only, runs before setup): OS, GPU, RAM, disk, required tools with OS-specific install hints, ElevenLabs login/credits/API key, network reachability, runtime state → per-stage plan, blockers, asks (`~/.reel-factory/profile.json`).

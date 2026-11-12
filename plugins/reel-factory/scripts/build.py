@@ -71,6 +71,39 @@ def speech_sync(items, scene_words, start, dur, min_hits=None):
     return [round(min(a, dur - 0.4), 3) for a in at]
 
 
+def walk_sync(actions, scene_words, start, dur):
+    """walkthrough `say` -> `at`. Consecutive actions with the same say word share one cue (move + zoom on
+    the same word); zooms are pulled forward so the 0.6 s ease finishes and holds before the cut."""
+    if not any(a.get("say") for a in actions) or all("at" in a for a in actions):
+        return actions
+    same = lambda j: j > 0 and actions[j]["say"] == actions[j - 1].get("say") if actions[j].get("say") else False
+    groups = [a.get("say") for j, a in enumerate(actions) if not same(j)]  # one cue per run of identical say words
+    ra = speech_sync([g or "" for g in groups], scene_words, start, dur, min_hits=1) or []
+    gid, gi = [], -1
+    for j in range(len(actions)):
+        gi += 0 if same(j) else 1
+        gid.append(gi)
+    # a cue that carries a zoom is pulled forward as a whole, so a move sharing it still lands on the zoom centre
+    zoomed = {gid[j] for j, a in enumerate(actions) if a.get("type") == "zoom"}
+    out = []
+    for j, a in enumerate(actions):
+        g = gid[j]
+        t = a.get("at", ra[g] if a.get("say") and g < len(ra) else None)
+        if t is not None and "at" not in a and g in zoomed:
+            t = round(min(t, max(0.0, dur - 1.0)), 3)
+        out.append({k: v for k, v in {**a, "at": t}.items() if v is not None})
+    return out
+
+
+def img_aspect(path):
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            return round(im.width / im.height, 4)
+    except Exception:
+        return None
+
+
 def beat_grid(audio, sr=22050, hop=512):
     """beat times (s) of a music file: onset envelope -> autocorrelation tempo (70-180 bpm) -> best phase"""
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(audio), "-ac", "1", "-ar", str(sr), "-f", "f32le", "-"], capture_output=True).stdout
@@ -154,11 +187,9 @@ def main():
                 if ha:
                     p["highlightAt"] = ha
             if sc["type"] == "walkthrough" and p.get("actions"):
-                says = [a.get("say") for a in p["actions"]]
-                if any(says) and not all("at" in a for a in p["actions"]):
-                    ra = speech_sync([s or "" for s in says], sw, start, dur, min_hits=1) or []
-                    p["actions"] = [{**a, "at": a.get("at", ra[j] if j < len(ra) and a.get("say") else None)} for j, a in enumerate(p["actions"])]
-                    p["actions"] = [{k: v for k, v in a.items() if v is not None} for a in p["actions"]]
+                p["actions"] = walk_sync(p["actions"], sw, start, dur)
+        if sc["type"] == "walkthrough" and p.get("src") and "aspect" not in p:
+            p["aspect"] = img_aspect(prod / "public" / p["src"]) or 0.75  # window matches the screenshot: no cover-crop
         scenes.append({"id": sc["id"], "type": sc["type"], "start": round(start, 3), "end": round(end, 3), "enter": sc.get("enter", "cut" if silent and i else "push"),
                        "label": sc.get("label"), "props": p, "_sfx": sc.get("sfx"), "_rehook": sc.get("rehook", False)})
 
@@ -239,6 +270,10 @@ if __name__ == "__main__":
     if "--selftest" in sys.argv:
         ws = [{"w": w, "s": i * 0.4, "e": i * 0.4 + 0.3} for i, w in enumerate("first we open hallmark then taste skill and finally gsd".split())]
         assert speech_sync(["Hallmark", "Taste skill", "GSD"], ws, 0, 5) == [1.08, 1.88, 3.48], speech_sync(["Hallmark", "Taste skill", "GSD"], ws, 0, 5)
+        acts = walk_sync([{"type": "move", "say": "hallmark"}, {"type": "zoom", "say": "hallmark"}, {"type": "zoom", "say": "gsd"}], ws, 0, 4)
+        assert [a["at"] for a in acts] == [1.08, 1.08, 3.0], acts  # shared cue; last zoom pulled to dur-1.0
+        acts = walk_sync([{"type": "box", "say": "open"}, {"type": "move", "say": "gsd"}, {"type": "zoom", "say": "gsd"}], ws, 0, 4)
+        assert [a["at"] for a in acts] == [0.68, 3.0, 3.0], acts  # move travels with its zoom when pulled forward
         print("ok")
     else:
         main()

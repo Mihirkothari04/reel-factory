@@ -102,6 +102,6 @@ export const ThemeCtx = createContext<Theme>(THEMES.paper);
 export const useTheme = () => useContext(ThemeCtx);
 
 // Stage = drawable area for scenes (full frame when faceless, top part when split with avatar).
-export type Stage = { w: number; h: number; s: number };
+export type Stage = { w: number; h: number; s: number; first?: boolean };
 export const StageCtx = createContext<Stage>({ w: 1080, h: 1920, s: 1 });
 export const useStage = () => useContext(StageCtx);

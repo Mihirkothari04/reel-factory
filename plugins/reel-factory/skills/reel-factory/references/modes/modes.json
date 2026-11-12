@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "note": "Creation modes = HOW a reel is constructed (stage, presenter, visual source, voice, pacing, audio, toolchain). Story skeletons (formats.md) are chosen inside a mode. Derived from 90 analysed reels (batch-01: 88, batch-02: 2 new of 21). Playbook per mode: modes/<id>.md. Scripts read: defaults, qa, requires, fallback.",
   "modes": [
     {

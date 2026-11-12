@@ -149,8 +149,9 @@ export const Chat: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
 /** Image / screenshot with Ken Burns + optional highlight box. props: src, frame?:'window'|'none', url?, kenburns?:'in'|'out'|'up', box?:{x,y,w,h} (0..1), caption? */
 export const ImageScene: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
   const t = useTheme();
-  const { s, w, h } = useStage();
-  const k = useSpring(0, 18);
+  const { s, w, h, first } = useStage();
+  const k0 = useSpring(0, 18);
+  const k = first ? 1 : k0;
   const kb = useProgress(0, dur, (x) => x);
   const boxIn = useProgress(Math.min(0.8, dur * 0.3), 0.5);
   const z = p.kenburns === "out" ? interpolate(kb, [0, 1], [1.12, 1]) : interpolate(kb, [0, 1], [1, 1.1]);
@@ -167,10 +168,13 @@ export const ImageScene: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
     <Center gap={28 * s}>
       <Window title={p.url ?? (p.frame === "none" ? undefined : "")} style={{ opacity: k, scale: interpolate(k, [0, 1], [0.95, 1]) }}>
         <div style={{ position: "relative", overflow: "hidden", maxHeight: (p.maxH ?? 1100) * s }}>
-          <Img src={src(p.src)} style={{ width: "100%", display: "block", scale: z, translate: `0 ${ty}%`, transformOrigin: p.origin ?? "50% 30%" }} />
-          {p.box && (
-            <div style={{ position: "absolute", left: `${p.box.x * 100}%`, top: `${p.box.y * 100}%`, width: `${p.box.w * 100}%`, height: `${p.box.h * 100}%`, border: `5px solid ${t.accent}`, borderRadius: 10, opacity: boxIn, scale: interpolate(boxIn, [0, 1], [1.15, 1]) }} />
-          )}
+          {/* box lives inside the Ken Burns layer so it stays on its UI element while the image moves */}
+          <div style={{ position: "relative", scale: z, translate: `0 ${ty}%`, transformOrigin: p.origin ?? "50% 30%" }}>
+            <Img src={src(p.src)} style={{ width: "100%", display: "block" }} />
+            {p.box && (
+              <div style={{ position: "absolute", left: `${p.box.x * 100}%`, top: `${p.box.y * 100}%`, width: `${p.box.w * 100}%`, height: `${p.box.h * 100}%`, border: `5px solid ${t.accent}`, borderRadius: 10, opacity: boxIn, scale: interpolate(boxIn, [0, 1], [1.15, 1]) }} />
+            )}
+          </div>
         </div>
       </Window>
       {p.caption && <div style={{ fontFamily: t.sans, fontWeight: 700, fontSize: 46 * s, color: t.ink, maxWidth: 900 }}><Rich text={p.caption} /></div>}

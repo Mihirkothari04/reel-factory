@@ -86,7 +86,7 @@ export const Reel: React.FC<ReelProps> = (props) => {
           const { box, stage } = stageFor(sc);
           return (
             <Sequence key={sc.id} from={from} durationInFrames={dur} name={`${sc.id}:${sc.type}`}>
-              <StageCtx.Provider value={stage}>
+              <StageCtx.Provider value={{ ...stage, first: sc.start < 0.01 }}>
                 <div style={{ position: "absolute", ...box, overflow: "hidden" }}>
                   <EnterWrap enter={sc.start < 0.01 ? "cut" : (sc.enter ?? "push")}>
                     <Comp p={sc.props} dur={sc.end - sc.start} />

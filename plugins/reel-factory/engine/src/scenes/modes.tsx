@@ -27,11 +27,15 @@ type Action =
 /** props: url?, src? (screenshot / mock), rows? (rebuilt text lines when no src), aspect? (w/h of content, default 0.75), actions[] (coords 0..1 of content) */
 export const Walkthrough: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
   const t = useTheme();
-  const { s } = useStage();
+  const { s, h, first } = useStage();
   const now = useT();
-  const k = useSpring(0, 18);
-  const W = 940;
-  const H = Math.min(1060 * s, W / (p.aspect ?? 0.75));
+  const k0 = useSpring(0, 18);
+  const k = first ? 1 : k0; // the reel's first frame must already show the window (hook frame / cover)
+  // fit the content box to the stage: title bar + caption take space; shrink width (not crop) when too tall
+  const aspect = p.aspect ?? 0.75;
+  const maxH = Math.min(1060 * s, h - 70 * s - (p.caption ? 110 : 0) * s - 24);
+  const H = Math.min(940 / aspect, maxH);
+  const W = Math.round(H * aspect);
   const acts: Action[] = p.actions ?? [];
   const at = acts.map((a, i) => a.at ?? 0.4 + (i * Math.max(0.6, dur - 1.2)) / Math.max(1, acts.length));
   // cursor path: glide between positional actions
@@ -52,7 +56,7 @@ export const Walkthrough: React.FC<{ p: any; dur: number }> = ({ p, dur }) => {
   const click = acts.map((a, i) => (a.type === "click" ? clamp01((now - at[i]) / 0.35) : 0));
   return (
     <Center>
-      <Window title={p.url ?? ""} style={{ opacity: k, scale: interpolate(k, [0, 1], [0.95, 1]) }}>
+      <Window title={p.url ?? ""} width={W} style={{ opacity: k, scale: interpolate(k, [0, 1], [0.95, 1]) }}>
         <div style={{ position: "relative", width: W, height: H, overflow: "hidden", background: t.surface }}>
           <div style={{ position: "absolute", inset: 0, scale: zs, transformOrigin: `${zx * 100}% ${zy * 100}%` }}>
             {p.src ? (

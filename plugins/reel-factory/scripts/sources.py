@@ -6,7 +6,7 @@ usage:
   rf sources hn "<query>" [--days 14]           Hacker News discussions (points, comments, links)
 Prints JSON. Set GITHUB_TOKEN to raise GitHub rate limits (optional).
 """
-import argparse, base64, json, os, re, sys, time
+import argparse, base64, html as html_lib, json, os, re, sys, time
 from pathlib import Path
 import requests
 from common import slugify
@@ -57,7 +57,7 @@ def og(url, prod, name=None):
     title = re.search(r"<title[^>]*>([^<]+)", html)
     if not m:
         return {"url": url, "og_image": None, "title": title.group(1).strip() if title else None}
-    img = requests.compat.urljoin(url, m.group(1))
+    img = requests.compat.urljoin(url, html_lib.unescape(m.group(1)))  # og:image URLs often carry &amp;
     return {"url": url, "title": title.group(1).strip() if title else None, "og_image": save_img(img, prod, name or slugify(url, 30))}
 
 

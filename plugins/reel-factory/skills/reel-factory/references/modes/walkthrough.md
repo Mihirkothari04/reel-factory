@@ -23,3 +23,4 @@ Before → after hook (or the result first: the heatmap, the 0% detector) → St
 ## Pitfalls
 - Tiny UI: zoom to the action (scale 1.5–2.0) or point an arrow every time something happens.
 - Coordinates guessed blind: open the screenshot, find the input or button, then set x/y.
+- Coordinates are fractions of the **image you pass in `src`**; the window takes that image's aspect and shrinks to fit the stage, so nothing is cropped. Crop big desktop shots to the part you talk about first (text must be legible at phone size).

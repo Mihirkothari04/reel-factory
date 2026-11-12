@@ -1,7 +1,7 @@
 ---
 name: reel-factory
 description: "Produce a complete, publish-ready Instagram Reel (1080x1920 MP4 + cover + caption) end-to-end — trend discovery or a given topic → multi-agent research → creation-mode selection (10 modes — kinetic explainer, presenter, illustrated story, newsroom, receipts, rapid catalog, screen walkthrough, cinematic, silent showcase, quick take; user picks or AI Select) → script → storyboard → ElevenLabs voice/music + generated visuals → Remotion render → automated + visual QA. Adapts to the machine it runs on. Use when the user runs /reel, asks to make/create/produce a reel, short, TikTok or vertical video, wants a trending topic turned into a reel, or wants to analyse reference reels to improve the system."
-version: 1.2.0
+version: 1.2.1
 ---
 
 # Reel Factory: autonomous reel production
