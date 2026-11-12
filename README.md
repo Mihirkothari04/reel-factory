@@ -35,7 +35,7 @@ Every topic gets the full table of creation modes with a line about what *that t
     <td align="center"><img src="docs/media/mode-catalog.gif" width="170"><br><b>Rapid Catalog</b><br><sub>i/N carousel, progress,<br>cheat-sheet end frame</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/media/mode-walkthrough.gif" width="170"><br><b>Screen Walkthrough</b><br><sub>cursor types, points and zooms<br>(shown on this repo's own page)</sub></td>
+    <td align="center"><img src="docs/media/walkthrough-github-install.gif" width="170"><br><b>Screen Walkthrough</b><br><sub>cursor types, points and zooms<br>(shown on this repo's own page)</sub></td>
     <td align="center"><img src="docs/media/mode-cinematic.gif" width="170"><br><b>Cinematic Hype</b><br><sub>film-slate HUD, condensed caps,<br>generated hero shots</sub></td>
     <td align="center"><img src="docs/media/mode-silent.gif" width="170"><br><b>Silent Showcase</b><br><sub>no voice, text cut on<br>the music's beat, loops</sub></td>
     <td align="center"><img src="docs/media/mode-story.gif" width="170"><br><b>Illustrated Story</b><br><sub>a character fails and learns,<br>with a growing progress stack</sub></td>
@@ -76,6 +76,11 @@ Every render is re-measured the way the reference reels were measured (loudness,
 <p align="center"><img src="docs/media/qa-contact-sheet.jpg" width="620" alt="QA contact sheet of a rendered reel"></p>
 
 ## Install
+
+<p align="center">
+  <img src="docs/media/walkthrough-github-install.gif" width="300" alt="Screen Walkthrough mode demo: a cursor finds this repo, zooms to the install commands and types /reel-setup">
+  <br><sub>Made by the plugin's Screen Walkthrough mode from screenshots of this repository.</sub>
+</p>
 
 ```bash
 claude plugin marketplace add Mihirkothari04/reel-factory
