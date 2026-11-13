@@ -1,7 +1,7 @@
 """Knowledge-base housekeeping for /reel-learn.
 
 usage: rf kb where              -> prints the WRITABLE plugin source dir (the knowledge base) and the installed copy
-       rf kb bump [minor|patch] -> bump plugin.json + marketplace version, then refresh the installed plugin
+       rf kb bump [major|minor|patch] -> bump plugin.json + marketplace version, then refresh the installed plugin
 
 The installed plugin is a cached COPY (~/.claude/plugins/cache/...). Knowledge-base edits must go to the source folder
 the local marketplace points at; after editing, `rf kb bump` makes the next Claude Code session load them.
@@ -47,7 +47,7 @@ def main():
         pj = src / ".claude-plugin" / "plugin.json"
         meta = load_json(pj)
         a, b, c = map(int, meta["version"].split("."))
-        meta["version"] = f"{a}.{b + 1}.0" if part == "minor" else f"{a}.{b}.{c + 1}"
+        meta["version"] = f"{a + 1}.0.0" if part == "major" else f"{a}.{b + 1}.0" if part == "minor" else f"{a}.{b}.{c + 1}"
         save_json(pj, meta)
         modes = src / "skills" / "reel-factory" / "references" / "modes" / "modes.json"
         if modes.exists():

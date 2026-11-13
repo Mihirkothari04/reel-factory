@@ -1,11 +1,12 @@
 """Turn a real page screenshot into a reel-ready source shot: clean, crop, and locate the exact phrases to highlight.
 
 usage:
-  rf shot <image-path-or-url> --prod DIR --name tc --find "more like Google" [--find "..."]
+  rf shot <image-path | image-url | page-url> --prod DIR --name tc --find "more like Google" [--find "..."]
           [--erase x,y,w,h ...] [--crop x,y,w,h | --aspect 1.0] [--pad 0.06]
 
-- <image>: the capture (Firecrawl `screenshot` URL, or an agent-browser PNG). Use a phone viewport (mobile layout)
-  so the headline is legible at reel size.
+- <image>: a capture (Firecrawl `screenshot` URL or a PNG), OR a page URL: rf shot then runs the capture ladder itself
+  (X posts -> official embed renderer; agent-browser headless 412x915@3x -> headed isolated session), scrolled to the
+  first --find phrase. Needs config.source_shots_browser=true (owner pre-approval for read-only public captures).
 - --find: exact phrases from the page (case/punctuation-insensitive). Located with local OCR (RapidOCR, free).
 - --erase: paint over cookie/paywall banners or ads (pixels of the ORIGINAL capture) with the surrounding colour.
   Never erase or alter the outlet's own words: overlays go on top, the page itself stays as published.
@@ -20,6 +21,54 @@ import requests
 from PIL import Image, ImageStat
 
 norm = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())
+
+
+IMG_EXT = (".png", ".jpg", ".jpeg", ".webp")
+BLOCKED = ("just a moment", "attention required", "access denied", "are you a robot", "403 forbidden", "verify you are human")
+
+
+def ab(session, *args, headed=False, timeout=45):
+    """one agent-browser call with a hard timeout (a wedged daemon must never hang the pipeline)"""
+    import shutil, subprocess
+    cmd = [shutil.which("agent-browser") or "agent-browser", "--session", session] + (["--headed"] if headed else []) + [str(x) for x in args]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout)
+        return (r.stdout or "") + (r.stderr or "")
+    except subprocess.TimeoutExpired:
+        return "TIMEOUT"
+
+
+def capture(url, out, focus=None):
+    """Capture ladder for a public web page (read-only): official X embed for posts; agent-browser headless at a phone
+    viewport; then headed in an isolated session (passes Cloudflare/Akamai bot checks). Never logs in or clicks
+    through walls. Requires config.source_shots_browser (owner pre-approval) — otherwise the caller must ask first."""
+    import re as _re
+    from common import config
+    if not config().get("source_shots_browser") and not config().get("browser_capture"):
+        raise SystemExit("rf shot: page capture needs owner approval (config source_shots_browser=true), or pass a screenshot file")
+    m = _re.search(r"(?:x|twitter)\.com/[^/]+/status/(\d+)", url)
+    if m:
+        url = f"https://platform.twitter.com/embed/Tweet.html?id={m.group(1)}&theme=light"
+    for headed in (False, True):
+        s = "rf-shot-headed" if headed else "rf-shot"
+        try:
+            if "TIMEOUT" in ab(s, "open", url, headed=headed, timeout=75):
+                continue
+            ab(s, "set", "viewport", 412, 915, 3, headed=headed)
+            ab(s, "wait", 3500 if headed else 2000, headed=headed)
+            title = ab(s, "get", "title", headed=headed).lower()
+            if title == "timeout" or any(b in title for b in BLOCKED):
+                continue
+            if focus:
+                ab(s, "find", "text", focus, "hover", headed=headed)
+                ab(s, "scroll", "up", 160, headed=headed)
+                ab(s, "wait", 800, headed=headed)
+            res = ab(s, "screenshot", out, headed=headed)
+            if "saved" in res.lower() or Path(out).exists():
+                return out
+        finally:
+            ab(s, "close", headed=headed, timeout=20)
+    raise SystemExit(f"rf shot: capture failed for {url} (blocked headless and headed). Next: Firecrawl screenshot (proxy stealth) if connected, else log the fallback")
 
 
 def load(src):
@@ -163,7 +212,12 @@ def main():
     ap.add_argument("--find", action="append", default=[]); ap.add_argument("--erase", action="append", default=[])
     ap.add_argument("--crop"); ap.add_argument("--aspect", type=float, default=1.0); ap.add_argument("--pad", type=float, default=0.06)
     a = ap.parse_args()
-    im = load(a.src)
+    src = a.src
+    if src.startswith("http") and not src.lower().split("?")[0].endswith(IMG_EXT):
+        raw = Path(a.prod) / "work" / "caps" / f"{a.name}-capture.png"
+        raw.parent.mkdir(parents=True, exist_ok=True)
+        src = capture(src, str(raw).replace("\\", "/"), a.find[0] if a.find else None)
+    im = load(src)
     for e in a.erase:
         erase(im, *[int(float(v)) for v in e.split(",")])
     ws = words(im)

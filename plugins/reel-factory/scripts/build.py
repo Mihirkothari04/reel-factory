@@ -170,6 +170,14 @@ def main():
         if dur < 0.6:
             log(prod, f"build WARNING: scene {sc['id']} only {dur:.2f}s — consider merging its VO into a neighbour")
         p = dict(sc.get("props", {}))
+        if sc["type"] == "presenter":  # talking head full-frame, cut in sync: source time = reel time (rf presenter)
+            if (prod / "public" / "avatar.mp4").exists():
+                w = next((w for w in (sb.get("avatar") or {}).get("windows", []) if w["scene"] == sc["id"]), None)
+                trim = w["offset"] + start - w["start"] if w else start  # windowed lip-sync: scene -> offset in avatar.mp4
+                sc["type"], p = "video", {"src": "avatar.mp4", "fit": "cover", "trim": round(trim, 3), **({"caption": p["caption"]} if p.get("caption") else {})}
+            else:
+                log(prod, f"build WARNING: scene {sc['id']} is a presenter shot but public/avatar.mp4 is missing (rf presenter P) -> title fallback")
+                sc["type"], p = "title", {"lines": [p.get("fallback") or "…"]}
         if sc["type"] == "source":  # real screenshot from `rf shot`: merge its JSON (storyboard props win)
             shot = prod / "public" / p["shot"] if p.get("shot") else None
             if shot and shot.exists():

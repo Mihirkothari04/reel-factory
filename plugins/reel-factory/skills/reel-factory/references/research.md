@@ -11,9 +11,27 @@ Skip: spam or malware-lure repos (fake stars, "Pro 2026 standalone installer"), 
 
 ## Topic research (both modes)
 
-Run two `topic-researcher` agents **in parallel**:
-- **A, primary-source and technical:** official repo, README, docs, launch blog, paper; exact numbers, install commands, requirements, license, who built it, how it works (mechanism), limitations, demo assets (og images, GIFs, video links). Use `rf sources repo owner/name --prod <dir>` and `rf sources og <url> --prod <dir>` for free facts and images.
-- **B, reception and context:** news coverage, HN, Reddit, and X discussion (`rf sources hn "<query>"`), third-party tests or benchmarks, criticisms, competitors and alternatives, "why now", what creators already said (to find an *unclaimed* angle), and lesser-known facts.
+**Why the workflow is built like this.** Generic web search plus a fetch tool that gets 403s from official sites, X and Reddit made whatever loaded easily (one trade site) the source of everything. Information originates and gains attention on official posts, company newsrooms, famous people's X accounts, big mastheads, Reddit, GitHub and papers. `rf intel` reaches those through official, free access paths, and the evidence ledger makes source quality measurable.
+
+1. **Source map.** The Creative Director picks the topic type in `sources.json → routing` (big-lab launch, open-source repo, paper/model, policy, viral moment, business tool) and passes the source types plus the relevant `rf intel handles` and subreddits to the researchers.
+2. Run two `topic-researcher` agents **in parallel**:
+   - **A, Origin Hunter:**
+     - official newsroom feeds (`rf intel feeds --tier official`);
+     - the official X posts of the company, CEO, founders and researchers (`rf intel handles`, then `rf intel x <url>`: text, date, verified, likes, replies);
+     - repos (`rf intel repo`: stars, star velocity, releases, contributors), papers (`rf intel papers`), docs and help pages (`rf intel read`).
+     - Gather exact numbers, mechanism, limitations and demo assets.
+   - **B, Coverage & Community:**
+     - press breadth (`rf intel news`: Google News across hundreds of publishers; prefer press-tier mastheads);
+     - reactions with engagement (`rf intel reddit`, `rf intel hn`, notable X posts);
+     - competitors, criticisms, third-party tests, "why now", and how other creators covered it, to find the *unclaimed* angle.
+3. **Ledger gate.** `rf intel score --prod <dir>` ranks sources by tier, originality, engagement, recency and corroboration. Before scripting, fix every warning:
+   - every key claim needs an original;
+   - no publisher may supply more than 30 % of claims;
+   - at least one community signal;
+   - no lead-only source on screen.
+
+   Popularity ranks discovery; verification decides truth.
+4. `rf sources repo|og` still fetch og-images for visuals.
 
 Each writes into `<prod>/research/` and returns a compact brief.
 
@@ -41,6 +59,8 @@ Each writes into `<prod>/research/` and returns a compact brief.
 
 ## Verification rules
 
+- Every claim traces to a ledger entry (`research/sources.json`) with publisher, date and engagement. For announcements, the **original** (official post or page, the CEO's X post, the repo or the paper) is the source; press coverage corroborates it.
+- TechCrunch and other `onscreen_ok:false` sites are research leads only: follow them to the original and never show them on screen.
 - Numbers need a primary source or two independent secondary sources. Star counts come live from the API on production day.
 - Dates must be absolute. Write "announced 10 Nov 2026", never "recently".
 - Quotes must be verbatim with a link. Paraphrases are labelled as such.

@@ -32,21 +32,61 @@ Score every *available* mode 1–5 on each axis, using the research, not habit:
 
 Fit = mean of the six. Recommended = highest fit. Ties go to the cheaper mode.
 
+## Structures and elements: combine, don't pick one
+
+Successful reels combine methods: a presenter hook that turns into a screen walkthrough, a cinematic cold open on an explainer, a newsroom banner over a quick take. So the choice has **two layers**:
+
+- **Structures** (the 10 modes above) are the storytelling backbone: who and what carries the reel and how the beats are built. A reel has **one primary structure** and may **sequence up to two more** as segments, for example `presenter → walkthrough → presenter` (hook, demo, verdict).
+- **Elements** are individual techniques layered on top, from `techniques.md` and the engine:
+
+| element | what it adds | requires | conflicts |
+|---|---|---|---|
+| `ai-presenter` | talking-head avatar (full frame or split) for hook, verdict or CTA | presenter provider (HeyGen / MuseTalk) | silent |
+| `source-shots` | real page or post screenshots with synced highlights (hard rule for web sources) | capture ladder | |
+| `cursor-demo` | app window with cursor, typing, zoom and arrows | screenshots or rebuilt UI | |
+| `cinematic-broll` | generated hero shots, slate HUD, fast cuts | image or video budget | sober topics (security, money) |
+| `breaking-banner` | persistent lower-third banner | | cinematic slate (one HUD at a time) |
+| `progress-stack` | progress bar or ToC chips (steps, ladder) | 3+ steps | |
+| `typewriter-title` | typed kinetic hook | | |
+| `stat-pops` | big number count-ups as pattern interrupts | numbers in facts.md | |
+| `carousel` | i/N cards flying past | 3+ items | |
+| `cheat-sheet` | dense end frame (screenshot bait) | 6+ items | |
+| `illustrated-character` | a fictional mascot through the reel (story ladder) | image budget | presenter as the main face |
+| `beat-cuts` | text beats snapped to music beats | music | dense narration |
+
+**Combination rules:**
+- One face at a time: an avatar presenter and an illustrated character can't both lead.
+- One persistent HUD at a time: banner, slate or progress.
+- At most 4 elements in a 60 s reel.
+- Every element must serve the angle in brief.md. Visual variety is not a reason on its own.
+- When segments switch structure, the narration profile switches too, with a spoken bridge sentence (speechwriting skill).
+
+Storyboard: `meta.mode` = primary structure; `meta.segments` = `[{"mode": "presenter", "scenes": ["s1", "s2"]}, {"mode": "walkthrough", "scenes": ["s3", …]}]` (optional, for sequenced structures); `meta.elements` = element ids. Scenes may carry `"mode"` to mark which segment they belong to.
+
 ## Presenting the choice (interactive runs)
 
-Unless `--mode <id>` or `--mode ai` was given, `--count N` is running, or `config.modes.ask` is false:
+Unless `--mode` was given, `--count N` is running, or `config.modes.ask` is false:
 
-1. In chat, print one table of **all** modes: `★` on the recommended one, the fit score, availability, and a **topic-specific** one-line description of what *this* reel would look like in that mode (for example "Newsroom: open on the Verge headline 'Cloudflare launches Kitesurf', banner 'Cloudflare ships a browser for AI agents', then the 24-hour developer reaction"). Never paste the generic `one_liner`; write what this topic becomes.
-2. Ask with `AskUserQuestion` (one question, header "Mode"). Options:
-   - `<Recommended mode> (Recommended)`: description = the topic-specific line plus why it wins;
-   - the 2nd and 3rd best modes, each with its topic-specific line;
-   - `AI Select`: "Let the Creative Director decide after weighing all modes, the research and recent history; may blend in one device from another mode."
-   The automatic "Other" lets the user type any mode id from the table. Put the names of the remaining modes in the question text, so they are visible inside the dialog.
-3. Record the choice and the reason in `brief.md`. This is the **only** question the pipeline asks; everything after it stays autonomous.
+1. **In chat**, print two tables.
+   - **Structures:** all 10 modes, with `★` on the recommendation, fit score and availability. Add a **topic-specific** line saying what *this* reel becomes in that mode (never the generic `one_liner`).
+   - **Elements:** the elements that fit this topic, each with a one-line effect for this reel.
+   - Then show the **recommended combination** as a concrete line, for example: "★ presenter hook (avatar) → walkthrough of the claim flow → presenter verdict + source-shots + progress-stack".
+2. **Ask once** with `AskUserQuestion` and two **multi-select** questions. The dialog allows 4 options per question.
+   - Q1 (header "Structures", `multiSelect: true`): the 3 best-fit structures (the recommended one marked "(Recommended)") and `AI Select`. The question text names the remaining modes and says "Other: type mode ids in order, e.g. presenter, walkthrough".
+   - Q2 (header "Elements", `multiSelect: true`): the 4 best-fit elements for this topic, the recommended ones marked "(Recommended)". The question text lists the other compatible elements.
+   - Selected structures are taken **in the order the user typed or ticked them**. The first is primary, and the others become segments in a sensible beat order.
+   - If both answers are AI Select, or empty, do a full AI Select.
+3. **Validate** against the combination rules. If a pick conflicts, keep the user's intent, drop the conflicting part, and say why in brief.md.
+4. Record structures, segments, elements and reasons in `brief.md`. This is the **only** question the pipeline asks.
 
-## AI Select
+## AI Select (combination-aware)
 
-Not just "take the top score". Re-read facts.md angles and do-not-say, weigh the top 3 modes against the strongest *angle* (the most surprising true thing), check history for repetition, and pick one primary mode. You may borrow **at most two devices** from another mode when they serve the angle (for example a `receipts` quote card inside a `catalog`, or a `newsroom` banner on a `quicktake`). Write a 3–5 line justification in brief.md: chosen mode, runner-up, why the runner-up lost, and borrowed devices.
+Not just "take the top score":
+1. Re-read the facts.md angles and do-not-say.
+2. Weigh the top structures against the strongest *angle*, the visual supply, the audience and recent history.
+3. Choose the **combination**: 1 primary structure, 0–2 sequenced segments, and 1–4 elements that each serve the angle.
+
+Prefer simple. A single structure with two strong elements beats a three-segment patchwork. Write a 3–6 line justification in brief.md: the combination, the runner-up combination, why it lost, and how the segments bridge in the narration.
 
 ## Mode × skeleton compatibility
 

@@ -7,7 +7,7 @@ Full evidence: `corpus-analysis.md` (synthesis) and `corpus-notes.md` (one secti
 1. **Payoff in the first sentence, spoken at 0.0 s.** Every narrated reel in the corpus starts talking on frame 1. No greeting, no "hey guys", no "in this video", no logo sting.
 2. **The visual hook lands with the verbal hook.** At 0–1 s the screen shows the thing itself (the result, the number, the famous logo, the headline building word by word). Never show an empty or slow intro.
 3. **One claim, one visual.** A new composition every **1.5–3 s**. Nothing static for more than about 4 s.
-4. **Fast, dense, plain voice-over.** About 190–230 wpm, no filler, sentences under 15 words, second person ("you"), concrete nouns and numbers.
+4. **Natural, connected, fast voice-over (speechwriting skill).** About 205–240 wpm overall. Sentences *flow*: median ~15 words, long payload sentences mixed with short punches, connectors that carry the logic ("So…", "And…", "But here's…", "Now…"), second person, concrete nouns and numbers. One continuous performance, never one fragment per scene.
 5. **Specific beats generic.** Use a number, name, price, star count, time saved, or percentage in nearly every sentence where facts allow. "45,000 stars", "two cents", "61% fewer tokens".
 6. **A re-hook at 40–60%.** "But here's the smart part / this next one is huge / here's where it gets crazy / but here's the catch."
 7. **An honesty beat.** One caveat, limitation, or "who it's not for". It raises trust, and the best reels in the corpus all have one.

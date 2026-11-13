@@ -26,3 +26,16 @@ List only problems plus the live-number updates. Keep it short.
 - For every `source` scene, check that each highlighted phrase is verbatim on the captured page and supports the spoken claim.
 - Flag a web source shown as a `headline`/`quote` text card unless brief.md logs why no screenshot was possible.
 - Flag any edit that changes the page's own words or numbers.
+
+## Evidence ledger
+Check every claim against the ledger (`research/sources.json`):
+- its supporting source is the **original** where one exists (the official post or page, the CEO's X post, the repo, the paper);
+- the date is absolute;
+- the quoted words appear verbatim in the original (`rf intel read <url>` or `rf intel x <url>`).
+
+Flag:
+- claims resting only on a lead-only (`onscreen_ok:false`) source;
+- engagement numbers not re-fetched today;
+- any on-screen source that isn't the original or a recognised masthead.
+
+Run `rf intel score --prod P` and report its warnings.

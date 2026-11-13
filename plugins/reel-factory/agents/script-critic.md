@@ -35,3 +35,14 @@ Be specific enough that every fix can be applied mechanically. Don't praise.
 
 ## Source screenshots
 Web sources (headlines, posts, blog/press/help lines, README lines) must be `source` scenes built from real screenshots. A text card for a web source without a logged fallback reason caps Credibility at 2.
+
+## Spoken flow (narration-first storyboards)
+Read the `narration` aloud in your head at speed before scoring:
+- Every sentence follows from the one before it, using connectors such as So, And, But here's, Now or Then.
+- The sentence-length median is 13–17 words, with long payload sentences followed by short punches.
+- There are no runs of more than three short sentences.
+- No thought is split across paragraphs.
+- The first sentence is a complete stake sentence.
+- `tts` has the same words as `text`.
+
+Cues must quote the narration in order, and each scene lands on the word it shows. Score "Spoken flow" and give exact rewritten paragraphs, not scene fragments, for anything under 4.

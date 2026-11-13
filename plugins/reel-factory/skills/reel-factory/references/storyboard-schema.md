@@ -1,6 +1,6 @@
 # storyboard.json: the single source of truth
 
-The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voice` speaks `scenes[].vo`, `image` generates `scenes[].assets`, `build` times scenes from the voice-over and produces `props.json`, and `render` draws it with the Remotion engine.
+The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voice` speaks the `narration` (spoken paragraphs; legacy: `scenes[].vo`), `image` generates `scenes[].assets`, `build` times scenes from the voice-over and produces `props.json`, and `render` draws it with the Remotion engine.
 
 ```jsonc
 {
@@ -43,13 +43,34 @@ The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voi
 }
 ```
 
+## Narration (narrated reels: write this FIRST, with the speechwriting skill)
+
+```jsonc
+"narration": [
+  {"id": "p1", "role": "hook", "text": "Someone just built a free AI video studio that runs entirely on your laptop, and you don't need a three-thousand-dollar GPU to use it.",
+   "tts": "[excited] Someone just built a FREE AI video studio that runs entirely on your laptop... and you don't need a three-thousand-dollar GPU to use it."},
+  {"id": "p2", "role": "define", "text": "This is WAN2GP, an open-source video generator built for people who can't afford cloud subscriptions."}
+],
+"lexicon": {"WAN2GP": "wan two G P"},     // optional pronunciation fixes (respelling, or /IPA/ on eleven_v4)
+"meta": {"max_seconds": 58},              // optional length budget for the voice report
+"scenes": [
+  {"id": "s1", "type": "title", "props": {...}},                                   // first scene starts at 0 s, no cue
+  {"id": "s2", "cue": "a three-thousand-dollar GPU", "type": "stat", "props": {...}}, // starts when these words are spoken
+  {"id": "s3", "cue": "This is WAN2GP", "type": "repo", "props": {...}}
+]
+```
+
+- `narration[].text` is what is said and captioned. `tts` (optional) is the **same words** with delivery markup: one audio tag at most per paragraph, CAPS for the stressed word, `...` for a held beat.
+- `role` is one of hook, define, mechanism, rehook, proof, catch, payoff or cta (see the speechwriting skill).
+- Each scene's `cue` is the 2–5 word phrase of the narration where the visual starts. Cues must appear in order and may fall **mid-sentence**, which is how the corpus cuts (1.08 cuts per sentence). A scene runs until the next cue: keep it 1.2–6 s by adding or moving cues, not by chopping sentences.
+
 ## Hard rules
 
 - **Silent mode exception:** with `meta.mode: "silent"` scenes have **no `vo`**; each has `"dur": <seconds>` (0.8–3) and boundaries snap to the music's beats. Run `rf music` before `rf build`.
 
-- **Every scene must have `vo`.** Scene duration equals its spoken length. Aim for 4–12 words (≈1.3–3.5 s) per scene. Longest allowed is about 6 s, and splitting is better.
-- Scene 1's `vo` **is the hook**: payoff in the first sentence, no greeting, no "in this video".
-- Write `vo` the way it should be *spoken*: numbers as people say them ("forty-five thousand" or "45,000", either works), no markdown, no emoji, and no URLs (put those on screen).
+- **Narration first.** Narrated reels use `narration` + scene `cue`s. The legacy form, one `vo` fragment per scene, is still accepted but produces choppy, robotic speech. Don't use it for new reels.
+- The first paragraph **is the hook**: one complete sentence carrying the stake at 0.0 s. No greeting, no "in this video".
+- Write narration the way it should be *spoken*: numbers as people say them ("forty-five thousand" or "45,000", either works), no markdown, no emoji, and no URLs (put those on screen).
 - On-screen text **complements** the voice-over and must not transcribe it. Use 2–7 words of headline per scene. Captions already carry the full speech.
 - Asset paths are relative to `<prod>/public/` (for example `img/s3.png`). Remote `https://` URLs also work.
 - Use one `theme` per reel. Change `enter` types to vary rhythm, but don't change themes mid-reel.
@@ -72,6 +93,7 @@ The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voi
 | `code` | a source or config file with highlighted line(s); secrets redacted | `file` (tab title), `lines: string[]` (≤14), `highlight?: number[]` (1-based), `redact?: string[]` (substrings to mask as ••••), `caption?` |
 | `chat` | prompt → AI answer demos | `app?`, `messages: [{role:"user"\|"ai", text}]` |
 | `image` | screenshot / generated image (Ken Burns), with optional highlight box | `src`, `frame?: "window"\|"none"\|"full"`, `url?` (title-bar text), `kenburns?: "in"\|"out"\|"up"`, `box?: {x,y,w,h}` (0..1), `caption?`, `maxH?`, `fallback?` (title text if asset missing) |
+| `presenter` | the AI presenter talking to camera, full frame. Lips stay synced because `rf build` trims `public/avatar.mp4` to the scene's start | `caption?`, `fallback?` (title text if `rf presenter` hasn't run). Requires `rf presenter P` after the voice gate |
 | `video` | generated b-roll / screen recording, full bleed | `src`, `fit?: "cover"\|"contain"`, `trim?` (s), `caption?` |
 | `item` | one entry of a listicle with i/N counter | `index`, `total`, `name`, `desc`, `stars?`, `tag?`, `url?`, `image?` |
 | `bars` | before/after, A vs B, benchmark | `title?`, `bars: [{label, value, highlight?}]`, `unit?`, `decimals?`, `note?` (source) |

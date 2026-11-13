@@ -5,7 +5,7 @@
   python rf.py doctor           check every tool / credential the pipeline can use
   python rf.py probe [--json]   system probe (works before setup): capabilities, per-stage plan, blockers, asks
   python rf.py <tool> [args]    run scripts/<tool>.py inside the runtime venv
-                                tools: trends, sources, shot, modes, voice, music, image, build, render, qa,
+                                tools: trends, sources, intel, shot, presenter, modes, voice, music, image, build, render, qa,
                                        analyze, ingest, kb, sfx_kit, config
 
 Runtime home: $REEL_FACTORY_HOME or ~/.reel-factory  (kept outside the plugin so plugin updates never wipe it)
@@ -17,17 +17,19 @@ PLUGIN = Path(__file__).resolve().parent.parent
 HOME = Path(os.environ.get("REEL_FACTORY_HOME", Path.home() / ".reel-factory"))
 WIN = os.name == "nt"
 VPY = HOME / "venv" / ("Scripts/python.exe" if WIN else "bin/python")
-REQS = ["faster-whisper", "edge-tts", "numpy", "pillow", "soundfile", "requests", "rapidocr-onnxruntime"]
+REQS = ["faster-whisper", "edge-tts", "numpy", "pillow", "soundfile", "requests", "rapidocr-onnxruntime", "trafilatura", "defusedxml"]
 GPU_REQS = ["nvidia-cublas-cu12", "nvidia-cudnn-cu12==9.*"]
 
 DEFAULT_CONFIG = {
     "output_dir": None,  # null -> <cwd>/reel-productions
-    "voice": {"provider": "elevenlabs", "voice_id": "TX3LPaxmHKxFdv7VOQHJ", "model_id": "eleven_v3",
-              "edge_voice": "en-US-AndrewMultilingualNeural", "speed": 1.08},
+    "voice": {"provider": "elevenlabs", "voice_id": "TX3LPaxmHKxFdv7VOQHJ", "model_id": "eleven_v4",
+              "edge_voice": "en-US-AndrewMultilingualNeural", "stability": 0.5, "similarity_boost": 0.75,
+              "target_articulation": 245, "max_tempo": 1.18, "paragraph_pause": 0.40, "lexicon": {}},
     "music": {"provider": "elevenlabs", "model_id": "music_v2"},
     "images": {"provider": "elevenlabs", "model_id": "gpt-image-2", "quality": "medium", "max_per_reel": 4},
     "video_gen": {"enabled": False, "model_id": "bytedance-seedance-v2-fast", "max_clips": 1},
     "avatar": {"enabled": False, "image": None, "model_id": "creatify-aurora"},
+    "presenter": {"provider": "heygen", "fallback": ["musetalk"], "avatar": "presenter-m1", "batch": 4},
     "brand": {"handle": "", "default_theme": None, "accent": None, "cta": "comment"},
     "language": "en",
     "browser_capture": False,  # agent-browser use needs explicit opt-in

@@ -9,14 +9,15 @@ Score each 1–5. **Ship threshold: no score below 3, and an average of at least
 | Hook (0–3 s) | Payoff or tension in the first sentence; specific (number, name, outcome); visual matches; no preamble |
 | Promise and payoff | The reel delivers exactly what the hook promised, with the payoff visible on screen |
 | Structure | Uses a known format skeleton correctly; escalation; re-hook at 40–60%; clean ending |
-| Pacing | 4–12 words per scene; no scene over 6 s; pattern interrupt every 8–12 s; total in the target length |
+| Spoken flow | Narration reads as one continuous performance: sentence median 13–17 words with long payloads and short punches, connectors carry the logic, no thought split across paragraphs, hook = one complete stake sentence. Scored by reading it aloud (speechwriting skill) |
+| Pacing | Scenes 1.2–6 s cued on spoken words (cuts may land mid-sentence); pattern interrupt every 8–12 s; about 3.4 words per target second; total in the target length |
 | Clarity | A smart 16-year-old understands it on first watch; jargon translated; one analogy |
 | Specificity | Concrete numbers, names, and examples in most sentences; nothing generic |
 | Visual variety | No more than 2 consecutive scenes of the same type; demo/proof visuals, not just logos |
 | On-screen text | Complements (doesn't duplicate) the VO; ≤7 words per headline; one emphasis per line |
 | Credibility | Every claim maps to facts.md; honesty beat present; sources on screen where useful. Every on-screen web source is a real `source` screenshot; a `headline`/`quote` text card for a web source without a logged fallback reason caps this at 2 |
 | CTA | Fits the format; shows the action; keyword is short and topical |
-| Voice-readiness | Sentences are speakable, no tongue-twisters, numbers written how they should be said |
+| Voice-readiness | Sentences are speakable, no tongue-twisters, numbers written how they should be said; `tts` markup is sparing (one tag per paragraph at most, same words as `text`); brand names in `lexicon` |
 | **Mode fidelity** | The storyboard is genuinely built the way the chosen mode's playbook (`modes/<id>.md`) describes: its stage, devices, pacing and audio, not a kinetic reel with a different theme |
 
 **Mode-specific checks** (score them inside "Mode fidelity"):

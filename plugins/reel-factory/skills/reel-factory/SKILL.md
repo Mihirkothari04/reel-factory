@@ -1,7 +1,7 @@
 ---
 name: reel-factory
 description: "Produce a complete, publish-ready Instagram Reel (1080x1920 MP4 + cover + caption) end-to-end — trend discovery or a given topic → multi-agent research → creation-mode selection (10 modes — kinetic explainer, presenter, illustrated story, newsroom, receipts, rapid catalog, screen walkthrough, cinematic, silent showcase, quick take; user picks or AI Select) → script → storyboard → ElevenLabs voice/music + generated visuals → Remotion render → automated + visual QA. Adapts to the machine it runs on. Use when the user runs /reel, asks to make/create/produce a reel, short, TikTok or vertical video, wants a trending topic turned into a reel, or wants to analyse reference reels to improve the system."
-version: 1.3.0
+version: 2.0.0
 ---
 
 # Reel Factory: autonomous reel production
@@ -48,20 +48,34 @@ Launch agent `reel-factory:trend-scout` with the current date and any niche hint
 
 ### 2. Production folder and research
 1. `RF new "<working title>"` and use the printed path as `P`.
-2. Launch **two `reel-factory:topic-researcher` agents in parallel** (one message, two Agent calls): focus **A = primary source and technical**, **B = reception, context, and fresh angles** (see research.md). Pass `P`, the topic, and the date. They write `P/research/` and return briefs.
-3. Merge into `P/research/facts.md` (claims table with ids, mechanism, numbers, angles, caveats, assets, do-not-say).
+2. **Source map.** Classify the topic in `references/sources.json → routing` and note the source types, `rf intel handles` and subreddits to cover.
+3. Launch **two `reel-factory:topic-researcher` agents in parallel** (one message, two Agent calls):
+   - focus **A = Origin Hunter**: official posts, X originals, repos, papers, docs;
+   - focus **B = Coverage & Community**: press breadth, Reddit, HN and X reactions with engagement, angles.
 
-### 3. Creation mode (the one question)
-1. Score every mode on the six fit axes in modes/INDEX.md using the research (shape, visual supply, register, audience, freshness, variety vs history). Unavailable modes show their fallback.
-2. If `--mode <id>` → use it. If `--mode ai`, `--count`, or `config.modes.ask` is false → **AI Select** (INDEX.md: full deliberation, may borrow ≤ 2 devices from another mode, 3–5 line justification).
-3. Otherwise present the choice: a chat table of all 10 modes (★ recommended, fit score, availability, and a **topic-specific** one-liner of what *this* reel would look like in that mode), then one `AskUserQuestion` (header "Mode") with: the recommended mode "(Recommended)", the 2nd and 3rd best, and "AI Select". The remaining mode names go in the question text; "Other" accepts any mode id. Descriptions must be written for this topic, never the generic `one_liner`.
-4. Read `references/modes/<id>.md`. Record mode, runner-up and reason in brief.md. Presenter + `--footage` not yet supplied → you will write the script, then ask the user to record it (stage 7).
+   Pass `P`, the topic, the date and the source map. Both use `rf intel` (research.md) and fill the evidence ledger `P/research/sources.json`.
+4. **Ledger gate.** Run `RF intel score --prod P`. Every warning must be resolved (or logged as impossible, with what was searched) before scripting.
+5. Merge into `P/research/facts.md` (claims table with ids, mechanism, numbers, angles, caveats, assets, do-not-say).
+
+### 3. Creative combination (the one question): structures + elements, multi-select
+1. Score every mode on the six fit axes in modes/INDEX.md, using the research: shape, visual supply, register, audience, freshness, and variety vs history. Unavailable modes show their fallback. Then shortlist the **elements** that fit the topic (INDEX.md element table).
+2. If `--mode <id>[,<id>…]` was given, use that sequence. If `--mode ai`, `--count`, or `config.modes.ask` is false, run **AI Select** (INDEX.md: a combination-aware deliberation with justification).
+3. Otherwise:
+   - Print the structures table and the elements table, all **topic-specific**, plus the recommended combination as one concrete line.
+   - Then make **one** `AskUserQuestion` call with two multi-select questions: "Structures" (top 3 + AI Select; Other = mode ids in order) and "Elements" (top 4).
+   - Validate the picks against the combination rules.
+4. Read `references/modes/<id>.md` for every chosen structure. Record mode, runner-up and reason in brief.md. Presenter + `--footage` not yet supplied → you will write the script, then ask the user to record it (stage 7).
 
 ### 4. Strategy brief: `P/brief.md`
 Decide and justify in a few lines each: **mode** (from stage 3) and **skeleton** (formats.md, compatible with the mode), **target viewer** (identity callout), **core promise** (one sentence), **angle** (the most surprising true one), **5 hook drafts**, scored, with the winner, **re-hook**, **honesty beat**, **CTA** (type and keyword), **target length** (inside the mode's range), **theme, accent, caption style, layout** (mode defaults unless there's a reason), **mode devices** (banner / slate / progress / hook sticker / typewriter / annotations), **music mood and prompt**, and **visual plan** (which facts become which scene types, and which images/b-roll are worth generating, within budget).
 
-### 5. Script and storyboard: `P/storyboard.json`
-Write the full storyboard per storyboard-schema.md **and the mode playbook**: `meta.mode`, `skeleton`, every scene with `vo` (silent mode: `dur` instead), `type`, `props`, `enter`, and optional `assets`, `label`, `rehook`, `sfx`. Use the mode's scene types and overlays and its beat template, so the reel is genuinely built the mode's way (not a kinetic reel in another theme). Apply the playbook: hook at 0 s, one claim per scene, a pattern interrupt every 8–12 s, re-hook at 40–60%, the honesty beat, the CTA. Also write `caption`, `hashtags` (5–8 specific), `sources_in_caption`, `emphasis`, `music`, `cover_at`. Save a readable `P/script.md` (VO, or on-screen text for silent mode, scene by scene).
+### 5. Storyline, narration, storyboard: `P/storyboard.json`
+Load the **speechwriting** skill and follow it in order:
+1. a beat sheet in brief.md;
+2. `narration` paragraphs (spoken, connected, with `tts` delivery markup where useful) written before any visual;
+3. the visuals hung on the speech with scene `cue`s.
+
+Write the full storyboard per storyboard-schema.md **and the mode playbook**: `meta.mode`, `skeleton`, `narration`, every scene with `cue` (silent mode: `dur` and no narration), `type`, `props`, `enter`, and optional `assets`, `label`, `rehook`, `sfx`. Use the mode's scene types and overlays and its beat template, so the reel is genuinely built the mode's way (not a kinetic reel in another theme). Apply the playbook: hook at 0 s, one claim per scene, a pattern interrupt every 8–12 s, re-hook at 40–60%, the honesty beat, the CTA. Also write `caption`, `hashtags` (5–8 specific), `sources_in_caption`, `emphasis`, `music`, `cover_at`. Save a readable `P/script.md` (VO, or on-screen text for silent mode, scene by scene).
 
 ### 6. Review loop (fresh eyes, before spending credits)
 Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode fidelity**) and `reel-factory:fact-checker` (every claim vs facts.md and sources). Apply all blocking fixes and any improvement that raises a score. If the critic's average is below 4 or any score is below 3, revise and run the critic once more (max 2 rounds). Log the changes in brief.md.
@@ -73,9 +87,12 @@ Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode f
    - Capture with Firecrawl (`firecrawl_scrape`, `formats: ["screenshot"]`, `mobile: true`). If Firecrawl is unavailable, use agent-browser on the public URLs after asking the owner with the exact list (no asking when `config.source_shots_browser` or `browser_capture` is true).
    - Text cards are only a logged fallback.
    Then free assets: `RF sources repo <owner/name> --prod P`, `RF sources og <url> --prod P` (screenshots for walkthrough/quicktake/receipts zooms). Update the storyboard with live numbers and paths. For walkthrough actions, open each screenshot and set coordinates on the real element.
-2. Generated visuals: `RF image P` (budget-aware; the story and cinematic modes may raise the budget for this reel: say so). Avatar/b-roll only if enabled and the brief justifies it (state the credit cost first).
+2. Generated visuals: `RF image P` (budget-aware; the story and cinematic modes may raise the budget for this reel: say so). B-roll only if enabled and the brief justifies it (state the credit cost first).
+   - **AI presenter** (element `ai-presenter` or structure `presenter` without footage): **after** the voice gate passes, run `RF presenter P`. Paid HeyGen first, local MuseTalk as fallback; say the cost before a paid run. Then use `presenter` scenes or `split-avatar` and disclose it in the caption.
 3. **Voice, by mode:**
-   - narrated modes: `RF voice P` (ElevenLabs with exact timing, or the free fallback; it cuts dead air and retimes toward 200 wpm; story mode can target 190 via `voice.target_wpm`). Check the reported wpm. Re-tune pacing without new TTS via `RF voice P --retime`. Regenerate TTS only when `vo` text changed.
+   - narrated modes: load the **voice** skill, then run `RF voice P`. It produces stitched paragraph segments on eleven_v4, natural-articulation tempo, pause shaping by sentence/comma/paragraph boundary, and the listening report `out/voice-report.md`.
+     - **The gate must PASS before build.** Fix cheap first: `--retime` (no credits), then `--regen <paragraph ids>` after fixing that paragraph's `tts` or the `lexicon`, then rewrite the narration.
+     - Never regenerate the whole take to "try again".
    - presenter with footage: give the user the final `script.md`, recording instructions (phone at face height, quiet room, start on the hook, ~200 wpm, one take), and wait for the clip; then `RF voice P --footage <clip>`.
    - silent: `RF voice P` just records "no VO".
 4. `RF music P` (skip if `music.none`). **Silent mode: music before build** (the beat grid comes from it).

@@ -47,6 +47,7 @@ def main():
     peak = sh(["ffmpeg", "-i", str(video), "-af", "ebur128=peak=true", "-vn", "-f", "null", "-"]).stderr
     tp = re.findall(r"Peak:\s+(-?[\d.]+) dBFS", peak)
     w = wer(script, [x["w"] for x in tr["words"]]) if script else 0.0
+    vr = load_json(prod / "out" / "voice-report.json") if (prod / "out" / "voice-report.json").exists() else {}  # rf voice listening gate
 
     checks = [
         ("loudness", T["lufs"][0] <= (m["lufs"] or -99) <= T["lufs"][1], f"{m['lufs']} LUFS (target -14)", True),
@@ -59,6 +60,7 @@ def main():
         ("no_frozen_video", "freeze_start" not in frz, "frozen segment >2.5s" if "freeze_start" in frz else "none", False),
         ("no_clipping", not tp or float(tp[-1]) <= -0.5, f"true peak {tp[-1] if tp else '?'} dBFS", True),
         ("vo_intelligible", w <= T["wer_max"], f"WER vs script {w:.1%} (local Whisper)", True),
+        ("voice_delivery", vr.get("gate", "PASS") == "PASS", ("; ".join(vr.get("fails", [])) or f"sentence pauses {vr.get('gap_sentence_median')}s, mid-gap p90 {vr.get('gap_mid_p90')}s") if vr else "no voice report (legacy take)", bool(vr)),
         ("music_bed", props["audio"].get("music") is not None, "music present" if props["audio"].get("music") else "no music bed (84% of corpus has one)", bool(spec.get("qa", {}).get("require_music"))),
     ]
     checks = [c for c in checks if c[0] not in skip]

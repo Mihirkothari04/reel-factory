@@ -33,3 +33,11 @@ Only `REDO` when the structure fails (hook doesn't land, story doesn't pay off).
 - Confirm that each `source` scene shows the real page and is legible at phone size.
 - Banners and ads must be removed.
 - The highlight must land on exactly the spoken words, at the moment they are spoken.
+
+## Voice report (blocking)
+Read `out/voice-report.md`. A FAIL is a FIX:
+- For pause or flow problems, the fix is `rf voice P --retime`.
+- For a mispronounced or flat paragraph, fix that paragraph's `tts` or the `lexicon`, then run `rf voice P --regen <id>`.
+- For a choppy script, the fix is a speechwriting rewrite.
+
+Spot-check 3 sentence ends in the render: each should have an audible breath, and no thought should pause mid-phrase.

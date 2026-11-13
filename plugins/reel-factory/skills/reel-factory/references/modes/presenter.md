@@ -4,7 +4,13 @@
 
 ## Two ways to get a presenter
 1. **Your own footage (free, best).** The Creative Director writes the script, the user records it (phone at face height, quiet room or lav, ~200 wpm, first word = the hook, no "hey guys"), then `RF voice P --footage clip.mp4`. The clip's audio becomes the VO, script words are aligned with Whisper, and the face is never time-cut (cutting would desync it). This is the one step that waits for the user: say exactly what to record (the script, framing, length) and stop until the clip exists.
-2. **AI avatar.** `config.avatar.enabled` + a consented portrait (`avatar.image`), then `RF avatar P` (Creatify Aurora; credit-heavy, so state the cost first). "Good enough" is enough (Creator 58): the board carries the content.
+2. **AI presenter (no recording needed).** The channel uses one consistent avatar, an **original** generated character or a consenting person, registered once with `RF presenter setup --image <portrait> --name presenter-m1`. That creates `~/.reel-factory/avatars/<name>/` with the portrait, an idle base clip and the bound voice.
+   - Per reel, after the voice gate passes, run `RF presenter P`. It lip-syncs the final `vo.mp3`, so face and voice can never drift, and writes `public/avatar.mp4`.
+   - Providers, in `config.presenter`:
+     - `heygen` (default; HeyGen API v3, an image subject driven by our own audio; `HEYGEN_API_KEY` in `~/.reel-factory/.env`; paid per minute, so state the cost);
+     - `musetalk` (local fallback: free, slower, re-animates the mouth on the idle base clip).
+   - Show it either as `"type": "presenter"` scenes (full frame, cut in sync; use them for the hook, the verdict and the CTA) or with `meta.layout: "split-avatar"` under a board.
+   - Always add "AI-generated presenter" to the caption and use Instagram's AI label. Never generate a real person's likeness.
 Neither available → fall back to `kinetic`, keeping the first-person voice.
 
 ## Construction

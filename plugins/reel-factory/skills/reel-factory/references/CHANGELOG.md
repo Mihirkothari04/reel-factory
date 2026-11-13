@@ -1,5 +1,50 @@
 # Knowledge-base changelog
 
+## 2.0.0 (2026-11-13): natural narration, source intelligence, creative combinations, AI presenter
+
+Built from a measured diagnosis against 89 English corpus reels. Our scripts had a sentence median of 7–9 words (corpus 15), sentence-end pauses of 0.03 s (corpus 0.24 s), no connectors, and research that defaulted to a single trade site.
+
+**Narration**
+- New **speechwriting** skill: storyline, then spoken paragraphs, then visual cues.
+  - Corpus rules: sentence mix, the connector system, the hook + define pair, viewer bridge, delivery markup.
+  - Per-format voice profiles.
+- **Storyboard v2:** `narration` paragraphs plus scene `cue`s, so cuts land mid-sentence like the corpus (1.08 per sentence). Legacy `scenes[].vo` is still accepted.
+- New **voice** skill and `rf voice` v2:
+  - `eleven_v4` default (A/B tested against v3);
+  - paragraph segments with `previous_text`/`next_text` stitching;
+  - `tts` delivery markup and a pronunciation `lexicon`;
+  - natural-articulation tempo (no blanket speed-up);
+  - **pause shaping on real silence, by boundary**: sentence 0.18–0.32 s, comma 0.10–0.22 s, paragraph 0.34–0.50 s, mid-phrase glitches removed;
+  - `--regen <paragraph>` and `--retime`;
+  - a **listening report and gate** (`out/voice-report.md`) that `rf qa` blocks on.
+
+**Research**
+- New **`rf intel`** with official and free access paths:
+  - Google News across publishers;
+  - publisher and company newsroom feeds (22 verified);
+  - X posts via the official oEmbed and embed data (text, date, verified, likes, replies);
+  - Reddit (OAuth with scores when a key is set, otherwise RSS);
+  - GitHub (new repos by stars/day; repo stars, velocity, releases, contributors, commits);
+  - HN, arXiv, Hugging Face Papers;
+  - full-text `read` via trafilatura.
+- **`sources.json` registry:** publisher tiers and on-screen eligibility (TechCrunch is lead only), official, founder and researcher X handles, subreddits by topic, and topic → source-type routing.
+- **Evidence ledger** (`research/sources.json`) and **`rf intel score`**, which ranks sources by credibility, originality, engagement, recency and corroboration. Its gates: originals for key claims, no publisher above 30 %, a community signal, and no lead-only source on screen.
+- Research agents redefined as **Origin Hunter** and **Coverage & Community**. The trend-scout uses attention signals and the fact-checker verifies against originals.
+- **`rf shot` capture ladder:** given a page URL it captures itself, using X's official embed for posts, then a headless phone viewport, then a headed isolated session. It has hard timeouts.
+
+**Creative combinations**
+- Structures (the 10 modes, sequenceable as segments) plus **elements** (presenter, source shots, cursor demo, cinematic b-roll, banner, progress, …) with combination rules.
+- Two multi-select questions; combination-aware AI Select. `meta.segments` and `meta.elements`.
+
+**AI presenter**
+- New `rf presenter`:
+  - one consistent avatar identity under `~/.reel-factory/avatars/` (portrait, idle base clip, bound voice);
+  - lip-sync of the final voice-over via **HeyGen API v3** (paid, default) or local **MuseTalk 1.5** (free fallback; installer `scripts/install_musetalk.sh`).
+- New `presenter` scene type: full-frame and cut in sync.
+- Lip-sync covers only the presenter scenes' spans (~4x less GPU time and HeyGen minutes). Per-avatar face-landmark cache. Live MuseTalk log with a stall watchdog (`presenter.stall_seconds`).
+
+**Known plan limits** (detected): ElevenLabs Flows image and video need the Pro plan, so `rf image` falls back to engine visuals on Creator.
+
 ## 1.3.0 (2026-11-12): real sources are shown as real screenshots (hard rule)
 
 - **Rule** (`playbook.md` › Credibility): headlines, social posts, blog/press/help lines and README lines appear as the **actual page**, highlighted where the voice-over reads it. Retyped text cards are only a logged fallback.

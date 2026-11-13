@@ -46,6 +46,13 @@ Plus **Presenter + Board** (your own recorded clip, or an AI avatar, under a mot
 
 <sub>The mode demos above are rendered by the plugin's own engine. The walkthrough uses screenshots of this repository; the others use fictional example content.</sub>
 
+## What's new in 2.0
+
+- **It sounds like a person.** Narration is written as connected spoken paragraphs first, with visuals cued onto the words. The voice step shapes pauses at real sentence, comma and paragraph boundaries (measured against 89 reference reels) and blocks any take that fails a listening report.
+- **It researches where news actually starts.** Official newsrooms, the company's and the CEO's own X posts with live likes and replies, Reddit, Hacker News, GitHub star velocity, papers, and the big mastheads. Every source goes into a ledger, and the originals are always found.
+- **Mix creative styles.** Pick several structures (for example a presenter hook into a screen walkthrough) and layer elements on top, or let AI Select build the combination.
+- **An AI presenter.** One consistent, original avatar, lip-synced to the final voice-over via HeyGen, or locally with MuseTalk.
+
 ## How it works
 
 <p align="center"><img src="docs/media/pipeline.svg" width="860" alt="Pipeline: topic, research, mode, script, review, assets, render, QA"></p>
