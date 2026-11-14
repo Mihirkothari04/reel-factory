@@ -1,5 +1,44 @@
 # Knowledge-base changelog
 
+## 3.0.0 (2026-11-14): studio engine, layered edit, one consistent AI presenter
+
+Built from batch-03 (7 new reference reels) measured against our 2.0 output.
+- References: 48–129 big picture changes per minute, 0–6 % static seconds.
+- Ours: 10 changes per minute, 9.4 % static seconds.
+
+The reference presenters are AI digital clones performing continuously under the edit. Ours was a mouth-only face in separate cut-away scenes. Root cause: the engine played one full-frame scene at a time.
+
+**Engine**
+- New `Studio` composition with layered tracks: presenter (alpha), layout, content shots, graphics, captions, grade, audio.
+- 7 presenter framings, animated between: off / full / close / split / card / corner / corner-left.
+- A virtual camera on images and screenshots: opens on the masthead, pans and zooms to each highlight as it is spoken; marker / box / underline / strike.
+- Footage with cover or blurred fill. Shot transitions: cut, whip, zoom, blur, slide, flash.
+- Graphics: cut-out stickers, mono labels, display slams, counters, boxed scene components.
+- Studio captions: single-word italic serif, bold, box.
+- Looks (format bibles): studio, intel, cutout. Film grain and vignette.
+- `rf build` compiles the storyboard's word-anchored edit decisions (`layout`, `motion`, `shots`, `gfx` per narration beat) into the timeline (`scripts/studio.py`). The legacy scene engine is unchanged for old storyboards.
+
+**Presenter**
+- One persistent synthetic host (`~/.reel-factory/avatars/host`).
+  - Rendered by HeyGen Avatar IV from our own voice track, only for the spans where a layout shows him.
+  - Each beat carries its own `motion` direction.
+  - Output: transparent WebM over his own set plate.
+- Measured cost $0.0425/s. Cap per reel `presenter.max_usd_per_reel` (default $2). `--dry-run` shows windows and cost; identical renders are reused, never paid twice.
+- Voice: an Indian-English reel voice to match him.
+
+**Media departments**
+- `rf footage find|get`: YouTube, Wikimedia Commons, NASA and Internet Archive search; short excerpts with source labels.
+- `rf cutout`: local background removal for sticker cut-outs.
+- Owner media policy recorded.
+
+**QA**
+- Blocking edit gates measured on the render: ≥ 40 big picture changes per minute, ≤ 3 % static seconds. Presenter share is a warning.
+- Presenter pace gate widened to 175–250 wpm (references 167–255).
+
+**Knowledge**
+- New `references/studio.md`: cast, layouts, shots, graphics, looks, sourcing, gates, beat recipe.
+- SKILL.md now builds every presenter reel on the studio engine.
+
 ## 2.0.0 (2026-11-13): natural narration, source intelligence, creative combinations, AI presenter
 
 Built from a measured diagnosis against 89 English corpus reels. Our scripts had a sentence median of 7–9 words (corpus 15), sentence-end pauses of 0.03 s (corpus 0.24 s), no connectors, and research that defaulted to a single trade site.

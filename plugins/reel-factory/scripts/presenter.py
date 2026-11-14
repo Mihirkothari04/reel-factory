@@ -204,6 +204,120 @@ def make(prod, provider=None, avatar=None):
     raise SystemExit("presenter: all providers failed: " + " | ".join(errs))
 
 
+# ---------- studio engine: per-window HeyGen performances with alpha ----------
+
+HG = "https://api.heygen.com"
+
+
+def hg_headers():
+    key = env("HEYGEN_API_KEY")
+    if not key:
+        raise SystemExit("HEYGEN_API_KEY missing in ~/.reel-factory/.env")
+    return {"X-Api-Key": key}
+
+
+def hg_balance(H):
+    try:
+        return float(requests.get(f"{HG}/v3/users/me", headers=H, timeout=30).json()["data"]["wallet"]["remaining_balance"])
+    except Exception:
+        return None
+
+
+def hg_render(H, prof, wav, motion, out, engine, stall_min=20):
+    """one HeyGen performance: our audio slice + per-beat motion direction -> transparent WebM (alpha)"""
+    aid = requests.post(f"{HG}/v3/assets", headers=H, files={"file": (wav.name, open(wav, "rb"), "audio/wav")}, timeout=300).json()["data"]["asset_id"]
+    body = {"type": "avatar", "avatar_id": prof["heygen_avatar_id"], "engine": {"type": engine}, "audio_asset_id": aid,
+            "aspect_ratio": "9:16", "resolution": "1080p", "output_format": "webm", "title": f"rf {out.stem}",
+            "motion_prompt": motion[:1200]}
+    if engine == "avatar_iv":
+        body["expressiveness"] = "medium"
+    r = requests.post(f"{HG}/v3/videos", headers={**H, "Content-Type": "application/json"}, json=body, timeout=120).json()
+    vid = (r.get("data") or {}).get("video_id")
+    if not vid:
+        raise RuntimeError(f"heygen create failed: {json.dumps(r)[:300]}")
+    t0, last, st = time.time(), time.time(), None
+    while True:
+        time.sleep(12)
+        d = requests.get(f"{HG}/v3/videos/{vid}", headers=H, timeout=60).json()
+        d = d.get("data") or d
+        if d.get("status") != st:
+            st, last = d.get("status"), time.time()
+            print(f"  {out.name}: {st} ({time.time() - t0:.0f}s)", file=sys.stderr, flush=True)
+        if st == "completed":
+            out.write_bytes(requests.get(d["video_url"], timeout=600).content)
+            return
+        if st in ("failed", "cancelled"):
+            raise RuntimeError(f"heygen {st}: {d.get('failure_message') or d}")
+        if time.time() - last > stall_min * 60:
+            raise RuntimeError(f"heygen stalled in '{st}' for {stall_min} min (video {vid})")
+
+
+def make_studio(prod, avatar=None, dry=False):
+    """Presenter for the studio engine: render only the spans where a layout shows him, each with its beat's direction."""
+    import hashlib
+    from concurrent.futures import ThreadPoolExecutor
+    from studio import compile_studio, presenter_windows
+    prod = Path(prod).resolve()
+    pc = config().get("presenter", {})
+    name = avatar or pc.get("avatar", "host")
+    d = AV / name
+    prof = load_json(d / "profile.json")
+    if not prof.get("heygen_avatar_id"):
+        raise SystemExit(f"avatar {name} has no heygen_avatar_id")
+    sb = load_json(prod / "storyboard.json")
+    words = load_json(prod / "words.json")
+    r = compile_studio(prod, sb, words)
+    wins = presenter_windows(r["layouts"], r["duration"])
+    engine = pc.get("engine", prof.get("engine", "avatar_iv"))
+    price = prof.get("price_per_sec", {}).get(engine, 0.0425)
+    secs = sum(b - a for a, b in wins)
+    cost = secs * price
+    cap = float(pc.get("max_usd_per_reel", 2.0))
+    log(prod, f"presenter: {len(wins)} windows · {secs:.1f}s on screen · {engine} @ ${price}/s = ${cost:.2f} (cap ${cap:.2f})")
+    if cost > cap + 1e-6:
+        raise SystemExit(f"presenter: ${cost:.2f} for {secs:.1f}s exceeds the ${cap:.2f}/reel cap -> shorten presenter layouts "
+                         f"(max {cap / price:.0f}s on screen) or raise presenter.max_usd_per_reel")
+    if dry:
+        return print(json.dumps({"windows": wins, "seconds": round(secs, 1), "usd": round(cost, 2)}))
+    H = hg_headers()
+    bal = hg_balance(H)
+    pdir = prod / "public" / "presenter"
+    pdir.mkdir(parents=True, exist_ok=True)
+    vo = prod / "public" / "vo.mp3"
+    jobs, rec = [], []
+    for i, (a, b) in enumerate(wins):
+        mot = [s.get("motion") for s in sb["scenes"] if s.get("motion") and r["bounds"][s["id"]][0] < b and r["bounds"][s["id"]][1] > a]
+        motion = prof.get("default_motion", "")
+        if mot:
+            motion = (motion + " " + " Then ".join(mot)).strip()
+        wav = pdir / f"w{i}.wav"
+        run(["ffmpeg", "-y", "-v", "error", "-ss", f"{a:.3f}", "-to", f"{b:.3f}", "-i", vo, "-ar", "44100", "-ac", "1", wav])
+        key = hashlib.md5(wav.read_bytes() + motion.encode() + engine.encode()).hexdigest()[:12]
+        out = pdir / f"w{i}-{key}.webm"
+        rec.append({"start": a, "end": b, "src": f"presenter/{out.name}", "key": key, "motion": motion})
+        if out.exists():
+            continue  # identical audio + direction already rendered: never pay twice
+        jobs.append((wav, motion, out, (b - a) * price))
+    need = sum(j[3] for j in jobs)
+    if bal is not None and jobs and bal < need:
+        raise SystemExit(f"presenter: HeyGen wallet ${bal:.2f} < ${need:.2f} needed -> top up at platform.heygen.com")
+    if jobs:
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            list(ex.map(lambda j: hg_render(H, prof, j[0], j[1], j[2], engine), jobs))
+    for w in rec:
+        if not (prod / "public" / w["src"]).exists():
+            raise SystemExit(f"presenter: {w['src']} missing after render")
+    spent = round(bal - (hg_balance(H) or bal), 2) if bal is not None and jobs else 0.0
+    shutil.copy(d / prof.get("set", "set.jpg"), pdir / "set.jpg")
+    sb = load_json(prod / "storyboard.json")
+    sb["presenter"] = {"name": name, "provider": "heygen", "engine": engine, "windows": rec, "set": "presenter/set.jpg", "usd": spent}
+    save_json(prod / "storyboard.json", sb)
+    with open(HOME / "spend.jsonl", "a", encoding="utf-8") as f:
+        f.write(json.dumps({"date": time.strftime("%Y-%m-%d %H:%M"), "prod": prod.name, "service": "heygen", "engine": engine,
+                            "seconds": round(sum(j[3] for j in jobs) / price, 1), "usd": spent}) + "\n")
+    log(prod, f"presenter: {len(jobs)} rendered, {len(rec) - len(jobs)} reused · spent ${spent:.2f} · disclose: AI-generated presenter")
+
+
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "setup":
         ap = argparse.ArgumentParser()
@@ -213,7 +327,10 @@ def main():
         return setup(a.image, a.name, a.voice, a.crop)
     ap = argparse.ArgumentParser()
     ap.add_argument("prod"); ap.add_argument("--provider", choices=list(PROVIDERS)); ap.add_argument("--avatar")
+    ap.add_argument("--dry-run", action="store_true", help="studio engine: print windows, seconds and cost without rendering")
     a = ap.parse_args()
+    if load_json(Path(a.prod) / "storyboard.json").get("meta", {}).get("engine") == "studio":
+        return make_studio(a.prod, a.avatar, a.dry_run)
     make(a.prod, a.provider, a.avatar)
 
 

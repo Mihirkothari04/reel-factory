@@ -25,6 +25,23 @@ def wer(ref, hyp):
     return 1 - matched / max(1, len(a))
 
 
+def edit_metrics(video):
+    """how alive the edit is, measured like the reference reels (4 fps, 72x128 grey): big picture changes per minute,
+    % of seconds with no visible change, and the longest still stretch. References: 48-129 changes/min, 0-6 % static."""
+    import numpy as np, subprocess
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(video), "-vf", "fps=4,scale=72:128,format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout
+    a = np.frombuffer(raw, np.uint8).reshape(-1, 128, 72).astype(np.int16)
+    d = np.abs(np.diff(a, axis=0)).mean(axis=(1, 2))
+    n = len(d) // 4
+    per_s = d[: n * 4].reshape(n, 4).max(axis=1)
+    still = per_s < 1.0
+    run = best = 0
+    for s in still:
+        run = run + 1 if s else 0
+        best = max(best, run)
+    return {"changes_per_min": round(float((d > 12).sum()) / (len(a) / 4) * 60, 1), "static_pct": round(float(still.mean()) * 100, 1), "longest_still_s": int(best)}
+
+
 def main():
     prod = Path(sys.argv[1])
     video = prod / "out" / "reel.mp4"
@@ -39,8 +56,9 @@ def main():
     tr = load_json(o / "transcript.json")
     props = load_json(prod / "props.json")
     script = [w["w"] for w in load_json(prod / "words.json")] if (prod / "words.json").exists() else []
-    scenes = props["scenes"]
-    lens = [s["end"] - s["start"] for s in scenes]
+    studio = "layouts" in props
+    scenes = props["shots"] if studio else props["scenes"]
+    lens = [s["to"] - s["from"] for s in scenes] if studio else [s["end"] - s["start"] for s in scenes]
 
     blk = sh(["ffmpeg", "-i", str(video), "-vf", "blackdetect=d=0.25:pix_th=0.02:pic_th=0.995", "-an", "-f", "null", "-"]).stderr
     frz = sh(["ffmpeg", "-i", str(video), "-vf", "freezedetect=n=0.002:d=2.5", "-an", "-f", "null", "-"]).stderr
@@ -63,6 +81,16 @@ def main():
         ("voice_delivery", vr.get("gate", "PASS") == "PASS", ("; ".join(vr.get("fails", [])) or f"sentence pauses {vr.get('gap_sentence_median')}s, mid-gap p90 {vr.get('gap_mid_p90')}s") if vr else "no voice report (legacy take)", bool(vr)),
         ("music_bed", props["audio"].get("music") is not None, "music present" if props["audio"].get("music") else "no music bed (84% of corpus has one)", bool(spec.get("qa", {}).get("require_music"))),
     ]
+    if studio:  # layered edit: judge the picture itself, not scene lengths (a full-frame presenter beat has no shot change)
+        em = edit_metrics(video)
+        from studio import presenter_windows
+        pres = sum(b - a for a, b in presenter_windows(props["layouts"], props["durationSec"])) if props.get("presenter") else 0.0
+        checks = [c for c in checks if c[0] not in ("longest_scene", "avg_scene")] + [
+            ("edit_change_rate", em["changes_per_min"] >= 40, f"{em['changes_per_min']} big picture changes/min (references 48-129, floor 40)", True),
+            ("edit_static", em["static_pct"] <= 3.0, f"{em['static_pct']}% static seconds (references 0-6%, max 3%)", True),
+            ("edit_longest_still", em["longest_still_s"] <= 2, f"longest still stretch {em['longest_still_s']}s", False),
+            ("presenter_share", not props.get("presenter") or 0.2 <= pres / props["durationSec"] <= 0.75, f"presenter on screen {pres:.1f}s of {props['durationSec']:.1f}s", False),
+        ]
     checks = [c for c in checks if c[0] not in skip]
     report = {"mode": spec["id"], "metrics": {k: m[k] for k in ["dur", "w", "h", "fps", "lufs", "wpm", "speech_ratio", "first_word_at", "n_cuts", "bed_db", "speech_db"]},
               "wer": round(w, 3), "scenes": len(scenes),

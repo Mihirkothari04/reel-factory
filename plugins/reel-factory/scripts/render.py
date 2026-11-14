@@ -19,12 +19,30 @@ def main():
     out.mkdir(exist_ok=True)
     raw = out / ("draft.mp4" if a.draft else "raw.mp4")
     npx = shutil.which("npx.cmd" if WIN else "npx") or shutil.which("npx")
-    cmd = [npx, "remotion", "render", "src/index.ts", "Reel", str(raw), f"--props={prod / 'props.json'}", f"--public-dir={prod / 'public'}",
+    comp = "Studio" if "layouts" in load_json(prod / "props.json") else "Reel"
+    cmd = [npx, "remotion", "render", "src/index.ts", comp, str(raw), f"--props={prod / 'props.json'}", f"--public-dir={prod / 'public'}",
            "--log=error", "--codec=h264", "--crf=18", "--audio-codec=aac", "--audio-bitrate=192k"]
+    if comp == "Studio":  # many alpha/H.264 streams decode at once; more workers race the compositor ("No frame found")
+        cmd.append("--concurrency=3")
     if a.draft:
         cmd.append("--scale=0.5")
     t0 = time.time()
-    run(cmd, cwd=HOME / "engine")
+    # stream Remotion's progress into out/render.log (long renders must be watchable; a silent hang wastes time)
+    import subprocess
+    cmd = [c if c != "--log=error" else "--log=info" for c in cmd]
+    with open(out / "render.log", "w", encoding="utf-8", errors="replace") as lf:
+        p = subprocess.Popen(list(map(str, cmd)), cwd=HOME / "engine", stdout=lf, stderr=subprocess.STDOUT)
+        last, size = time.time(), 0
+        while p.poll() is None:
+            time.sleep(5)
+            s = (out / "render.log").stat().st_size
+            if s != size:
+                last, size = time.time(), s
+            elif time.time() - last > 900:
+                p.kill()
+                raise SystemExit("render stalled: no progress for 15 min (see out/render.log)")
+    if p.returncode != 0:
+        raise SystemExit(f"render failed (see out/render.log): {(out / 'render.log').read_text(encoding='utf-8', errors='replace')[-800:]}")
     log(prod, f"render: {'draft' if a.draft else 'full'} in {time.time() - t0:.0f}s")
     if a.draft:
         return

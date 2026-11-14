@@ -1,7 +1,7 @@
 ---
 name: reel-factory
-description: "Produce a complete, publish-ready Instagram Reel (1080x1920 MP4 + cover + caption) end-to-end — trend discovery or a given topic → multi-agent research → creation-mode selection (10 modes — kinetic explainer, presenter, illustrated story, newsroom, receipts, rapid catalog, screen walkthrough, cinematic, silent showcase, quick take; user picks or AI Select) → script → storyboard → ElevenLabs voice/music + generated visuals → Remotion render → automated + visual QA. Adapts to the machine it runs on. Use when the user runs /reel, asks to make/create/produce a reel, short, TikTok or vertical video, wants a trending topic turned into a reel, or wants to analyse reference reels to improve the system."
-version: 2.0.0
+description: "Produce a complete, publish-ready Instagram Reel (1080x1920 MP4 + cover + caption) end-to-end like a production studio — trend discovery or a given topic → multi-agent research → creation mode → script → layered edit (one consistent AI presenter integrated as a layer with full-body performance, real footage and news excerpts, highlighted source screenshots, cut-out stickers, motion graphics, camera moves) → ElevenLabs voice/music + HeyGen presenter → Remotion studio render → automated edit gates + visual QA. Use when the user runs /reel, asks to make/create/produce a reel, short, TikTok or vertical video, wants a trending topic turned into a reel, or wants to analyse reference reels to improve the system."
+version: 3.0.0
 ---
 
 # Reel Factory: autonomous reel production
@@ -19,7 +19,8 @@ You are the **Creative Director and producer**. You own strategy, script, storyb
 - `references/modes/INDEX.md`: **read every run.** The 10 creation modes, fit scoring, how to present the choice, AI Select, mode × skeleton compatibility, fallbacks. Then read the **chosen mode's playbook** `references/modes/<id>.md`.
 - `references/formats.md`: 11 story skeletons (beat order) with ids. **Read every run.**
 - `references/hooks.md`: hook, re-hook, honesty, and CTA libraries. **Read every run.**
-- `references/storyboard-schema.md`: exact JSON contract, scene types, overlays, speech-synced props. **Read before writing the storyboard.**
+- `references/studio.md`: **read every run.** The studio engine: the presenter, layouts, shots, graphics, looks, sourcing policy, edit gates, beat recipe. This is how reels are built now.
+- `references/storyboard-schema.md`: exact JSON contract of the legacy scene types (reused as studio `scene` shots), speech-synced props. **Read before writing the storyboard.**
 - `references/art-direction.md`: themes, captions, layouts, overlays, illustration style locks, annotation grammar, sourcing, prompts.
 - `references/techniques.md`: every known technique and where it is implemented (engine prop vs guidance).
 - `references/research.md`, `references/tools.md`, `references/qa-rubric.md`.
@@ -75,7 +76,7 @@ Load the **speechwriting** skill and follow it in order:
 2. `narration` paragraphs (spoken, connected, with `tts` delivery markup where useful) written before any visual;
 3. the visuals hung on the speech with scene `cue`s.
 
-Write the full storyboard per storyboard-schema.md **and the mode playbook**: `meta.mode`, `skeleton`, `narration`, every scene with `cue` (silent mode: `dur` and no narration), `type`, `props`, `enter`, and optional `assets`, `label`, `rehook`, `sfx`. Use the mode's scene types and overlays and its beat template, so the reel is genuinely built the mode's way (not a kinetic reel in another theme). Apply the playbook: hook at 0 s, one claim per scene, a pattern interrupt every 8–12 s, re-hook at 40–60%, the honesty beat, the CTA. Also write `caption`, `hashtags` (5–8 specific), `sources_in_caption`, `emphasis`, `music`, `cover_at`. Save a readable `P/script.md` (VO, or on-screen text for silent mode, scene by scene).
+**Engine: `meta.engine: "studio"` (default; studio.md).** Each scene is one narration beat with `vo`, `layout`, `motion` (presenter direction when he is visible), `shots` (a new visual every 1–2.5 s, anchored to phrases), and `gfx`. Set `meta.look` (studio / intel / cutout). Plan presenter time against the cost cap (≈ 30–45 s on screen). Only pure faceless motion-graphics or silent formats may use the legacy scene engine. Write the full storyboard per studio.md, storyboard-schema.md **and the mode playbook**: `meta.mode`, `skeleton`, `narration`, every scene with `cue` (silent mode: `dur` and no narration), `type`, `props`, `enter`, and optional `assets`, `label`, `rehook`, `sfx`. Use the mode's scene types and overlays and its beat template, so the reel is genuinely built the mode's way (not a kinetic reel in another theme). Apply the playbook: hook at 0 s, one claim per scene, a pattern interrupt every 8–12 s, re-hook at 40–60%, the honesty beat, the CTA. Also write `caption`, `hashtags` (5–8 specific), `sources_in_caption`, `emphasis`, `music`, `cover_at`. Save a readable `P/script.md` (VO, or on-screen text for silent mode, scene by scene).
 
 ### 6. Review loop (fresh eyes, before spending credits)
 Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode fidelity**) and `reel-factory:fact-checker` (every claim vs facts.md and sources). Apply all blocking fixes and any improvement that raises a score. If the critic's average is below 4 or any score is below 3, revise and run the critic once more (max 2 rounds). Log the changes in brief.md.
@@ -86,9 +87,10 @@ Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode f
    - Build it with `RF shot <capture> --prod P --name <id> --find "<spoken phrase>"`.
    - Capture with Firecrawl (`firecrawl_scrape`, `formats: ["screenshot"]`, `mobile: true`). If Firecrawl is unavailable, use agent-browser on the public URLs after asking the owner with the exact list (no asking when `config.source_shots_browser` or `browser_capture` is true).
    - Text cards are only a logged fallback.
-   Then free assets: `RF sources repo <owner/name> --prod P`, `RF sources og <url> --prod P` (screenshots for walkthrough/quicktake/receipts zooms). Update the storyboard with live numbers and paths. For walkthrough actions, open each screenshot and set coordinates on the real element.
+   Then free assets: `RF sources repo <owner/name> --prod P`, `RF sources og <url> --prod P` (screenshots for walkthrough/quicktake/receipts zooms).
+   **Footage (studio.md §6):** for every beat that names a person, product or event, find real footage: `RF footage find "<query>" [--source youtube|commons|nasa|archive]`, pick the clip that shows exactly that, then `RF footage get <url> --prod P --name <id> --start S --dur 3-6 --label "<outlet>"` and paste the printed shot JSON. **Cut-outs:** `RF cutout <photo-url> --prod P --name <id>` for people, products and logos as stickers. Update the storyboard with live numbers and paths. For walkthrough actions, open each screenshot and set coordinates on the real element.
 2. Generated visuals: `RF image P` (budget-aware; the story and cinematic modes may raise the budget for this reel: say so). B-roll only if enabled and the brief justifies it (state the credit cost first).
-   - **AI presenter** (element `ai-presenter` or structure `presenter` without footage): **after** the voice gate passes, run `RF presenter P`. Paid HeyGen first, local MuseTalk as fallback; say the cost before a paid run. Then use `presenter` scenes or `split-avatar` and disclose it in the caption.
+   - **The presenter (studio engine):** **after** the voice gate passes, run `RF presenter P --dry-run` (windows, seconds, cost). If it exceeds the cap, shorten presenter layouts (turn some beats `off`), then run `RF presenter P`. It renders only his visible spans with HeyGen Avatar IV and each beat's `motion`, as transparent WebM; it reuses identical renders. Disclose "AI-generated presenter" in the caption.
 3. **Voice, by mode:**
    - narrated modes: load the **voice** skill, then run `RF voice P`. It produces stitched paragraph segments on eleven_v4, natural-articulation tempo, pause shaping by sentence/comma/paragraph boundary, and the listening report `out/voice-report.md`.
      - **The gate must PASS before build.** Fix cheap first: `--retime` (no credits), then `--regen <paragraph ids>` after fixing that paragraph's `tts` or the `lexicon`, then rewrite the narration.
@@ -100,7 +102,7 @@ Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode f
 ### 8. Build, render, QA
 1. `RF build P`, then read its warnings (scenes under 0.6 s or over the mode's max → merge or split the `vo` and re-run voice **only if text changed**; otherwise adjust props).
 2. `RF render P --draft`. Extract 3–4 stills (hook at 0.3 s, mid, CTA) with ffmpeg, **look at them**, fix overflow, legibility, or device collisions in the storyboard props, then re-run `RF build P` (no new voice). For `--draft` runs, stop here.
-3. `RF render P` (full), then `RF qa P` (thresholds per mode).
+3. `RF render P` (full), then `RF qa P`. The studio edit gates block: ≥ 40 big picture changes/min and ≤ 3 % static seconds. On a fail, add shots or camera moves (studio.md §7), rebuild and re-render; no new voice or presenter renders are needed unless the narration changed.
 4. Launch `reel-factory:qa-reviewer` with `P`. On `FIX`: edit storyboard props or timing → `RF build P` → `RF render P` → `RF qa P` (max 2 loops). On `REDO`: return to stage 5.
 
 ### 9. Deliver and learn
@@ -110,7 +112,7 @@ Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode f
 ## Guardrails
 - **Credits:** paid generation only for shipped assets and only after review. Generate the voice once per final script. Never loop paid generation to retry style; change prompts deliberately.
 - **Truth:** no claim without a facts.md source; never fabricate numbers, quotes, comments, or star counts; use absolute dates. Receipts and newsroom modes show the source on screen.
-- **People:** no generated likeness of real people and no fake endorsements; news about people uses reputable outlets and allegation language. Story protagonists are always fictional.
-- **Media rights:** never repost another creator's video; official press/launch media only, credited; no movie or TV frames as reaction clips.
+- **People:** no generated likeness of real people and no fake endorsements; news about people uses reputable outlets and allegation language. Story protagonists are always fictional. The show's presenter is the one synthetic host in `~/.reel-factory/avatars/host` (never a real person's face).
+- **Media rights:** never repost another creator's video. Owner policy (2026-11-14): official/press media and free-licence stock first; short news/YouTube excerpts of real people and events (≤ 6 s each, a few per reel) are allowed with a visible source label and never altered to change meaning.
 - **Browser automation** (agent-browser) only when `config.browser_capture` is true, or for source screenshots of public pages after the owner approves the exact URL list (pre-approved when `config.source_shots_browser` is true), and only for public, read-only pages. Otherwise use APIs, og:images, and rebuilt UI.
 - **Files:** everything lives inside `P`. Never write into the plugin folder during `/reel` (learnings go to `~/.reel-factory`); the knowledge base is edited only by `/reel-learn`.

@@ -46,6 +46,14 @@ Plus **Presenter + Board** (your own recorded clip, or an AI avatar, under a mot
 
 <sub>The mode demos above are rendered by the plugin's own engine. The walkthrough uses screenshots of this repository; the others use fictional example content.</sub>
 
+## What's new in 3.0: a studio, not a template
+
+- **The presenter is a layer, not a scene.** One consistent, original AI host performs under the edit with full head, hand and body motion (HeyGen Avatar IV, rendered from your own voice track with a per-line performance direction, transparent background). The edit only changes how much of the frame he gets: full, close-up, split screen, a card over his chest, a corner cut-out, or off.
+- **Layered edit on a timeline.** Word-anchored edit decisions compile into tracks: presenter, layout, content shots, graphics, captions, grade and sound design. Screenshots get a virtual camera that pans to each highlight as it is spoken. Footage gets cover or blurred fill. Graphics include cut-out stickers, labels, slams and counters.
+- **Real media departments.** `rf footage` finds and trims real clips (YouTube excerpts with source labels, Wikimedia Commons, NASA, Internet Archive). `rf cutout` turns press photos into stickers locally.
+- **Edit gates.** QA measures the render like the reference reels: at least 40 big picture changes per minute and no more than 3 % static seconds, or it does not ship.
+- **Cost control.** Only the seconds where the presenter is visible are rendered. `rf presenter P --dry-run` shows the bill first, a per-reel cap applies, and identical renders are never paid twice.
+
 ## What's new in 2.0
 
 - **It sounds like a person.** Narration is written as connected spoken paragraphs first, with visuals cued onto the words. The voice step shapes pauses at real sentence, comma and paragraph boundaries (measured against 89 reference reels) and blocks any take that fails a listening report.

@@ -390,7 +390,8 @@ def report(prod, words, audio, seg_bounds, mode, asr=None):
          "sentence_len_median": med(sents), "long_sentence_share": round(sum(s >= 16 for s in sents) / max(1, len(sents)), 2),
          "gap_sentence_median": med(gaps["sent"]), "gap_comma_median": med(gaps["comma"]), "gap_paragraph_median": med(gaps["para"]),
          "gap_mid_p90": p90(gaps["mid"]), "join_loudness_jump_db": joins, "wer": round(wer, 3), "misheard": misheard}
-    rng = {"kinetic": (195, 245), "presenter": (200, 250), "story": (175, 225), "quicktake": (165, 230), "silent": (0, 999)}.get(mode, (180, 245))
+    rng = {"kinetic": (195, 245), "presenter": (175, 250),  # batch-03 presenters: 167-255 wpm
+           "story": (175, 225), "quicktake": (165, 230), "silent": (0, 999)}.get(mode, (180, 245))
     fails = []
     if m["gap_sentence_median"] is not None and not 0.14 <= m["gap_sentence_median"] <= 0.40:
         fails.append(f"sentence pauses {m['gap_sentence_median']} s (target 0.18–0.32)")

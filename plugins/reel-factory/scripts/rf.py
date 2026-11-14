@@ -5,7 +5,7 @@
   python rf.py doctor           check every tool / credential the pipeline can use
   python rf.py probe [--json]   system probe (works before setup): capabilities, per-stage plan, blockers, asks
   python rf.py <tool> [args]    run scripts/<tool>.py inside the runtime venv
-                                tools: trends, sources, intel, shot, presenter, modes, voice, music, image, build, render, qa,
+                                tools: trends, sources, intel, shot, footage, cutout, presenter, modes, voice, music, image, build, render, qa,
                                        analyze, ingest, kb, sfx_kit, config
 
 Runtime home: $REEL_FACTORY_HOME or ~/.reel-factory  (kept outside the plugin so plugin updates never wipe it)
@@ -17,7 +17,7 @@ PLUGIN = Path(__file__).resolve().parent.parent
 HOME = Path(os.environ.get("REEL_FACTORY_HOME", Path.home() / ".reel-factory"))
 WIN = os.name == "nt"
 VPY = HOME / "venv" / ("Scripts/python.exe" if WIN else "bin/python")
-REQS = ["faster-whisper", "edge-tts", "numpy", "pillow", "soundfile", "requests", "rapidocr-onnxruntime", "trafilatura", "defusedxml"]
+REQS = ["faster-whisper", "edge-tts", "numpy", "pillow", "soundfile", "requests", "rapidocr-onnxruntime", "trafilatura", "defusedxml", "rembg", "yt-dlp"]
 GPU_REQS = ["nvidia-cublas-cu12", "nvidia-cudnn-cu12==9.*"]
 
 DEFAULT_CONFIG = {
@@ -29,7 +29,7 @@ DEFAULT_CONFIG = {
     "images": {"provider": "elevenlabs", "model_id": "gpt-image-2", "quality": "medium", "max_per_reel": 4},
     "video_gen": {"enabled": False, "model_id": "bytedance-seedance-v2-fast", "max_clips": 1},
     "avatar": {"enabled": False, "image": None, "model_id": "creatify-aurora"},
-    "presenter": {"provider": "heygen", "fallback": ["musetalk"], "avatar": "presenter-m1", "batch": 4},
+    "presenter": {"provider": "heygen", "fallback": ["musetalk"], "avatar": "host", "engine": "avatar_iv", "max_usd_per_reel": 2.0, "batch": 4},
     "brand": {"handle": "", "default_theme": None, "accent": None, "cta": "comment"},
     "language": "en",
     "browser_capture": False,  # agent-browser use needs explicit opt-in

@@ -46,3 +46,10 @@ Read the `narration` aloud in your head at speed before scoring:
 - `tts` has the same words as `text`.
 
 Cues must quote the narration in order, and each scene lands on the word it shows. Score "Spoken flow" and give exact rewritten paragraphs, not scene fragments, for anything under 4.
+
+## Studio engine (`meta.engine: "studio"`, references/studio.md)
+- **Layout rhythm:** presenter layouts change every 2–6 s, never the same layout more than 3 beats in a row, `close` at most twice, hook opens on a presenter layout. Presenter share is 30–60 % and fits the cost cap.
+- **Shot density:** a new shot every 1–2.5 s of narration in `off`/`split`/`corner` beats. Flag any visual held longer than 3 s without a camera move or highlight.
+- **Relevance:** every shot shows what is being said at that moment (the named person, product or quoted line). Generic "related" visuals are a blocking issue when real footage or a real screenshot exists.
+- **Motion directions:** each visible beat has a `motion` line that matches the emotion of the line, varies across beats, and is never theatrical.
+- **Sourcing:** news and YouTube excerpts are ≤ 6 s and carry a `label`.

@@ -141,10 +141,45 @@ def silent_timing(sb, prod):
     return bounds
 
 
+def build_studio(prod, sb, cfg):
+    """engine "studio": layered timeline (presenter layer + layouts + shots + graphics) -> props for the Studio composition"""
+    from studio import compile_studio
+    words = load_json(prod / "words.json")
+    r = compile_studio(prod, sb, words)
+    pub = prod / "public"
+    (pub / "sfx").mkdir(parents=True, exist_ok=True)
+    for f in (HOME / "sfx").glob("*.wav"):
+        shutil.copy2(f, pub / "sfx" / f.name)
+    meta = {k: v for k, v in sb["meta"].items() if k in ("title", "look", "accent", "captionStyle", "handle", "grain")}
+    meta.setdefault("look", "studio")
+    pres = sb.get("presenter") or {}
+    layouts = r["layouts"]
+    if any(e["layout"] != "off" for e in layouts) and not pres.get("windows"):
+        log(prod, "build WARNING: presenter layouts used but no presenter windows (run rf presenter P) -> presenter hidden")
+        layouts = [{"t": 0, "layout": "off"}]
+    sfx = r["sfx"] + [{"t": round(max(0, r["bounds"][s["id"]][0] - 1.15), 3), "name": "riser", "vol": 0.28} for s in sb["scenes"] if s.get("rehook")]
+    props = {"meta": meta, "durationSec": r["duration"], "fps": 30,
+             "audio": {"vo": "vo.mp3", "sfx": sorted(sfx, key=lambda c: c["t"]),
+                       **({"music": "music.mp3"} if (pub / "music.mp3").exists() else {}),
+                       "musicVolume": sb.get("musicVolume", 0.26), "duckTo": sb.get("duckTo", 0.09)},
+             "words": [{"w": w["w"], "s": w["s"], "e": w["e"]} for w in words],
+             "emphasis": [e.lower() for e in sb.get("emphasis", [])],
+             "layouts": layouts, "shots": r["shots"], "gfx": r["gfx"]}
+    if pres.get("windows"):
+        props["presenter"] = {"windows": [{"start": w["start"], "end": w["end"], "src": w["src"]} for w in pres["windows"]], "set": pres.get("set")}
+    save_json(prod / "props.json", props)
+    from studio import presenter_windows
+    vis = sum(b - a for a, b in presenter_windows(layouts, r["duration"]))
+    log(prod, f"build: studio · look {meta['look']} · {len(r['shots'])} shots ({len(r['shots']) / r['duration'] * 60:.0f}/min) · "
+              f"{len(layouts)} layout events · {len(r['gfx'])} gfx · presenter on screen {vis:.1f}s · {r['duration']:.1f}s")
+
+
 def main():
     prod = Path(sys.argv[1])
     sb = load_json(prod / "storyboard.json")
     cfg = config()
+    if sb.get("meta", {}).get("engine") == "studio":
+        return build_studio(prod, sb, cfg)
     brand = cfg.get("brand", {})
     meta = dict(sb["meta"])
     spec = mode_spec(meta.get("mode"))

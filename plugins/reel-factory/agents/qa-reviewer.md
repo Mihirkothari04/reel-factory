@@ -41,3 +41,14 @@ Read `out/voice-report.md`. A FAIL is a FIX:
 - For a choppy script, the fix is a speechwriting rewrite.
 
 Spot-check 3 sentence ends in the render: each should have an audible breath, and no thought should pause mid-phrase.
+
+## Studio engine reels
+- Read the `edit_change_rate` and `edit_static` checks in the QA report (blocking).
+- In the stills, check that:
+  - captions stay legible on white documents and bright footage;
+  - gfx never sit on the caption line or the presenter's face;
+  - the presenter's cut-out edges are clean in `corner` and `split`;
+  - his set looks natural in `full`/`close`;
+  - documents fill the content box width (no small floating cards);
+  - every news/YouTube excerpt shows its source label.
+- On `FIX`, give exact storyboard edits: add shots, move gfx `y`, change a beat's layout. Then rebuild and render; presenter renders are reused when the narration did not change.
