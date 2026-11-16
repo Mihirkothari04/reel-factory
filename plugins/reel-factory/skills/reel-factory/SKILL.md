@@ -1,7 +1,7 @@
 ---
 name: reel-factory
 description: "Produce a complete, publish-ready Instagram Reel (1080x1920 MP4 + cover + caption) end-to-end like a production studio — trend discovery or a given topic → multi-agent research → creation mode → script → layered edit (one consistent AI presenter integrated as a layer with full-body performance, real footage and news excerpts, highlighted source screenshots, cut-out stickers, motion graphics, camera moves) → ElevenLabs voice/music + HeyGen presenter → Remotion studio render → automated edit gates + visual QA. Use when the user runs /reel, asks to make/create/produce a reel, short, TikTok or vertical video, wants a trending topic turned into a reel, or wants to analyse reference reels to improve the system."
-version: 3.0.0
+version: 3.1.0
 ---
 
 # Reel Factory: autonomous reel production
@@ -90,7 +90,17 @@ Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode f
    Then free assets: `RF sources repo <owner/name> --prod P`, `RF sources og <url> --prod P` (screenshots for walkthrough/quicktake/receipts zooms).
    **Footage (studio.md §6):** for every beat that names a person, product or event, find real footage: `RF footage find "<query>" [--source youtube|commons|nasa|archive]`, pick the clip that shows exactly that, then `RF footage get <url> --prod P --name <id> --start S --dur 3-6 --label "<outlet>"` and paste the printed shot JSON. **Cut-outs:** `RF cutout <photo-url> --prod P --name <id>` for people, products and logos as stickers. Update the storyboard with live numbers and paths. For walkthrough actions, open each screenshot and set coordinates on the real element.
 2. Generated visuals: `RF image P` (budget-aware; the story and cinematic modes may raise the budget for this reel: say so). B-roll only if enabled and the brief justifies it (state the credit cost first).
-   - **The presenter (studio engine):** **after** the voice gate passes, run `RF presenter P --dry-run` (windows, seconds, cost). If it exceeds the cap, shorten presenter layouts (turn some beats `off`), then run `RF presenter P`. It renders only his visible spans with HeyGen Avatar IV and each beat's `motion`, as transparent WebM; it reuses identical renders. Disclose "AI-generated presenter" in the caption.
+   - **The presenter (studio engine):** **after** the voice gate passes, run `RF presenter P --dry-run` (windows, seconds, cost). If it exceeds the cap, shorten presenter layouts (turn some beats `off`), then render. It renders only his visible spans with HeyGen Avatar IV and each beat's `motion`, as transparent WebM, and reuses identical renders. **HeyGen MCP first (plan credits), API only as backup:**
+     1. `RF presenter P --jobs` writes `P/public/presenter/jobs.json`: `avatar_id`, `engine`, `aspect_ratio`, `resolution`, `output_format: webm`, `expressiveness`, and per job `wav`, `out`, `motion`, `seconds`. Empty `jobs` → skip to step 4.
+     2. If the `heygen` MCP tools are available (`mcp__heygen__*`): `get_current_user` for remaining plan credits. Then for each job: `create_asset_upload` for the wav → PUT the file to the returned URL with `curl -T` → `complete_asset_upload` → `create_video_from_avatar` with the job's avatar_id, the audio asset, engine, 9:16, 1080p, webm/transparent background, the `motion` as motion prompt and expressiveness. Start all jobs, then poll `get_video` until `completed`, and download each `video_url` with curl to exactly the job's `out` path.
+        - Verified on 2026-11-16 with the host look. The PUT must send every `upload_headers` entry (`content-type`, `x-amz-server-side-encryption`).
+        - Create call: `avatarId`, `audioAssetId`, `engine: {"type": "avatar_iv"}`, `aspectRatio: "9:16"`, `resolution: "1080p"`, `outputFormat: "webm"`, `motionPrompt`. The MCP has no expressiveness setting.
+        - Always pass the engine. Left unset, the MCP uses Avatar 6 Turbo, which would change the host's look.
+        - Output is VP9 with alpha and no watermark. The Free plan renders at 720p and queues slowly (a 4 s clip took about 18 min). Wait with a background `sleep` between polls.
+     3. Use the API backup instead (skip MCP for the rest) when: the MCP tools are missing or unauthorised, credits are exhausted or too low, a create call is refused for credits, or the tool cannot take our own audio or return a transparent WebM (alpha is required). Never re-render a job the MCP already finished.
+     4. `RF presenter P` (always). Files already present are reused for free; only what is still missing goes to the API wallet, within `max_usd_per_reel`. This step also writes `storyboard.presenter`. Log in brief.md which route rendered each window.
+
+     Disclose "AI-generated presenter" in the caption.
 3. **Voice, by mode:**
    - narrated modes: load the **voice** skill, then run `RF voice P`. It produces stitched paragraph segments on eleven_v4, natural-articulation tempo, pause shaping by sentence/comma/paragraph boundary, and the listening report `out/voice-report.md`.
      - **The gate must PASS before build.** Fix cheap first: `--retime` (no credits), then `--regen <paragraph ids>` after fixing that paragraph's `tts` or the `lexicon`, then rewrite the narration.

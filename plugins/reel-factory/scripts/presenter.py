@@ -252,8 +252,10 @@ def hg_render(H, prof, wav, motion, out, engine, stall_min=20):
             raise RuntimeError(f"heygen stalled in '{st}' for {stall_min} min (video {vid})")
 
 
-def make_studio(prod, avatar=None, dry=False):
-    """Presenter for the studio engine: render only the spans where a layout shows him, each with its beat's direction."""
+def make_studio(prod, avatar=None, dry=False, jobs_only=False):
+    """Presenter for the studio engine: render only the spans where a layout shows him, each with its beat's direction.
+    jobs_only: write public/presenter/jobs.json (the renders still missing) for Claude to render through the HeyGen MCP
+    (plan credits); rerunning without it then reuses those files and only calls the API for whatever is still missing."""
     import hashlib
     from concurrent.futures import ThreadPoolExecutor
     from studio import compile_studio, presenter_windows
@@ -279,8 +281,6 @@ def make_studio(prod, avatar=None, dry=False):
                          f"(max {cap / price:.0f}s on screen) or raise presenter.max_usd_per_reel")
     if dry:
         return print(json.dumps({"windows": wins, "seconds": round(secs, 1), "usd": round(cost, 2)}))
-    H = hg_headers()
-    bal = hg_balance(H)
     pdir = prod / "public" / "presenter"
     pdir.mkdir(parents=True, exist_ok=True)
     vo = prod / "public" / "vo.mp3"
@@ -298,6 +298,14 @@ def make_studio(prod, avatar=None, dry=False):
         if out.exists():
             continue  # identical audio + direction already rendered: never pay twice
         jobs.append((wav, motion, out, (b - a) * price))
+    if jobs_only:
+        spec = {"avatar_id": prof["heygen_avatar_id"], "engine": engine, "aspect_ratio": "9:16", "resolution": "1080p",
+                "output_format": "webm", "expressiveness": "medium" if engine == "avatar_iv" else None,
+                "jobs": [{"wav": str(w), "out": str(o), "motion": m[:1200], "seconds": round(c / price, 2)} for w, m, o, c in jobs]}
+        save_json(pdir / "jobs.json", spec)
+        return print(json.dumps(spec, indent=1))
+    H = hg_headers() if jobs else None
+    bal = hg_balance(H) if jobs else None
     need = sum(j[3] for j in jobs)
     if bal is not None and jobs and bal < need:
         raise SystemExit(f"presenter: HeyGen wallet ${bal:.2f} < ${need:.2f} needed -> top up at platform.heygen.com")
@@ -328,9 +336,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("prod"); ap.add_argument("--provider", choices=list(PROVIDERS)); ap.add_argument("--avatar")
     ap.add_argument("--dry-run", action="store_true", help="studio engine: print windows, seconds and cost without rendering")
+    ap.add_argument("--jobs", action="store_true", help="studio engine: write presenter/jobs.json for HeyGen MCP rendering, no API calls")
     a = ap.parse_args()
     if load_json(Path(a.prod) / "storyboard.json").get("meta", {}).get("engine") == "studio":
-        return make_studio(a.prod, a.avatar, a.dry_run)
+        return make_studio(a.prod, a.avatar, a.dry_run, a.jobs)
     make(a.prod, a.provider, a.avatar)
 
 

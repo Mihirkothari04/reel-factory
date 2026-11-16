@@ -15,7 +15,7 @@ Inputs in your prompt: production path `P` and plugin root. Read:
 ## Do
 1. Read the VO aloud in your head at about 205 wpm and estimate each scene's duration (words ÷ 3.4 s). Flag scenes over 6 s or under 0.7 s.
 2. Watch it in your head scene by scene: what does the viewer **see** at each second? Where is it static, repetitive (same type more than twice in a row), or only logos?
-3. Judge the hook brutally: would *you* stop scrolling for the first 2 seconds? Propose 2 stronger alternatives if it scores under 5.
+3. Judge the hook brutally: would *you* stop scrolling for the first 2 seconds? Judge the whole **opening lock** for this reel type (hooks.md "The opening lock"), all by about 11 s (6 s in short reels): STOP is the most surprising true outcome, consequence or pain (not background, a date or a topic name); AMPLIFY adds a second reason; COMMIT promises what the reel then delivers. Propose 2 stronger complete openings if it scores under 5.
 4. Check props validity against storyboard-schema.md (types, prop names, rich-text markup, headline length ≤ about 7 words, ≤ 6 list items).
 5. **Mode fidelity:** is this reel genuinely built the way the mode playbook says (its stage, devices, pacing, audio), or is it a kinetic reel wearing another theme? Apply the mode-specific checks in qa-rubric.md §A. Silent mode: scenes have `dur`, no `vo`; judge the on-screen text as the script.
 6. Check the ethics rules (real people, unsourced claims, malware or abuse promotion).

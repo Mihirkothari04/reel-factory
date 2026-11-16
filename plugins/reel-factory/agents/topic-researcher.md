@@ -75,6 +75,7 @@ Write `P/research/<A|B>-<focus>.md` using the facts.md structure from `skills/re
 - mechanism, numbers, angles, surprising facts, caveats;
 - visual assets with local paths;
 - **source shots to capture**: the originals and recognised mastheads only;
+- **footage leads** and **cut-out leads** (see below);
 - do-not-say.
 
 Then return a compact brief of 15 lines or fewer:
@@ -91,3 +92,14 @@ For every headline, post or official quote likely to appear on screen:
 - build the source shot with `RF shot <url-or-file> --prod P --name <id> --find "<exact on-page phrase>"`;
 - use only originals and recognised mastheads; never `onscreen_ok:false` sites;
 - never retype a page as if it were a screenshot.
+
+## Footage and cut-out leads (studio engine, references/studio.md §6)
+Reels are layered edits that need real moving pictures of what is being said, so research also scouts media:
+- **footage**, in this order:
+  1. official/press video (keynotes, launch videos, the company's own channel);
+  2. free-licence stock: `RF footage find "<q>" --source commons|nasa|archive`;
+  3. news/YouTube excerpts of the named people and events: `RF footage find "<q>" --source youtube`.
+
+  For each pick give the url, channel, and the `mm:ss` start of the best 3–6 s moment showing exactly the named thing. Excerpts are ≤ 6 s with a source label, never altered in meaning.
+- **cut-outs**: logos, product shots and official photos of the named companies and products (direct image urls) for `RF cutout`. Never generate or cut out a likeness to imply an endorsement.
+- List them in your output file under **footage leads** and **cut-out leads**. Don't download; the director picks.

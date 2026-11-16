@@ -1,5 +1,18 @@
 # Knowledge-base changelog
 
+## 3.1.4 (2026-11-16): the opening lock, generalised
+
+- hooks.md "The opening lock": every narrated reel opens with three moves, STOP → AMPLIFY → COMMIT.
+- A table covers each reel type (tool, authority launch, list, challenge, tutorial, money, threat, hidden pain, concept, claim, discovery, news ×3, product-for-you), with verbatim examples from the 80 corpus hooks and the batch-03 openings.
+- Wired into speechwriting, qa-rubric and script-critic.
+- topic-researcher scouts footage and cut-out leads (3.1.2).
+
+## 3.1.0 (2026-11-16): HeyGen MCP first, API as backup
+
+- Presenter renders now go through the HeyGen MCP server (`heygen`, OAuth, HeyGen plan credits). `RF presenter P --jobs` writes `public/presenter/jobs.json` (audio slice, output path, motion direction, avatar, engine); Claude renders each job with the MCP tools and saves it to that path.
+- `RF presenter P` then reuses those files at no cost and sends only what is still missing to the API wallet (`HEYGEN_API_KEY`). That happens when plan credits run out or the MCP is unavailable. The `max_usd_per_reel` cap still applies.
+- The API key is no longer needed when every render is already on disk.
+
 ## 3.0.0 (2026-11-14): studio engine, layered edit, one consistent AI presenter
 
 Built from batch-03 (7 new reference reels) measured against our 2.0 output.

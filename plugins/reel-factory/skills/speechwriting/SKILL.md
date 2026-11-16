@@ -45,6 +45,10 @@ One paragraph per beat, usually 1–3 sentences. Write the way the creator would
   - The first sentence is **complete and carries the stake**, and is often long. Example: "Someone just built a free AI video studio that runs entirely on your laptop, and you don't need a three-thousand-dollar GPU to use it."
   - Never open with a fragment.
   - The second sentence names and defines it. Example: "This is WAN2GP, an open-source video generator built for people who can't afford cloud subscriptions."
+  - **The opening lock (every narrated reel):** the first sentences make three moves, by about 11 s (6 s in short reels). Pick the row for the reel type in reel-factory `references/hooks.md`, "The opening lock".
+    1. STOP: the most surprising true outcome, consequence or pain, with the thing named.
+    2. AMPLIFY: a second reason, such as free, a proof number, authority, a precedent, irony, or stakes for you.
+    3. COMMIT: "Here's how it works.", "Here's what happened." or a visual preview.
 - **Connect every sentence to the one before it.** Use the connector system:
   - adding: "And…", "Plus…", "On top of that…";
   - consequence: "So…", "Which means…", "That's why…";

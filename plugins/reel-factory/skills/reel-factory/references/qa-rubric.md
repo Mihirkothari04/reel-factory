@@ -6,7 +6,7 @@ Score each 1–5. **Ship threshold: no score below 3, and an average of at least
 
 | Criterion | 5 looks like |
 |---|---|
-| Hook (0–3 s) | Payoff or tension in the first sentence; specific (number, name, outcome); visual matches; no preamble |
+| Hook (0–3 s) and opening lock | Payoff or tension in the first sentence; specific (number, name, outcome); visual matches; no preamble. By about 11 s (6 s under 30 s), the first seconds make all three moves for the reel type (hooks.md "The opening lock"): STOP (a surprising true outcome, consequence or pain) → AMPLIFY (a second reason) → COMMIT (a promise the reel keeps) |
 | Promise and payoff | The reel delivers exactly what the hook promised, with the payoff visible on screen |
 | Structure | Uses a known format skeleton correctly; escalation; re-hook at 40–60%; clean ending |
 | Spoken flow | Narration reads as one continuous performance: sentence median 13–17 words with long payloads and short punches, connectors carry the logic, no thought split across paragraphs, hook = one complete stake sentence. Scored by reading it aloud (speechwriting skill) |

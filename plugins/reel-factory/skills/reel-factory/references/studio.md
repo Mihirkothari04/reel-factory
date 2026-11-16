@@ -13,7 +13,8 @@ The reference reels are layered, not sequenced. A presenter performs continuousl
 
   Never swap him per reel; consistency is the brand.
 - He is rendered by HeyGen Avatar IV (`presenter.engine`) from **our** ElevenLabs take, only for the spans where a layout shows him. The output is a transparent WebM, so he can sit on his set, in a split band or as a corner cut-out.
-- Cost: **$0.0425/s** of presenter on screen (measured 2026-11-14). The cap is `presenter.max_usd_per_reel` (default $2 ≈ 47 s). `RF presenter P --dry-run` prints windows and cost before paying. Re-runs reuse identical renders and never pay twice.
+- Route: the **HeyGen MCP** (`heygen` server, OAuth, draws on the HeyGen plan's credits) renders the jobs from `RF presenter P --jobs`. The API (`HEYGEN_API_KEY`, wallet) is only the backup when plan credits run out or the MCP is unavailable (SKILL.md stage 7).
+- API backup cost: **$0.0425/s** of presenter on screen (measured 2026-11-14). The cap is `presenter.max_usd_per_reel` (default $2 ≈ 47 s). `RF presenter P --dry-run` prints windows and cost before paying. Re-runs reuse identical renders and never pay twice.
 - Performance direction: each beat's `motion` (≤ 1–2 sentences) tells him how to deliver that line. Examples:
   - "leans in, lowers voice, sceptical half-smile";
   - "counts three points on his fingers";
