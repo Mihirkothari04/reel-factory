@@ -63,9 +63,10 @@ const Marks: React.FC<{ marks: Mark[]; t: number; color: string }> = ({ marks, t
   </>
 );
 
-// source chip: bottom-left on full-height content, top-left when the box ends at a caption seam (split)
-const Label: React.FC<{ text: string; look: Look; top?: boolean }> = ({ text, look, top }) => (
-  <div style={{ position: "absolute", left: 40, ...(top ? { top: 40 } : { bottom: 40 }), background: look.labelBg, color: look.labelInk, fontFamily: look.theme.mono, fontSize: 26, fontWeight: 600, padding: "8px 16px", borderRadius: 8, letterSpacing: "0.02em" }}>{text}</div>
+// source chip: bottom-left on full-height content, top-left when the box ends at a caption seam (split).
+// `inset` keeps it out of Instagram's UI: the "Reels" header (top ~200 px) and the username/caption (bottom ~350 px).
+const Label: React.FC<{ text: string; look: Look; top?: boolean; inset?: number }> = ({ text, look, top, inset = 40 }) => (
+  <div style={{ position: "absolute", left: 40, ...(top ? { top: inset } : { bottom: inset }), background: look.labelBg, color: look.labelInk, fontFamily: look.theme.mono, fontSize: 26, fontWeight: 600, padding: "8px 16px", borderRadius: 8, letterSpacing: "0.02em" }}>{text}</div>
 );
 
 /** incoming transition of a shot (first ~0.3 s) */
@@ -134,7 +135,7 @@ export const ShotView: React.FC<{ shot: Shot; w: number; h: number; look: Look; 
   return (
     <AbsoluteFill style={{ background: shot.bg ?? field ?? "transparent", overflow: "hidden" }}>
       <AbsoluteFill style={enterStyle(enter, t)}>{body}</AbsoluteFill>
-      {shot.label && <Label text={shot.label} look={look} top={h < 1400} />}
+      {shot.label && <Label text={shot.label} look={look} top={h < 1400} inset={h >= 1400 ? 540 : h >= 900 ? 210 : 40} />}
       {flash > 0 && <AbsoluteFill style={{ background: "#fff", opacity: flash }} />}
     </AbsoluteFill>
   );

@@ -1,5 +1,15 @@
 # Knowledge-base changelog
 
+## 3.1.6 (2026-11-16): source labels clear Instagram's UI
+
+- Studio shot labels: 210 px from the top in split boxes (clear of the "Reels" header) and 540 px from the bottom on full-height shots. That keeps them clear of the username/caption block and above the off-layout caption line (≈1480). Before, they sat 40 px from the edge, under Instagram's overlays.
+
+## 3.1.5 (2026-11-16): fixes from the Microsoft 365 outage production
+
+- `rf presenter`: the `max_usd_per_reel` cap now counts only the windows still to be rendered by the API. Windows already on disk (HeyGen MCP plan renders, earlier takes) cost $0, so a reel can mix MCP and API renders. The dry-run reports `over_cap` instead of exiting.
+- `rf voice --regen`: unknown paragraph ids now stop with an error. Before, `--regen p2,p3` regenerated nothing and left stale audio under new captions (WER 18%). Ids are space-separated: `--regen p2 p3`.
+- Lesson: the HeyGen Free plan's monthly Avatar IV allowance is tiny. One 4 s test used it up, and later free jobs fail with `AVATAR_IV_VIDEO_GENERATION_DURATION_LIMIT_REACHED`.
+
 ## 3.1.4 (2026-11-16): the opening lock, generalised
 
 - hooks.md "The opening lock": every narrated reel opens with three moves, STOP → AMPLIFY → COMMIT.

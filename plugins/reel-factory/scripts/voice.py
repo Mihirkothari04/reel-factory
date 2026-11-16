@@ -529,6 +529,10 @@ def main():
         r = load_json(prod / "words_raw.json")
         assign_scenes(sb, r["words"])  # cues may have changed since the take: re-map scenes, no new TTS
         return finish(prod, sb, x, r["words"], r["bounds"], vcfg, "retime")
+    if a.regen:
+        bad = set(a.regen) - {p["id"] for p in paragraphs(sb)}
+        if bad:  # e.g. "p2,p3" as one token would otherwise regenerate nothing and leave stale audio
+            raise SystemExit(f"--regen: unknown paragraph id(s) {sorted(bad)}; pass ids separated by spaces, e.g. --regen p2 p3")
     provider = a.provider or vcfg.get("provider", "elevenlabs")
     chars = sum(len(p["tts"]) for p in paragraphs(sb))
     if provider == "elevenlabs" and eleven_ok() < chars + 200:

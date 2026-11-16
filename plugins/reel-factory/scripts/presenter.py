@@ -276,11 +276,8 @@ def make_studio(prod, avatar=None, dry=False, jobs_only=False):
     cost = secs * price
     cap = float(pc.get("max_usd_per_reel", 2.0))
     log(prod, f"presenter: {len(wins)} windows · {secs:.1f}s on screen · {engine} @ ${price}/s = ${cost:.2f} (cap ${cap:.2f})")
-    if cost > cap + 1e-6:
-        raise SystemExit(f"presenter: ${cost:.2f} for {secs:.1f}s exceeds the ${cap:.2f}/reel cap -> shorten presenter layouts "
-                         f"(max {cap / price:.0f}s on screen) or raise presenter.max_usd_per_reel")
     if dry:
-        return print(json.dumps({"windows": wins, "seconds": round(secs, 1), "usd": round(cost, 2)}))
+        return print(json.dumps({"windows": wins, "seconds": round(secs, 1), "usd": round(cost, 2), "over_cap": cost > cap + 1e-6}))
     pdir = prod / "public" / "presenter"
     pdir.mkdir(parents=True, exist_ok=True)
     vo = prod / "public" / "vo.mp3"
@@ -304,9 +301,13 @@ def make_studio(prod, avatar=None, dry=False, jobs_only=False):
                 "jobs": [{"wav": str(w), "out": str(o), "motion": m[:1200], "seconds": round(c / price, 2)} for w, m, o, c in jobs]}
         save_json(pdir / "jobs.json", spec)
         return print(json.dumps(spec, indent=1))
+    need = sum(j[3] for j in jobs)
+    # the cap limits what the API wallet pays; windows already on disk (MCP plan renders, earlier takes) cost nothing
+    if need > cap + 1e-6:
+        raise SystemExit(f"presenter: ${need:.2f} for {need / price:.1f}s still to render exceeds the ${cap:.2f}/reel cap -> shorten presenter "
+                         f"layouts, render some windows via the HeyGen MCP (--jobs), or raise presenter.max_usd_per_reel")
     H = hg_headers() if jobs else None
     bal = hg_balance(H) if jobs else None
-    need = sum(j[3] for j in jobs)
     if bal is not None and jobs and bal < need:
         raise SystemExit(f"presenter: HeyGen wallet ${bal:.2f} < ${need:.2f} needed -> top up at platform.heygen.com")
     if jobs:
