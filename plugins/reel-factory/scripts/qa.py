@@ -8,21 +8,18 @@ Re-measures the final MP4 the same way the 88 reference reels were measured (ana
 Writes out/qa/{report.json, report.md, sheet.jpg}. The qa-reviewer agent then inspects sheet.jpg visually.
 Exit code 0 = no blocking failures.
 """
-import difflib, re, sys
+import re, sys
 from pathlib import Path
 from analyze import analyze, sh
 from build import mode_spec
-from common import load_json, norm_tok, save_json
+from common import load_json, save_json, wer_score
 
 # targets from analysis/REEL_ANALYSIS.md §1 (medians / IQR of 88 reels)
 T = {"lufs": (-15.0, -13.0), "first_word_max": 0.35, "wpm": (165, 245), "dur": (15, 95), "max_scene": 6.5, "avg_scene": (1.2, 3.8), "wer_max": 0.12}
 
 
 def wer(ref, hyp):
-    a, b = [norm_tok(x) for x in ref if norm_tok(x)], [norm_tok(x) for x in hyp if norm_tok(x)]
-    sm = difflib.SequenceMatcher(a=a, b=b, autojunk=False)
-    matched = sum(bl.size for bl in sm.get_matching_blocks())
-    return 1 - matched / max(1, len(a))
+    return wer_score(ref, hyp)  # numbers/hyphens normalised (common.wer_tokens)
 
 
 def edit_metrics(video):

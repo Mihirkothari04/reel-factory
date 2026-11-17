@@ -65,7 +65,10 @@ Rules:
 | `counter` | `value`, `fromValue`, `prefix`, `suffix`, `decimals`, `text` | numbers that count up as they are said |
 | `scene` | `type`, `props`, `x`, `y`, `w`, `h` | a boxed legacy component floating over footage |
 
-`at` = start phrase, `dur` (default 1.8 s) or `until` (phrase). Keep `y` clear of the caption line for that layout (split ≈ 925, full ≈ 1430, corner ≈ 1150, off ≈ 1480).
+`at` = start phrase, `dur` (default 1.8 s) or `until` (phrase). Keep `y` clear of the caption line for that layout (split ≈ 925, full ≈ 1430, close ≈ 1460, card ≈ 985, corner ≈ 1150, off ≈ 1480).
+- In `close` and `full`, put slams on the chest (y ≈ 940–980), never across the face (y 500–600).
+- Over white documents, give the shot a dark `bg` and put the slam in the dark letterbox, not on the page.
+- Stay out of Instagram's UI zones: the top ~200 px and the bottom ~350 px.
 
 ## 5. Looks (format bibles)
 

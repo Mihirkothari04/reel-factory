@@ -1,5 +1,21 @@
 # Knowledge-base changelog
 
+## 3.2.0 (2026-11-17): presenter wardrobe, number-aware WER
+
+- **Presenter outfits** (owner rule: a new outfit every reel, the same face, zero wasted credits):
+  - `storyboard.meta.presenter_look` picks a look in the host's avatar group, and `presenter.py` renders with it.
+  - `profile.json → looks` records `last_used`, so outfits rotate.
+  - The render cache key includes the look only when it differs from the default, so existing renders stay reusable.
+  - SKILL.md step 0 makes the outfit the first step before any presenter render: a reference image via `RF image`, then `create_look_remix` (1 credit), then `create_photo_avatar` in the host group.
+- **WER scoring** (voice gate and `rf qa`): spelled numbers, hyphens, slashes and thousands separators are normalised on both sides, so "forty-five" equals "45" and "9/11" equals "9 -11". A number-heavy take went from a false 9.3% FAIL to 1.6% PASS with the same audio.
+- **Lesson:** HeyGen plan credits round up per video. 7 windows totalling 39.6 s cost 12 credits, not 10.6, so fewer, longer presenter windows are cheaper.
+
+## 3.1.9 (2026-11-17): no more stalled captures
+
+- `rf shot <url>` used to hang forever. The first agent-browser call spawns its daemon, which inherited the output pipe, so `subprocess.run(capture_output, timeout)` never returned. Output now goes to a temp file, the call waits only on the CLI process, and the process is killed on timeout. A URL capture now takes about 12 s.
+- The topic-researcher has a hard no-stall rule: every external command runs under `timeout`, anything past 3 minutes is killed and replaced with a fallback, and the research file is written early.
+- MCP presenter notes (3.1.8): Avatar IV with `motionPrompt` is charged with no expressive-motion surcharge. Avatar 6 Turbo was tested and rejected.
+
 ## 3.1.6 (2026-11-16): source labels clear Instagram's UI
 
 - Studio shot labels: 210 px from the top in split boxes (clear of the "Reels" header) and 540 px from the bottom on full-height shots. That keeps them clear of the username/caption block and above the off-layout caption line (≈1480). Before, they sat 40 px from the edge, under Instagram's overlays.

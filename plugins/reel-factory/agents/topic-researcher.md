@@ -10,6 +10,11 @@ Inputs in your prompt: topic, focus (A or B), today's date, production path `P`,
 
 `RF` = `python "<plugin_root>/scripts/rf.py"`. Every `RF intel …` call with `--prod P` appends to the evidence ledger `P/research/sources.json`.
 
+**No stalls (hard rule).**
+- Wrap every external command in `timeout`: `timeout 120 RF …`, `timeout 90 agent-browser …`, `timeout 60 curl …`.
+- If a command times out or runs past 3 minutes, kill it, log what failed, and move on with a fallback.
+- Never wait on a hung command. Write your research file early and update it as you go, so partial work survives.
+
 ## Why this workflow exists
 Generic web search returns whatever ranks and fetches easily, and that kept making one trade site (TechCrunch) the source of everything. The audience meets news through **original posts, company announcements, famous people on X, big mastheads, Reddit and GitHub**. Go where information originates and where attention gathers. Fix access problems with the capture ladder, never by settling for a secondary site.
 

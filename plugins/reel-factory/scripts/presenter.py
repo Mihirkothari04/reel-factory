@@ -223,10 +223,10 @@ def hg_balance(H):
         return None
 
 
-def hg_render(H, prof, wav, motion, out, engine, stall_min=20):
+def hg_render(H, prof, wav, motion, out, engine, stall_min=20, look=None):
     """one HeyGen performance: our audio slice + per-beat motion direction -> transparent WebM (alpha)"""
     aid = requests.post(f"{HG}/v3/assets", headers=H, files={"file": (wav.name, open(wav, "rb"), "audio/wav")}, timeout=300).json()["data"]["asset_id"]
-    body = {"type": "avatar", "avatar_id": prof["heygen_avatar_id"], "engine": {"type": engine}, "audio_asset_id": aid,
+    body = {"type": "avatar", "avatar_id": look or prof["heygen_avatar_id"], "engine": {"type": engine}, "audio_asset_id": aid,
             "aspect_ratio": "9:16", "resolution": "1080p", "output_format": "webm", "title": f"rf {out.stem}",
             "motion_prompt": motion[:1200]}
     if engine == "avatar_iv":
@@ -267,6 +267,9 @@ def make_studio(prod, avatar=None, dry=False, jobs_only=False):
     if not prof.get("heygen_avatar_id"):
         raise SystemExit(f"avatar {name} has no heygen_avatar_id")
     sb = load_json(prod / "storyboard.json")
+    # outfit for this reel: a look in the host's avatar group (same face, new clothes); default = the original look
+    look = sb.get("meta", {}).get("presenter_look") or prof["heygen_avatar_id"]
+    look_salt = b"" if look == prof["heygen_avatar_id"] else look.encode()  # keeps keys of existing renders unchanged
     words = load_json(prod / "words.json")
     r = compile_studio(prod, sb, words)
     wins = presenter_windows(r["layouts"], r["duration"])
@@ -289,14 +292,14 @@ def make_studio(prod, avatar=None, dry=False, jobs_only=False):
             motion = (motion + " " + " Then ".join(mot)).strip()
         wav = pdir / f"w{i}.wav"
         run(["ffmpeg", "-y", "-v", "error", "-ss", f"{a:.3f}", "-to", f"{b:.3f}", "-i", vo, "-ar", "44100", "-ac", "1", wav])
-        key = hashlib.md5(wav.read_bytes() + motion.encode() + engine.encode()).hexdigest()[:12]
+        key = hashlib.md5(wav.read_bytes() + motion.encode() + engine.encode() + look_salt).hexdigest()[:12]
         out = pdir / f"w{i}-{key}.webm"
         rec.append({"start": a, "end": b, "src": f"presenter/{out.name}", "key": key, "motion": motion})
         if out.exists():
             continue  # identical audio + direction already rendered: never pay twice
         jobs.append((wav, motion, out, (b - a) * price))
     if jobs_only:
-        spec = {"avatar_id": prof["heygen_avatar_id"], "engine": engine, "aspect_ratio": "9:16", "resolution": "1080p",
+        spec = {"avatar_id": look, "engine": engine, "aspect_ratio": "9:16", "resolution": "1080p",
                 "output_format": "webm", "expressiveness": "medium" if engine == "avatar_iv" else None,
                 "jobs": [{"wav": str(w), "out": str(o), "motion": m[:1200], "seconds": round(c / price, 2)} for w, m, o, c in jobs]}
         save_json(pdir / "jobs.json", spec)
@@ -312,15 +315,17 @@ def make_studio(prod, avatar=None, dry=False, jobs_only=False):
         raise SystemExit(f"presenter: HeyGen wallet ${bal:.2f} < ${need:.2f} needed -> top up at platform.heygen.com")
     if jobs:
         with ThreadPoolExecutor(max_workers=3) as ex:
-            list(ex.map(lambda j: hg_render(H, prof, j[0], j[1], j[2], engine), jobs))
+            list(ex.map(lambda j: hg_render(H, prof, j[0], j[1], j[2], engine, look=look), jobs))
     for w in rec:
         if not (prod / "public" / w["src"]).exists():
             raise SystemExit(f"presenter: {w['src']} missing after render")
     spent = round(bal - (hg_balance(H) or bal), 2) if bal is not None and jobs else 0.0
     shutil.copy(d / prof.get("set", "set.jpg"), pdir / "set.jpg")
     sb = load_json(prod / "storyboard.json")
-    sb["presenter"] = {"name": name, "provider": "heygen", "engine": engine, "windows": rec, "set": "presenter/set.jpg", "usd": spent}
+    sb["presenter"] = {"name": name, "provider": "heygen", "engine": engine, "look": look, "windows": rec, "set": "presenter/set.jpg", "usd": spent}
     save_json(prod / "storyboard.json", sb)
+    prof.setdefault("looks", {}).setdefault(look, {})["last_used"] = {"date": time.strftime("%Y-%m-%d"), "prod": prod.name}  # wardrobe rotation
+    save_json(d / "profile.json", prof)
     with open(HOME / "spend.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps({"date": time.strftime("%Y-%m-%d %H:%M"), "prod": prod.name, "service": "heygen", "engine": engine,
                             "seconds": round(sum(j[3] for j in jobs) / price, 1), "usd": spent}) + "\n")

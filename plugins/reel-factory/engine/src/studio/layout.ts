@@ -22,7 +22,7 @@ export const GEO: Record<LayoutName, Geo> = {
   full: { ...base, ba: 0, set: 1, capY: 1430 },
   close: { ...base, ps: 1.34, px: -184, py: -120, ba: 0, set: 1, capY: 1460 },
   split: { ...base, py: 1000 + 34 - 280, clipTop: 1000, bh: 1000, set: 1, capY: 925 },
-  card: { ...base, bx: 56, by: 1040, bw: 968, bh: 560, br: 26, ba: 0, set: 1, capY: 1715, card: 1 },
+  card: { ...base, bx: 56, by: 1040, bw: 968, bh: 560, br: 26, ba: 0, set: 1, capY: 985, card: 1 }, // above the card: 1715 sat in IG's bottom UI zone
   corner: { ...base, ps: 0.62, px: 1080 - 0.62 * 1080 + 70, py: 1920 - 1480 * 0.62, bh: 1300, capY: 1150, shadow: 1 },
   "corner-left": { ...base, ps: 0.62, px: -70, py: 1920 - 1480 * 0.62, bh: 1300, capY: 1150, shadow: 1 },
 };

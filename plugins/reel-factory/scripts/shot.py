@@ -29,13 +29,19 @@ BLOCKED = ("just a moment", "attention required", "access denied", "are you a ro
 
 def ab(session, *args, headed=False, timeout=45):
     """one agent-browser call with a hard timeout (a wedged daemon must never hang the pipeline)"""
-    import shutil, subprocess
+    import shutil, subprocess, tempfile
     cmd = [shutil.which("agent-browser") or "agent-browser", "--session", session] + (["--headed"] if headed else []) + [str(x) for x in args]
-    try:
-        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout)
-        return (r.stdout or "") + (r.stderr or "")
-    except subprocess.TimeoutExpired:
-        return "TIMEOUT"
+    # Output goes to a temp file, not a pipe: the first call spawns the agent-browser daemon, which inherits the
+    # handles and keeps a pipe open forever, so subprocess.run(capture_output=..., timeout=...) never returns.
+    with tempfile.TemporaryFile() as f:
+        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
+        try:
+            p.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            p.kill()
+            return "TIMEOUT"
+        f.seek(0)
+        return f.read().decode("utf-8", "replace")
 
 
 def capture(url, out, focus=None):

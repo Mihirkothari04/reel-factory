@@ -90,5 +90,56 @@ def norm_tok(w):
     return re.sub(r"[^a-z0-9]", "", w.lower())
 
 
+_UNITS = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+                                     "fifteen sixteen seventeen eighteen nineteen".split())}
+_TENS = {w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if w != "_"}
+_SCALES = {"thousand": 1000, "million": 10 ** 6, "billion": 10 ** 9}
+
+
+def wer_tokens(words):
+    """Tokens for word-error-rate scoring: the script says 'forty-five', 'decades-old', '9/11';
+    Whisper writes '45', 'decades -old', '9 -11'. Split on hyphens and slashes, drop thousands separators,
+    split '4pm', and turn spelled-out numbers into digits so both sides compare equal."""
+    toks = []
+    for w in words:
+        for t in re.split(r"[-/\s]+|(?<=\d)(?=[a-z])", w.lower().replace(",", "")):
+            t = re.sub(r"[^a-z0-9]", "", t)
+            if t:
+                toks.append(t)
+    out, cur, total, num = [], 0, 0, False
+    for t in toks + [""]:
+        if t in _UNITS or t in _TENS:
+            cur, num = cur + _UNITS.get(t, _TENS.get(t, 0)), True
+        elif t == "hundred" and num:
+            cur = max(cur, 1) * 100
+        elif t in _SCALES and num:
+            total, cur = total + max(cur, 1) * _SCALES[t], 0
+        else:
+            if num:
+                out.append(str(total + cur))
+            cur, total, num = 0, 0, False
+            if t:
+                out.append(t)
+    return out
+
+
+def wer_score(ref_words, hyp_words):
+    """1 - matched/len(ref) on normalised tokens (see wer_tokens)."""
+    import difflib
+    a, b = wer_tokens(ref_words), wer_tokens(hyp_words)
+    sm = difflib.SequenceMatcher(a=a, b=b, autojunk=False)
+    return 1 - sum(bk.size for bk in sm.get_matching_blocks()) / max(1, len(a))
+
+
+if __name__ == "__main__":
+    assert wer_tokens(["thirty-five", "hundred"]) == ["3500"]
+    assert wer_tokens(["eighteen", "thousand"]) == wer_tokens(["18,000"]) == ["18000"]
+    assert wer_tokens(["forty-five"]) == ["45"] and wer_tokens(["4pm,"]) == ["4", "pm"]
+    assert wer_tokens(["9/11,"]) == wer_tokens(["9", "-11,"]) == ["9", "11"]
+    assert wer_tokens(["decades-old"]) == wer_tokens(["decades", "-old"])
+    assert wer_score("four to five seconds".split(), "4 -5 seconds".split()) == 0.25  # only 'to' is missing (1 of 4 ref tokens)
+    print("common ok")
+
+
 def slugify(s, n=48):
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:n] or "reel"

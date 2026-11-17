@@ -19,7 +19,7 @@ Writes public/vo.mp3, words.json [{w, s, e, scene, para}], public/vo_raw.mp3 + w
 """
 import argparse, asyncio, base64, difflib, json, re
 from pathlib import Path
-from common import config, duration, eleven, eleven_ok, load_json, log, norm_tok, run, save_json, whisper
+from common import config, duration, eleven, eleven_ok, load_json, log, norm_tok, run, save_json, wer_score, whisper
 
 TAG = re.compile(r"\[[^\]]{1,40}\]")
 # corpus targets (89 English reference reels, medians/IQR): see references/voice.md
@@ -383,7 +383,7 @@ def report(prod, words, audio, seg_bounds, mode, asr=None):
     a_t = [norm_tok(w["w"]) for w in words]
     b_t = [norm_tok(t) for t, _, _ in asr]
     sm = difflib.SequenceMatcher(a=a_t, b=b_t, autojunk=False)
-    wer = 1 - sum(bk.size for bk in sm.get_matching_blocks()) / max(1, len(a_t))
+    wer = wer_score([w["w"] for w in words], [t for t, _, _ in asr])  # numbers/hyphens normalised (common.wer_tokens)
     misheard = [" ".join(w["w"] for w in words[i1:i2]) + " → " + " ".join(t for t, _, _ in asr[j1:j2])
                 for op, i1, i2, j1, j2 in sm.get_opcodes() if op == "replace" and i2 - i1 <= 3][:12]
     m = {"duration": round(dur, 2), "wpm": round(len(words) / dur * 60), "artic_wpm": round(len(words) / max(1e-6, speech) * 60),
