@@ -5,7 +5,7 @@ usage:
         list candidate clips (title, channel/author, duration, licence, url). Pick the one that shows exactly what the
         narration says at that moment — the person, the product, the event — not something merely related.
   rf footage get <url> --prod DIR --name NAME [--start S] [--dur D] [--label "CNBC"]
-        download a short section (default 6 s), muted, H.264, ≤1080p -> <prod>/public/footage/NAME.mp4 and record it in
+        download a short section (default 6 s), muted (--audio keeps the sound, for soundbites), H.264, ≤1080p -> <prod>/public/footage/NAME.mp4 and record it in
         <prod>/footage.json (url, label, licence). Use the label as the shot's `label` chip ("Source: CNBC").
 
 Policy (owner decision 2026-11-14): official/press media and free-licence stock first; news and YouTube clips of
@@ -76,7 +76,7 @@ def find_archive(q, n):
 FINDERS = {"youtube": find_youtube, "commons": find_commons, "nasa": find_nasa, "archive": find_archive}
 
 
-def get(url, prod, name, start=0.0, dur=6.0, label=None):
+def get(url, prod, name, start=0.0, dur=6.0, label=None, audio=False):
     prod = Path(prod)
     out = prod / "public" / "footage" / f"{name}.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -97,13 +97,13 @@ def get(url, prod, name, start=0.0, dur=6.0, label=None):
             raise SystemExit(f"footage: download failed: {(r.stderr or r.stdout)[-400:]}")
         start = 0.0  # the section download already starts at `start`
     vf = "scale='min(1920,iw)':-2:flags=lanczos,fps=30,format=yuv420p"
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{start:.2f}", "-i", str(tmp), "-t", f"{dur:.2f}", "-an", "-vf", vf,
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{start:.2f}", "-i", str(tmp), "-t", f"{dur:.2f}", *(["-c:a", "aac", "-b:a", "160k", "-ac", "2", "-ar", "44100"] if audio else ["-an"]), "-vf", vf,
                     "-c:v", "libx264", "-crf", "18", "-preset", "medium", "-movflags", "+faststart", str(out)], check=True)
     tmp.unlink(missing_ok=True)
     pr = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", str(out)], capture_output=True, text=True).stdout.strip()
     w, h = (int(x) for x in pr.split(",")[:2])
     rec = load_json(prod / "footage.json") if (prod / "footage.json").exists() else {}
-    rec[name] = {"url": url, "label": label, "src": f"footage/{name}.mp4", "start": start, "dur": dur, "aspect": round(w / h, 4)}
+    rec[name] = {"url": url, "label": label, "src": f"footage/{name}.mp4", "start": start, "dur": dur, "aspect": round(w / h, 4), "audio": audio}
     save_json(prod / "footage.json", rec)
     log(prod, f"footage: {name} <- {url} ({dur:.1f}s, {w}x{h}{', label ' + label if label else ''})")
     print(json.dumps({"kind": "video", "src": rec[name]["src"], "aspect": rec[name]["aspect"], "fit": "cover" if w / h < 0.8 else "blurfill", **({"label": label} if label else {})}))
@@ -115,6 +115,7 @@ def main():
     f = sub.add_parser("find"); f.add_argument("q"); f.add_argument("--source", default="all"); f.add_argument("--n", type=int, default=6)
     g = sub.add_parser("get"); g.add_argument("url"); g.add_argument("--prod", required=True); g.add_argument("--name", required=True)
     g.add_argument("--start", type=float, default=0.0); g.add_argument("--dur", type=float, default=6.0); g.add_argument("--label")
+    g.add_argument("--audio", action="store_true", help="keep the clip sound (for a storyboard soundbite)")
     a = ap.parse_args()
     if a.cmd == "find":
         res = []
@@ -125,7 +126,7 @@ def main():
                 print(f"{s}: {str(e)[:120]}", file=sys.stderr)
         print(json.dumps(res, indent=1, ensure_ascii=False))
     else:
-        get(a.url, a.prod, a.name, a.start, a.dur, a.label)
+        get(a.url, a.prod, a.name, a.start, a.dur, a.label, a.audio)
 
 
 if __name__ == "__main__":

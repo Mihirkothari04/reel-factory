@@ -32,8 +32,11 @@ export type Gfx = {
   id: string;
   from: number;
   to: number;
-  kind: "sticker" | "label" | "slam" | "scene" | "counter";
+  kind: "sticker" | "label" | "slam" | "scene" | "counter" | "callout";
   src?: string; // sticker image (cutout png)
+  strike?: boolean; // sticker: red slash drawn across it after ~0.35 s (a rival's logo crossed out)
+  icon?: string; // label: small logo before the text (brand pill)
+  tx?: number; ty?: number; // callout: the point the leader line points at (frame px); x,y = the tag
   text?: string;
   sub?: string;
   x?: number; y?: number; w?: number; h?: number; // frame px (1080x1920)

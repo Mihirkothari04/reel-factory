@@ -22,6 +22,7 @@ The reference reels are layered, not sequenced. A presenter performs continuousl
   - "shrugs, open palms".
 
   Match the emotion of the line, vary it beat to beat, and never make it theatrical.
+  - Every presenter window must get a different gesture. A beat whose layout list opens two presenter windows (e.g. `close` → `off` → `close`) would otherwise send the same prompt twice. Put `"motion"` on those layout entries instead; it replaces the beat motion for the window that entry opens.
 - Disclose in the caption ("AI-generated presenter"). Meta also asks for the "AI info" label on photoreal AI video.
 
 ## 2. Layouts (presenter framings)
@@ -55,6 +56,21 @@ Rules:
 
 `enter`: `cut` (default; most changes should be hard cuts on a word), `whip`, `zoom`, `blur`, `slide`, `flash`. Use `whip`/`zoom` for section changes, `flash` for impacts. Transition SFX are added automatically.
 
+### Soundbites: real people speaking with their own voice (owner rule 2026-11-24)
+
+Muted cut-aways under the narration are not enough. When the story has real people reacting (experts, the person named, a famous commentator), the reference reels **stop the narration and let them speak**: the clip fills the frame, its own sound plays, and their words are captioned (the Fields medallist crying, Strogatz, Tao in batch samples). Use 2–3 per reel, 3–7 s each, at the beats they amplify (after the hook's stake, on "no one understands it", before the verdict).
+
+```json
+"soundbites": [{"after": "one hundred sixty-seven years.", "src": "footage/sb-greene-c.mp4", "trim": 0.1, "dur": 6.8,
+                "label": "World Science Festival · Brian Greene", "fit": "cover",
+                "text": "What may be one of the greatest mathematical breakthroughs in the past two centuries."}]
+```
+- Source: `RF footage get <url> … --audio` keeps the sound. Pick a span where the speaker is **on camera the whole time** (no cut-away to b-roll), then crop tight on the speaker (≈ 9:16 around the face; a split-screen news panel → crop the panel, `fit` blurfill/cover). Find the line in a local Whisper transcript of the audio-only copy; choose a complete sentence.
+- `after` = the narration phrase the soundbite follows (its last word). Put it where the presenter is **off** (or ≤ 0.45 s before his next window opens): `rf build` warps the timeline there, splices the clip sound into `public/vo_sb.mp3` and leaves `vo.mp3` untouched, so presenter renders are reused (0 new credits). A soundbite deep inside a presenter window stops the build.
+- Each clip is normalised to about the narration level; a hot speaker gets `"gain": -3` (dB). Check per-segment loudness after render.
+- `text` = the verified wording for the captions (Whisper mishears endings and names). Captions and music ducking use it automatically; `rf qa` adds it to the WER reference.
+- Label every soundbite with outlet + person + role. Never put an old interview under a new claim: the person must be talking about this story.
+
 ## 4. Graphics (gfx track, over everything)
 
 | kind | fields | use |
@@ -64,6 +80,8 @@ Rules:
 | `slam` | `text`, `sub`, `y`, `h` (font px), `color` | 1–3 display words that land on a stressed word ("CHINESE SPY", "FREE") |
 | `counter` | `value`, `fromValue`, `prefix`, `suffix`, `decimals`, `text` | numbers that count up as they are said |
 | `scene` | `type`, `props`, `x`, `y`, `w`, `h` | a boxed legacy component floating over footage |
+
+Optional extras (used by the subject categories in `categories/`; harmless elsewhere): `sticker` + `"strike": true` (a red slash crosses it out ~0.35 s after it lands), `label` + `"icon": "<logo path>"` (logo pill), and kind `callout` with `text`, `x`, `y` (the tag) and `tx`, `ty` (the point its leader line names).
 
 `at` = start phrase, `dur` (default 1.8 s) or `until` (phrase). Keep `y` clear of the caption line for that layout (split ≈ 925, full ≈ 1430, close ≈ 1460, card ≈ 985, corner ≈ 1150, off ≈ 1480).
 - In `close` and `full`, put slams on the chest (y ≈ 940–980), never across the face (y 500–600).

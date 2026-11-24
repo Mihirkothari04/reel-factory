@@ -17,6 +17,7 @@ The plugin is never finished. Every batch of reference reels goes through `/reel
 | Discrete techniques | `techniques.md` | every technique: id, evidence count, modes, **where implemented** (engine/script/guide/avoid) |
 | Evidence | `corpus.md`, `corpus-notes.md`, `corpus-analysis.md` | every analysed reel by mode; per-reel notes; batch-01 synthesis |
 | Research | `research.md` | trend scoring, research protocol, facts format |
+| Subject categories | `categories/INDEX.md`, `categories/<id>.md` | construction specific to one kind of subject (agent skills, repos, OSS alternatives, top-N lists); read only for a matching reel, never merged into the general files |
 | Change history | `CHANGELOG.md` | what each batch/version added, and why |
 | Production lessons | `~/.reel-factory/learnings.md` (runtime, not in the plugin) | lessons from our own productions; read every run |
 
@@ -42,6 +43,7 @@ nothing new → corpus.md row only ("confirms <mode>/<skeleton>")
 ```
 
 Rules:
+- **Scope before you write (owner rule, 2026-11-17).** First ask: does this finding hold for *every* kind of reel, or only for one subject category (dev tools, news, …)? Category-only findings go into `categories/<id>.md` (create the category if a batch is built around one), never into the general files (playbook, hooks, formats, modes, techniques, studio). A batch dominated by one niche must not reshape how other reel types are built.
 - **No duplicates.** Search `techniques.md`, `hooks.md` and the mode playbooks before writing; strengthen an entry instead of adding a twin.
 - **A mode is a pipeline, not a look.** A new theme or caption style is never a mode; it goes into art-direction.md.
 - **Evidence or it didn't happen.** Every addition cites the reel(s) (creator + topic, batch).

@@ -131,7 +131,106 @@ def wer_score(ref_words, hyp_words):
     return 1 - sum(bk.size for bk in sm.get_matching_blocks()) / max(1, len(a))
 
 
+_SCALE_TOK = {"k": 1e3, "thousand": 1e3, "m": 1e6, "million": 1e6, "b": 1e9, "billion": 1e9}
+_NUM_RE = re.compile(r"(?<![\w.:])(\d[\d,]*(?:\.\d+)?)\s*(k|m|b|thousand|million|billion)?(?![\w:])", re.I)  # not clock times
+
+
+def numbers(text):
+    """Every number a text states, as floats: digits ('20,000', '45K', '33.5k', '1.2 billion') and spoken words
+    ('forty-five thousand', 'one point two billion')."""
+    vals = {float(n.replace(",", "")) * _SCALE_TOK.get((s or "").lower(), 1) for n, s in _NUM_RE.findall(text or "")}
+    toks = wer_tokens(re.sub(r"\d+:\d+|\d+\.\d+\s*[a-zA-Z]*", " ", text or "").split())  # times dropped; decimals read above
+    i = 0
+    while i < len(toks):
+        if toks[i].isdigit():
+            v = float(toks[i])
+            if i + 2 < len(toks) and toks[i + 1] == "point" and toks[i + 2].isdigit():  # "one point two billion" -> 1, point, 2000000000
+                b = int(toks[i + 2])
+                sc = next((sc for sc in (10 ** 9, 10 ** 6, 10 ** 3) if b >= sc and b % sc == 0 and b // sc < 10), None)
+                v = (v + (b // sc) / 10) * sc if sc else v + b / 10 ** len(str(b))
+                i += 2
+            elif i + 1 < len(toks) and toks[i + 1] in _SCALE_TOK:
+                v *= _SCALE_TOK[toks[i + 1]]
+                i += 1
+            vals.add(v)
+        i += 1
+    return vals
+
+
+_NOT_SHOWN = {"vo", "cue", "at", "until", "motion", "src", "shot", "id", "layout", "look", "enter", "fit", "type", "kind", "markStyle",
+              "url", "icon", "highlight", "tts", "say", "cam", "dur", "x", "y", "w", "h", "tx", "ty", "rot", "color", "bg", "trim", "from", "to"}
+
+
+def _shown(o, key=None):
+    """on-screen strings of a storyboard subtree (skips timing, paths, direction)"""
+    if isinstance(o, dict):
+        for k, v in o.items():
+            if k not in _NOT_SHOWN:
+                yield from _shown(v, k)
+    elif isinstance(o, list):
+        for v in o:
+            yield from _shown(v, key)
+    elif isinstance(o, str):
+        yield o
+    elif isinstance(o, (int, float)) and key in ("value", "stars", "num"):
+        yield str(o)
+
+
+def consistency_issues(sb):
+    """Numbers and the CTA keyword must agree across voice-over, screen and caption (batch-04: 7 of 100 reference reels
+    contradict themselves, e.g. VO '20k stars' vs caption '22k'). Rounding within 7 % is allowed ('40K' for 42.5k)."""
+    spoken = " ".join(p.get("text", "") for p in sb.get("narration") or []) or " ".join(s.get("vo", "") for s in sb.get("scenes", []))
+    screen = " | ".join(_shown(sb.get("scenes", []))) + " | " + " | ".join(_shown((sb.get("meta") or {}).get("hookTitle")))
+    caption = sb.get("caption", "")
+    S, C = numbers(spoken), numbers(caption)
+    fmt = lambda v: f"{v:,.0f}" if v == int(v) else f"{v:,.2f}".rstrip("0")
+    close = lambda a, b: abs(a - b) / max(a, b) <= 0.07
+    near = lambda a, b: 0.07 < abs(a - b) / max(a, b) <= 0.4
+    # ponytail: any whole number 1000-2100 counts as a calendar year ("1859", "2026") and is not compared as a quantity;
+    # a real count in that range (e.g. 1,900 stars) is skipped too. Track the source format if that ever matters.
+    year = lambda v: v == int(v) and 1000 <= v <= 2100
+    S = {v for v in S if not year(v)}
+    C = {v for v in C if not year(v)}
+    out = []
+    for name, vals in (("screen", numbers(screen)), ("caption", C)):
+        for x in sorted(v for v in vals if v >= 100 and not year(v)):
+            if any(close(x, y) for y in S):
+                continue
+            y = next((y for y in sorted(S) if y >= 100 and near(x, y)), None)
+            if y is not None:
+                out.append(f"{name} says {fmt(x)} but the voice-over says {fmt(y)}")
+            elif name == "screen" and (y := next((y for y in sorted(C) if y >= 100 and near(x, y)), None)) is not None:
+                out.append(f"screen says {fmt(x)} but the caption says {fmt(y)}")
+    kws = set()
+    stack = [sb.get("scenes", [])]
+    while stack:
+        o = stack.pop()
+        if isinstance(o, dict):
+            if isinstance(o.get("keyword"), str) and o["keyword"].strip():
+                kws.add(o["keyword"].strip())
+            stack += list(o.values())
+        elif isinstance(o, list):
+            stack += o
+    for kw in sorted(kws):
+        for name, text in (("voice-over", spoken), ("caption", caption)):
+            if text and not re.search(rf"(?<!\w){re.escape(kw)}(?!\w)", text, re.I):
+                out.append(f"CTA keyword {kw!r} is shown but not in the {name}")
+    return out
+
+
 if __name__ == "__main__":
+    assert numbers("forty-five thousand stars and 20k forks") >= {45000.0, 20000.0}
+    assert not numbers("13 Nov, 4:16 PM") & {416.0, 16.0, 4.0}  # clock times are not quantities
+    assert not consistency_issues({"narration": [{"text": "In 1859 Riemann guessed it."}], "caption": "1859 to 2026",
+                                   "scenes": [{"gfx": [{"kind": "label", "text": "Riemann (1826-1866)"}]}]})  # years
+    assert 1.2e9 in numbers("one point two billion people") and 1.2e9 in numbers("1.2 billion") and 33500.0 in numbers("33.5k")
+    sb = {"narration": [{"text": "It has twenty thousand stars. Comment REPO and I'll send it."}],
+          "scenes": [{"id": "s1", "vo": "x", "shots": [{"at": "stars", "kind": "image", "src": "shot-a-111.png", "label": "★ 22,000"}],
+                      "gfx": [{"at": "send", "kind": "scene", "type": "cta", "props": {"kind": "comment", "keyword": "REPO"}}]}],
+          "caption": "40K devs use it. Comment LINK for the link."}
+    iss = consistency_issues(sb)
+    assert any("22,000" in i and "20,000" in i for i in iss) and any("'REPO'" in i and "caption" in i for i in iss), iss
+    assert not any("111" in i for i in iss) and not any("40,000" in i for i in iss), iss  # paths ignored; 40K unrelated (>40 % off)
     assert wer_tokens(["thirty-five", "hundred"]) == ["3500"]
     assert wer_tokens(["eighteen", "thousand"]) == wer_tokens(["18,000"]) == ["18000"]
     assert wer_tokens(["forty-five"]) == ["45"] and wer_tokens(["4pm,"]) == ["4", "pm"]

@@ -1,5 +1,66 @@
 # Knowledge-base changelog
 
+## 3.6.0 (2026-11-24): soundbites (real people speaking with their own voice)
+
+- Owner: "use actual video clips… there was no voice and focus in the video clips." The references let real people speak on camera; our footage was muted b-roll under narration.
+- New storyboard `soundbites` (studio.md §3): the narration pauses after a phrase, the clip plays full-frame with its own sound and captions. `rf footage get --audio` keeps the sound. `studio.soundbite_plan / apply_soundbites / soundbite_audio` warp the compiled timeline at build time only and write `public/vo_sb.mp3`; `vo.mp3` and presenter renders are untouched (0 new HeyGen credits). Optional `text` fixes ASR wording in captions. `rf qa` includes soundbite speech in the WER reference. Selftest in studio.py.
+- First used on the Riemann reel: Brian Greene (World Science Festival), Jon Keating (Numberphile), Tony Padilla (FRANCE 24).
+
+## 3.5.3 (2026-11-24): consistency check ignores calendar years
+
+- `common.consistency_issues` compared years as quantities ("screen says 1,859 but the caption says 2,026" on the Riemann reel). Whole numbers 1000–2100 now count as years and are skipped; selftest added.
+- HeyGen MCP note: the create call's default engine is now Avatar 6 Turbo. Always pass `engine: {"type": "avatar_iv"}` (measured 16 credits/min, rounded up per video: 9 windows / 40.7 s = 12 credits).
+
+## 3.5.2 (2026-11-24): outfit route re-measured; 3.4.1 was wrong
+
+- 3.4.1 priced `create_look_remix` at 1 credit without measuring it. HeyGen bills heygen-image-1 at $0.28 per image (≈ 6 credits); the Riemann reel's outfit cost remix + photo avatar = **7 credits** (570 → 563).
+- SKILL.md step 0 now uses the measured cheapest route: `create_image` edit of the base look (2) + `create_photo_avatar` (1) = **3 credits**. `create_look_remix` is banned. Check the balance before and after every paid HeyGen step, and stop and tell the owner when it drops more than quoted.
+
+## 3.5.1 (2026-11-23): use the routine's decoded links
+
+- When the routine's `stories.json` link carries `decoded` (a destination decoded offline in the cloud), `rf news` uses it and skips network resolution.
+
+## 3.5.0 (2026-11-23): newsletter intel (`rf news`)
+
+- New `scripts/news.py`, run as `rf news`. It ingests the owner's daily Gmail-newsletter routine ZIP (`*_AI-Tech-Newsletters.zip` in ~/Downloads):
+  - extracts it safely (zip-slip guard);
+  - dedups emails by Gmail message ID across days;
+  - parses stories from the routine's `stories.json`, or from the digest .md as a fallback;
+  - resolves substack/beehiiv tracking redirects to real URLs (HTTP plus meta-refresh, with a cache);
+  - downloads images the cloud run could not fetch;
+  - links the same story across days into threads.
+- Commands:
+  - `rf news leads`: threads ranked by distinct-newsletter coverage, for momentum.
+  - `rf news grep`: searches stories and raw email bodies, for research.
+  - `rf news selftest`.
+- Store: `config.json → news.dir`. Wired into trend-scout (step 1b), topic-researcher (A0, B3), research.md and SKILL.md stage 1. Newsletter text is a lead only and is never ledgered as a source or shown on screen.
+
+## 3.4.1 (2026-11-18): outfit route corrected to the cheapest
+
+- 3.4.0 made the HeyGen `create_image` edit the default outfit route (3 credits). That was wrong: a free reference photo + `create_look_remix` (1) + `create_photo_avatar` (1) = **2 credits** is the default now. `create_image` needs the owner's OK, and a failed cheap step means asking before any costlier route. (Owner: zero wasted credits; the design-skills reel spent 1 credit more than needed.)
+
+## 3.4.0 (2026-11-18): new pose with every outfit; a different gesture for every window
+
+From the first `agent-skill` + `top-n` production (Claude design skills).
+- **Outfit step (SKILL.md stage 7, step 0).** The verified route is HeyGen `create_image` (nano-banana-2.1) editing the base look's preview URL, then a 2× upscale, then `create_photo_avatar` in the host group: 3 credits in all. Owner rule: the same edit also changes the **resting pose**, so each reel has a new outfit and a new pose at no extra cost. ElevenLabs Flows images need the Pro plan; a free-licence reference with `create_look_remix` remains the fallback.
+- **Per-layout `motion`** (`studio.py`, `presenter.py`, studio.md). A beat whose layout list opens two presenter windows used to send the same gesture prompt twice. A layout entry can now carry `"motion"`, which replaces the beat motion for the window it opens. Reels without layout-level motion are unaffected: same cache keys, `jobs: []`.
+
+## 3.3.0 (2026-11-17): batch-04 → subject categories (dev-tool reels), consistency check
+
+**Corpus:** "AI Dev Tools Reels" Parts 01–02 (100 files) → 42 new + 58 already in the library. All 100 `.md` files (captions, links, on-screen text) were mined, including the known reels. 9 parallel analysts; notes in `analysis/notes/batch-04-*.md`.
+
+**Added: a category layer** (`references/categories/`), read only when a reel's subject matches:
+- `agent-skill` (skills / plugins / MCP servers for a task), `github-repo`, `oss-alternative` (villain-first beat order), `top-n` (list COMMIT devices, item grammar, recap).
+- `INDEX.md` explains *why* dev-tool reels are built differently from incident/news reels (the viewer shops for a tool vs. wants to understand an event). Category devices are never applied to other reel types.
+- SKILL.md: category chosen in the brief (`meta.category`); script-critic checks category fidelity only when it is set. README: a "scope before you write" rule for future `/reel-learn` runs.
+- The general files (playbook, hooks, formats, modes, techniques) are unchanged by this batch.
+
+**Engine (optional studio gfx, no effect unless used):** `sticker.strike` (red slash across a rival logo), `label.icon` (logo pill), kind `callout` (tag + leader line to `tx,ty`). Typechecked; still rendered and inspected.
+
+**Scripts:**
+- `common.consistency_issues`: numbers (≥ 100, rounding ≤ 7 % allowed, clock times ignored) and the CTA keyword must agree across VO, screen and caption. `rf build` logs a warning; `rf qa` reports a non-blocking check. 7 of the 100 reference reels contradict themselves; our 3 shipped reels pass.
+- `rf ingest`: library reels from older batches were stored with paths relative to the project root, so fine-hash verification couldn't find them and returned 0.00. 9 known reels were then mislabelled as new. Sources now resolve against `--source-root` or the cwd; if one is still missing, the coarse verdict stands with a warning.
+
 ## 3.2.0 (2026-11-17): presenter wardrobe, number-aware WER
 
 - **Presenter outfits** (owner rule: a new outfit every reel, the same face, zero wasted credits):

@@ -10,6 +10,7 @@ Inputs in your prompt: today's date, the plugin root, the output path for trends
 
 ## Method
 1. Hard signals: run `python "<plugin_root>/scripts/rf.py" trends --days 7 --out <path>` (and `--days 3` for very fresh items). Read the ranked list. **Cross-source convergence is the strongest signal.**
+1b. Newsletter leads: run `python "<plugin_root>/scripts/rf.py" news ingest`, then `... news leads --days 3` (add `--json` for every link). These are stories from the owner's AI/tech newsletter subscriptions, ranked by **distinct newsletters covering them** (convergence), with real outlet or official URLs. Use them as candidates and as momentum evidence, written as "covered by N newsletters". Every fact needs a source you opened, because newsletter text is a claim, not verification.
 2. Attention signals:
    - `rf intel news "<lab or theme>" --days 3`: press volume, and which mastheads covered it.
    - `rf intel feeds "" --tier official --days 3`: what the labs actually announced.

@@ -15,7 +15,7 @@ usage: rf build <prod_dir>
 import re, shutil, subprocess, sys
 from pathlib import Path
 import numpy as np
-from common import HOME, PLUGIN, config, load_json, log, save_json
+from common import HOME, PLUGIN, config, consistency_issues, load_json, log, save_json
 
 TAIL = 1.4  # hold after last word (CTA readable)
 ENTER_SFX = {"push": ("whoosh", 0.28), "slide": ("swipe", 0.35), "pop": ("pop", 0.45), "blur": ("swipe", 0.3), "cut": None}
@@ -143,23 +143,29 @@ def silent_timing(sb, prod):
 
 def build_studio(prod, sb, cfg):
     """engine "studio": layered timeline (presenter layer + layouts + shots + graphics) -> props for the Studio composition"""
-    from studio import compile_studio
+    from studio import compile_studio, soundbite_plan, apply_soundbites, soundbite_audio
     words = load_json(prod / "words.json")
     r = compile_studio(prod, sb, words)
     pub = prod / "public"
+    # soundbites: warp voice-over time -> reel time here only (presenter renders stay keyed to the untouched vo.mp3)
+    sbs = soundbite_plan(prod, sb, words)
+    pres = dict(sb.get("presenter") or {})
+    r, words, wins = apply_soundbites(r, words, pres.get("windows"), sbs)
+    if sbs:
+        pres["windows"] = wins
+        log(prod, "build: soundbites " + ", ".join(f"{s['src']} {s['dur']:.1f}s after '{s['after']}'" for s in sbs))
     (pub / "sfx").mkdir(parents=True, exist_ok=True)
     for f in (HOME / "sfx").glob("*.wav"):
         shutil.copy2(f, pub / "sfx" / f.name)
     meta = {k: v for k, v in sb["meta"].items() if k in ("title", "look", "accent", "captionStyle", "handle", "grain")}
     meta.setdefault("look", "studio")
-    pres = sb.get("presenter") or {}
     layouts = r["layouts"]
     if any(e["layout"] != "off" for e in layouts) and not pres.get("windows"):
         log(prod, "build WARNING: presenter layouts used but no presenter windows (run rf presenter P) -> presenter hidden")
         layouts = [{"t": 0, "layout": "off"}]
     sfx = r["sfx"] + [{"t": round(max(0, r["bounds"][s["id"]][0] - 1.15), 3), "name": "riser", "vol": 0.28} for s in sb["scenes"] if s.get("rehook")]
     props = {"meta": meta, "durationSec": r["duration"], "fps": 30,
-             "audio": {"vo": "vo.mp3", "sfx": sorted(sfx, key=lambda c: c["t"]),
+             "audio": {"vo": soundbite_audio(pub, sbs) if sbs else "vo.mp3", "sfx": sorted(sfx, key=lambda c: c["t"]),
                        **({"music": "music.mp3"} if (pub / "music.mp3").exists() else {}),
                        "musicVolume": sb.get("musicVolume", 0.26), "duckTo": sb.get("duckTo", 0.09)},
              "words": [{"w": w["w"], "s": w["s"], "e": w["e"]} for w in words],
@@ -178,6 +184,8 @@ def main():
     prod = Path(sys.argv[1])
     sb = load_json(prod / "storyboard.json")
     cfg = config()
+    for msg in consistency_issues(sb):  # fix in storyboard/caption before render (cheap now, re-render later)
+        log(prod, f"build: WARNING consistency — {msg}")
     if sb.get("meta", {}).get("engine") == "studio":
         return build_studio(prod, sb, cfg)
     brand = cfg.get("brand", {})

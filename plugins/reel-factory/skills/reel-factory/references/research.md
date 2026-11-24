@@ -3,6 +3,7 @@
 ## Trend discovery (Mode 1)
 
 1. **Hard signals:** `python "${CLAUDE_PLUGIN_ROOT}/scripts/rf.py" trends --days 7 --out <prod_root>/trends.json` covers GitHub new repos by star velocity, GitHub trending (daily and weekly), Hacker News, Hugging Face trending models, and Lobsters, with spam filtering and cross-source convergence scoring.
+1b. **Newsletter leads:** `rf news ingest` (picks up any new daily `*_AI-Tech-Newsletters.zip` from ~/Downloads; no-op when nothing is new), then `rf news leads --days 3`. It lists stories from the user's subscribed AI/tech newsletters, ranked by how many **distinct newsletters** covered each one across days, with tracking links already resolved to the real outlet or official URL. Several newsletters on one story counts as convergence for *momentum*. The rows are newsletter claims and only leads: open the real link and confirm the date and facts before scoring *verifiability*.
 2. **Soft signals (web search):** AI and tech news from the last 7 days (major-lab launches, model releases, big open-source drops), what AI creators are posting on Instagram, TikTok, YouTube Shorts, and X, Reddit discussions (r/LocalLLaMA, r/ClaudeAI, r/ChatGPT, r/singularity), and Product Hunt top launches. Run several searches with different phrasings and include the current month and year.
 3. **Score each candidate 1–5** on: *novelty* (≤14 days old; ≤7 is better), *momentum* (stars/day, HN points, number of independent sources: **convergence is the strongest signal**), *audience value* (free, saves time or money, solves a felt pain, wow outcome), *visualisability* (can we *show* it?), *verifiability* (primary source exists), *saturation risk* (already covered to death? find a fresh angle or skip), *brand safety*.
 4. Return the **top 3** with evidence links and a recommended pick plus format. The orchestrator decides without asking the user.
@@ -20,6 +21,7 @@ Skip: spam or malware-lure repos (fake stars, "Pro 2026 standalone installer"), 
      - the official X posts of the company, CEO, founders and researchers (`rf intel handles`, then `rf intel x <url>`: text, date, verified, likes, replies);
      - repos (`rf intel repo`: stars, star velocity, releases, contributors), papers (`rf intel papers`), docs and help pages (`rf intel read`).
      - Gather exact numbers, mechanism, limitations and demo assets.
+     - Start with `rf news grep "<topic keywords>" --days 14`. The user's newsletters often name the primary links (official blog, changelog, repo, paper), already resolved. Follow each one to the original. Never ledger a newsletter as the source for a claim.
    - **B, Coverage & Community:**
      - press breadth (`rf intel news`: Google News across hundreds of publishers; prefer press-tier mastheads);
      - reactions with engagement (`rf intel reddit`, `rf intel hn`, notable X posts);

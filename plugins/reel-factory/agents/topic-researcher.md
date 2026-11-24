@@ -19,6 +19,7 @@ Inputs in your prompt: topic, focus (A or B), today's date, production path `P`,
 Generic web search returns whatever ranks and fetches easily, and that kept making one trade site (TechCrunch) the source of everything. The audience meets news through **original posts, company announcements, famous people on X, big mastheads, Reddit and GitHub**. Go where information originates and where attention gathers. Fix access problems with the capture ladder, never by settling for a secondary site.
 
 ## Focus A: Origin Hunter (find the originals)
+0. **Newsletter leads (fast start):** `RF news grep "<topic keywords>" --days 14` searches the owner's daily AI/tech newsletter archive, both stories and raw email bodies. It returns the newsletters' summaries plus links already resolved to official blogs, changelogs, repos and papers. Follow those links to the originals. Use newsletter text only to find leads and angles. Never cite a newsletter in the ledger for a claim, and never show one on screen.
 1. **Official sources:**
    - `RF intel feeds "<keywords>" --tier official --prod P`;
    - the company's newsroom, help-center and docs pages;
@@ -46,7 +47,7 @@ Generic web search returns whatever ranks and fetches easily, and that kept maki
    - `RF intel hn "<topic>" --prod P`;
    - notable X reactions from founders, researchers and practitioners via `RF intel x <url>`;
    - quote posts with high engagement.
-3. **Context:** competitors (with prices), "why now", criticisms, third-party tests, and how other creators already covered it, so you can find an **unclaimed angle**.
+3. **Context:** `RF news grep "<topic>" --days 14` shows how the newsletters framed the story, and which framing they all share, so you can avoid that angle. Then competitors (with prices), "why now", criticisms, third-party tests, and how other creators already covered it, so you can find an **unclaimed angle**.
 4. **Output:** 3–5 candidate angles with why each would hook, 3+ lesser-known true facts, and the strongest caveat.
 
 ## Ledger discipline (both focuses)

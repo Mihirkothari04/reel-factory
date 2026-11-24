@@ -5,7 +5,7 @@
   python rf.py doctor           check every tool / credential the pipeline can use
   python rf.py probe [--json]   system probe (works before setup): capabilities, per-stage plan, blockers, asks
   python rf.py <tool> [args]    run scripts/<tool>.py inside the runtime venv
-                                tools: trends, sources, intel, shot, footage, cutout, presenter, modes, voice, music, image, build, render, qa,
+                                tools: trends, news, sources, intel, shot, footage, cutout, presenter, modes, voice, music, image, build, render, qa,
                                        analyze, ingest, kb, sfx_kit, config
 
 Runtime home: $REEL_FACTORY_HOME or ~/.reel-factory  (kept outside the plugin so plugin updates never wipe it)
@@ -35,6 +35,7 @@ DEFAULT_CONFIG = {
     "browser_capture": False,  # agent-browser use needs explicit opt-in
     "source_shots_browser": False,  # true = read-only agent-browser screenshots of public pages for source shots need no prompt
     "modes": {"ask": True},  # ask which creation mode to use (False = AI Select every time)
+    "news": {"dir": None},  # newsletter archive store for `rf news` (null -> ~/.reel-factory/news)
     "whisper": {"model": "small"},  # tiny | base | small | medium (local transcription for alignment, QA, analysis)
 }
 

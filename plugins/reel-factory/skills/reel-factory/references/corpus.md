@@ -36,7 +36,7 @@ Counts use the primary mode; many reels borrow devices from a second mode (noted
 | Creator 48 — 20 repos motion studio · Creator 18 | listicle | Creator 18 = cinematic slate HUD |
 | Creator 45 — 5 Claude Code skills | listicle | persistent rebuilt terminal board |
 | Creator 47 — Claude Code mods · Creator 67 — "Claude just killed web designers" (batch-02) | listicle, stack-roadmap | |
-| Roast Room (AI advisors) · Creator 10 — Claude Duet · Creator 49 — Windows apps · Creator 65 — 5 performance fixes · Creator 02 — earn in dollars | spotlight, comparison, listicle | Duet: comparison + "my pick"; Creator 65: mini chart per tip; TTI: headline ticker |
+| Creator 94 (AI advisors) · Creator 10 — Claude Duet · Creator 49 — Windows apps · Creator 65 — 5 performance fixes · Creator 02 — earn in dollars | spotlight, comparison, listicle | Duet: comparison + "my pick"; Creator 65: mini chart per tip; TTI: headline ticker |
 | Creator 58 — London Strategic Edge | spotlight | **AI avatar** presenter |
 | Creator 55 — Claude SEO · 4 design repos (batch-02) | tutorial, listicle | ransom-note labels, reaction stickers, typewriter title |
 | Creator 26 — never /compact · Anthropic OSS scanner (pink room) · Creator 35 — OSINT · Creator 31 — 4 websites · Creator 16 — 10 things after launch | spotlight, listicle | full-frame head + overlays; checklist fill |
@@ -66,7 +66,7 @@ Humanize AI text (screen-rec steps) · Creator 22 — Framer steps · Creator 11
 Recordly (batch-02, cut-out presenter over README zoom) · Creator 60 — AITMPL 1,000+ components (typewriter headline over a cursor-driven site recording) · Creator 24 — God's Eye View (tweet frame) · Creator 39 — Opal Zero (tweet frame) · Creator 42 — M3E Canvas (batch-02, silent frame) · **floor:** Creator 44 — Astryx · Creator 61 — Manim · Creator 28 — Anti-slop / OpenShip / prettymaps · Semantica · Next AI Draw.io (batch-02).
 
 ## cinematic
-Creator 18 (slate HUD, 1.4 s cuts) · Creator 22 — Wan2GP (AI-generated cold open) · MotionSites (3D card swarm, "KILLED" stamp) · Creator 59 — MiroFish (Matrix city) · Creator 24's inner video.
+Creator 18 (slate HUD, 1.4 s cuts) · Creator 22 — Wan2GP (AI-generated cold open) · Creator 88 (3D card swarm, "KILLED" stamp) · Creator 59 — MiroFish (Matrix city) · Creator 24's inner video.
 
 ## newsroom
 Creator 54 — big-tech CEO scandal story (full report) · Creator 02 (headline ticker) · Creator 12 — Google Foresight (red banner) · Creator 36 — Grok Bot.
@@ -76,3 +76,55 @@ Creator 15 — "Sonnet + 1 prompt = this site" · Creator 40 — websites flashc
 
 ## story
 Creator 25 — The 8 Layers of AI Engineering (problem-ladder, 128 s, callback twist).
+
+
+## batch-04: AI dev-tools reels (2026-11-17, category-scoped)
+
+Source: "AI Dev Tools Reels" Parts 01–02 (100 files, saved 2026-04-23 → 2026-11-10) → **42 new, 58 already in the library** (re-mined for captions, CTAs and comments). These reels belong to the subject categories in `categories/` (agent-skill 61, github-repo 77, oss-alternative 6, top-n 13 tags). Their lessons live in `categories/*.md` only and do **not** change the general distribution above. Full notes: `analysis/notes/batch-04-{N1..N6,D1..D3}.md` (project).
+
+| # | creator — topic | category | mode | skeleton |
+|---|---|---|---|---|
+| 033 | Creator 95 — vgpu WebGPU shaders | agent-skill | presenter (panel over selfie) + walkthrough | spotlight |
+| 060 | Creator 77 — 5 free repos "should be illegal" | top-n, oss-alternative, repo | presenter (keyed over READMEs) | listicle |
+| 061 | Creator 82 — Ruflo cost router | agent-skill, repo | presenter + kinetic | spotlight |
+| 062 | Creator 37 — Promptive Sentry | agent-skill | presenter (arched window) | spotlight |
+| 063 | Creator 80 — GSAP skills | agent-skill | presenter (keyed, card) | spotlight |
+| 064 | Creator 37 — 5 skills you need | top-n, agent-skill | presenter | listicle (reduction) |
+| 065 | Creator 85 — 6 website skills | top-n, agent-skill | presenter (split) | listicle (pipeline order) |
+| 066 | Creator 37 — find-skills | agent-skill | presenter + walkthrough | spotlight |
+| 067 | Creator 96 — Matt Pocock skills | agent-skill, repo | presenter (UGC, filmed monitor) | spotlight |
+| 068 | Creator 99 — Addy Osmani agent-skills | agent-skill, repo | presenter + cinematic cold open | spotlight (with/without test) |
+| 069 | Creator 92 — Pake vs Electron | repo, oss-alternative | presenter (split) | spotlight (villain first) |
+| 070 | Creator 89 — Google Stitch + Claude Code | agent-skill | presenter → walkthrough | tutorial |
+| 071 | Creator 90 — 6 design skills | top-n, agent-skill | silent | listicle (cheat-sheet frame) |
+| 072 | Creator 87 — GitHub Spec Kit | repo | presenter (UGC mic) → filmed screen | spotlight |
+| 073 | Creator 99 — Headroom | agent-skill | presenter + cinematic cold open | spotlight (opposed counters) |
+| 074 | Creator 45 — find-skills | agent-skill | presenter (persistent split) | spotlight |
+| 075 | Creator 70 — Pake | repo, oss-alternative | quicktake floor (slide reel) | spotlight |
+| 076 | Creator 99 — 3 token tools | top-n, repo | presenter + catalog devices | listicle |
+| 077 | Creator 22 — MarkItDown | agent-skill, repo | presenter | spotlight (pain meter) |
+| 078 | Creator 97 — Puter | repo, oss-alternative | presenter (selfie, top band) | spotlight (brand roll call) |
+| 079 | Creator 84 — CLAUDE.md guardrails | repo | presenter (HUD board) | framework |
+| 080 | Creator 100 — DESIGN.md extractor | agent-skill | walkthrough (phone-filmed) | tutorial |
+| 081 | Creator 99 — Hallmark | agent-skill, repo | presenter + cinematic cold open | spotlight |
+| 082 | Creator 73 — 5 MCP servers | top-n, agent-skill | presenter (headroom board) | listicle |
+| 083 | Creator 72 — Higgsfield MCP pipeline | agent-skill | silent (editorial frame, outlier) | stack-roadmap |
+| 084 | Creator 78 — 6 plugins | agent-skill, repo | presenter (split) | listicle |
+| 085 | Creator 81 — "killed web designers" | agent-skill | presenter → walkthrough → presenter | stack-roadmap |
+| 086 | Creator 97 — OpenHands vs Cursor | repo, oss-alternative | presenter (dark board) | spotlight (villain first) |
+| 087 | Creator 71 — The Council | agent-skill | presenter + kinetic cold open | spotlight (persona roster) |
+| 088 | Creator 83 — 3 chained skills | agent-skill, repo | presenter (selfie split) | listicle (chained) |
+| 089 | Creator 96 — best-practice repo | agent-skill, repo | quicktake (filmed monitor) | spotlight |
+| 090 | Creator 86 — AgentScope | repo, oss-alternative | presenter (synthetic host) | spotlight (logo strike) |
+| 091 | Creator 68 — ArcReel (Hindi) | repo | presenter (insert window) | spotlight |
+| 092 | Creator 45 — agent-browser | agent-skill, repo | presenter (50/50 split) | spotlight + comparison |
+| 093 | Creator 69 — LLM Council | agent-skill | walkthrough (desk below) | claim-test (self A/B) |
+| 094 | Creator 22 — Octogent | repo | presenter | spotlight |
+| 095 | Creator 22 — CodeBurn | agent-skill | presenter | spotlight (limitation receipt) |
+| 096 | Creator 78 — RuFlo | repo | presenter → kinetic → presenter | spotlight |
+| 097 | Creator 91 — KARIMO (maker duo) | agent-skill, repo | presenter | spotlight |
+| 098 | Creator 93 — Picsart CLI skill | agent-skill | walkthrough + presenter | tutorial |
+| 099 | Creator 05 — Matt Pocock skills | agent-skill, repo | presenter (split) | spotlight → tutorial |
+| 100 | Creator 76 — $10,000 site, one command | agent-skill, repo | presenter (split) | stack-roadmap |
+
+No new creation mode: 35 presenter, 3 walkthrough, 2 quicktake, 2 silent (primary). Registry corrections from re-mining: Creator 94 → Creator 22; the 5 video-editing skills + Humanize → Creator 75; OSS scanner → Creator 74; Creator 88 → Creator 98; Anatomy skill (Creator 79) was missing; Hallmark (Creator 37) metrics are from a 2× looped file.

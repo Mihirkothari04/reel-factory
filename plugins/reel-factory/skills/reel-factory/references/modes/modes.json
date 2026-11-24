@@ -1,5 +1,5 @@
 {
-  "version": "3.2.1",
+  "version": "3.6.0",
   "note": "Creation modes = HOW a reel is constructed (stage, presenter, visual source, voice, pacing, audio, toolchain). Story skeletons (formats.md) are chosen inside a mode. Derived from 90 analysed reels (batch-01: 88, batch-02: 2 new of 21). Playbook per mode: modes/<id>.md. Scripts read: defaults, qa, requires, fallback.",
   "modes": [
     {
@@ -408,7 +408,7 @@
       "evidence": [
         "Creator 18 (film-slate HUD, 1.4 s cuts)",
         "Creator 22 — Wan2GP (AI-generated cold open)",
-        "MotionSites (3D card swarm)",
+        "Creator 88 (3D card swarm)",
         "Creator 59 — MiroFish (Matrix city)"
       ]
     },

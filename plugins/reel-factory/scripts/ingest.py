@@ -58,6 +58,16 @@ def md5(p):
     return hashlib.md5(Path(p).read_bytes()).hexdigest()
 
 
+def resolve_src(rel, source_root: Path):
+    """a library reel's source video: absolute, under this batch's --source-root, or under the cwd of the
+    run that ingested it (older batches stored paths relative to the project root). None if not found."""
+    p = Path(rel)
+    for c in ([p] if p.is_absolute() else [source_root / p, Path.cwd() / p]):
+        if c.exists():
+            return c
+    return None
+
+
 def library_index(source_root: Path):
     """[(slug, fp, md5)] for every library reel we can fingerprint"""
     idx = []
@@ -65,10 +75,8 @@ def library_index(source_root: Path):
         fpf = d / "fp.npz"
         if not fpf.exists():
             m = d / "metrics.json"
-            src = Path(load_json(m)["file"]) if m.exists() else None
-            if src and not src.is_absolute():
-                src = source_root / src
-            if not (src and src.exists()):
+            src = resolve_src(load_json(m)["file"], source_root) if m.exists() else None
+            if not src:
                 continue
             fp = fingerprint(src)
             np.savez_compressed(fpf, md5=md5(src), **fp)
@@ -81,10 +89,9 @@ def library_index(source_root: Path):
 def fine_for(slug_, source_root):
     """compute + cache the fine hash for a library reel fingerprinted before it existed"""
     d = LIB / slug_
-    src = Path(load_json(d / "metrics.json")["file"])
-    src = src if src.is_absolute() else source_root / src
-    if not src.exists():
-        return {"fine": np.zeros((0, 32), np.uint8)}
+    src = resolve_src(load_json(d / "metrics.json")["file"], source_root)
+    if not src:
+        return {}  # source moved: caller can't verify and keeps the coarse verdict
     fine = fingerprint(src, ("fine",))
     z = dict(np.load(d / "fp.npz"))
     z.update(fine)
@@ -124,8 +131,12 @@ def main():
             other = dict(idx_map.get(hit[0]) or next(pf for p, pf, _ in seen if str(p) == hit[0]))
             if "fine" not in other:
                 other.update(fine_for(hit[0], Path(a.source_root).resolve()))
-            fine = similarity(fp, other, ("fine",))
-            print(f"     verify {f.name[:50]} vs {hit[0][:40]}: coarse {hit[1]:.2f} fine {fine:.2f}", flush=True)
+            if "fine" not in other:
+                print(f"  !! cannot verify {f.name[:50]} vs {hit[0][:40]}: source video missing; keeping coarse {hit[1]:.2f} — spot-check", flush=True)
+                fine = 1.0
+            else:
+                fine = similarity(fp, other, ("fine",))
+                print(f"     verify {f.name[:50]} vs {hit[0][:40]}: coarse {hit[1]:.2f} fine {fine:.2f}", flush=True)
             if fine < FINE_DUP:
                 hit = (hit[0], fine)  # shared layout, different reel
         if hit[1] >= DUP:
@@ -152,6 +163,9 @@ if __name__ == "__main__":
         z = np.packbits(np.zeros((3, 64), bool), axis=1)
         o = np.packbits(np.ones((3, 64), bool), axis=1)
         assert overlap(z, z) == 1.0 and overlap(z, z[:0]) == 0.0 and overlap(z, o) == 0.0
+        here = Path(__file__)
+        assert resolve_src(here.name, here.parent) == here.parent / here.name
+        assert resolve_src("no/such.mp4", here.parent) is None
         print("ok")
     else:
         main()

@@ -12,7 +12,7 @@ import re, sys
 from pathlib import Path
 from analyze import analyze, sh
 from build import mode_spec
-from common import load_json, save_json, wer_score
+from common import consistency_issues, load_json, save_json, wer_score
 
 # targets from analysis/REEL_ANALYSIS.md §1 (medians / IQR of 88 reels)
 T = {"lufs": (-15.0, -13.0), "first_word_max": 0.35, "wpm": (165, 245), "dur": (15, 95), "max_scene": 6.5, "avg_scene": (1.2, 3.8), "wer_max": 0.12}
@@ -53,6 +53,12 @@ def main():
     tr = load_json(o / "transcript.json")
     props = load_json(prod / "props.json")
     script = [w["w"] for w in load_json(prod / "words.json")] if (prod / "words.json").exists() else []
+    if script and sb.get("soundbites"):  # the soundbites' own speech is part of what the viewer hears
+        from studio import soundbite_plan
+        vw = load_json(prod / "words.json")
+        seq = sorted([(w["s"], 0, w["w"]) for w in vw] + [(s["at"] + 1e-3 * (i + 1), 1, w["w"]) for s in soundbite_plan(prod, sb, vw)
+                                                         for i, w in enumerate(s["words"])])
+        script = [w for _, _, w in seq]
     studio = "layouts" in props
     scenes = props["shots"] if studio else props["scenes"]
     lens = [s["to"] - s["from"] for s in scenes] if studio else [s["end"] - s["start"] for s in scenes]
@@ -88,6 +94,8 @@ def main():
             ("edit_longest_still", em["longest_still_s"] <= 2, f"longest still stretch {em['longest_still_s']}s", False),
             ("presenter_share", not props.get("presenter") or 0.2 <= pres / props["durationSec"] <= 0.75, f"presenter on screen {pres:.1f}s of {props['durationSec']:.1f}s", False),
         ]
+    ci = consistency_issues(sb)
+    checks.append(("numbers_keyword_consistent", not ci, "; ".join(ci) or "numbers and CTA keyword agree across VO, screen and caption", False))
     checks = [c for c in checks if c[0] not in skip]
     report = {"mode": spec["id"], "metrics": {k: m[k] for k in ["dur", "w", "h", "fps", "lufs", "wpm", "speech_ratio", "first_word_at", "n_cuts", "bed_db", "speech_db"]},
               "wer": round(w, 3), "scenes": len(scenes),

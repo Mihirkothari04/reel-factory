@@ -110,7 +110,8 @@ def compile_studio(prod, sb, words, tail=1.4):
             layouts.append({"t": round(a, 3), "layout": lay})
         elif isinstance(lay, list):
             for k, e in enumerate(lay):
-                layouts.append({"t": round(a if k == 0 and "at" not in e else phrase_time(e.get("at"), sw, a), 3), "layout": e["layout"]})
+                layouts.append({"t": round(a if k == 0 and "at" not in e else phrase_time(e.get("at"), sw, a), 3), "layout": e["layout"],
+                                **({"motion": e["motion"], "scene": sc["id"]} if e.get("motion") else {})})  # per-layout gesture (presenter.py)
         # shots
         items = list(sc.get("shots") or [])
         if not items and sc.get("type") and sc["type"] != "presenter":
@@ -181,7 +182,7 @@ def compile_studio(prod, sb, words, tail=1.4):
     for e in layouts[1:]:
         sfx.append({"t": round(max(0, e["t"] - 0.04), 3), "name": "swipe", "vol": 0.16})
     for g in gfx:
-        nm = {"sticker": ("pop", 0.4), "slam": ("impact", 0.42), "counter": ("tick", 0.3), "label": ("tick", 0.2)}.get(g["kind"])
+        nm = {"sticker": ("pop", 0.4), "slam": ("impact", 0.42), "counter": ("tick", 0.3), "label": ("tick", 0.2), "callout": ("pop", 0.3)}.get(g["kind"])
         if nm:
             sfx.append({"t": round(g["from"], 3), "name": nm[0], "vol": nm[1]})
     return {"layouts": layouts, "shots": shots, "gfx": gfx, "sfx": sorted(sfx, key=lambda c: c["t"]), "duration": round(end_all, 3), "bounds": bounds}
@@ -209,6 +210,122 @@ def presenter_windows(layouts, duration, merge_gap=1.2, pad=0.15):
     return [[round(a, 3), round(b, 3)] for a, b in out]
 
 
+# ---------- soundbites: real people speaking with their own voice ----------
+# storyboard "soundbites": [{"after": "<narration phrase>", "src": "footage/x.mp4" (rf footage get --audio), "trim": 0,
+#   "dur": 4.5, "label": "Outlet · Name, role", "fit": "cover"}]
+# The narration pauses after the phrase; the clip plays full-frame (presenter off) with its own sound and captions.
+# Everything is planned in voice-over time and warped at build time only, so presenter renders (sliced from vo.mp3) never change.
+
+def clip_words(src):
+    """word timings of a clip's own speech (local Whisper), cached next to the clip"""
+    from common import load_json as lj, save_json, whisper
+    cache = Path(src).with_suffix(".words.json")
+    if cache.exists():
+        return lj(cache)
+    segs, _ = whisper().transcribe(str(src), word_timestamps=True, vad_filter=True, language="en")
+    ws = [{"w": w.word.strip(), "s": round(w.start, 3), "e": round(w.end, 3)} for s in segs for w in (s.words or [])]
+    save_json(cache, ws)
+    return ws
+
+
+def soundbite_plan(prod, sb, words, transcribe=True):
+    """soundbites in voice-over time: at = end of the `after` phrase; words = the clip's speech inside [trim, trim+dur]"""
+    out = []
+    seq = [norm(w["w"]) for w in words]
+    for x in sb.get("soundbites") or []:
+        toks = [norm(t) for t in x["after"].split() if norm(t)]
+        at = next((words[i + len(toks) - 1]["e"] for i in range(len(seq) - len(toks) + 1) if seq[i:i + len(toks)] == toks), None)
+        if at is None:
+            raise SystemExit(f"soundbite {x.get('src')}: phrase not in the narration: {x['after']!r}")
+        trim, dur = float(x.get("trim", 0)), float(x["dur"])
+        cw = clip_words(Path(prod) / "public" / x["src"]) if transcribe else []
+        ws = [w for w in cw if w["s"] >= trim - 0.05 and w["e"] <= trim + dur + 0.05]
+        if x.get("text") and ws:  # verified wording for the captions on Whisper's timing (ASR mishears names and endings)
+            toks = x["text"].split()
+            if len(toks) == len(ws):
+                ws = [{**w, "w": t} for w, t in zip(ws, toks)]
+            else:  # ponytail: even spread over the spoken span when the counts differ; per-word alignment if it ever drifts
+                a, b = ws[0]["s"], ws[-1]["e"]
+                step = (b - a) / len(toks)
+                ws = [{"w": t, "s": round(a + i * step, 3), "e": round(a + (i + 1) * step - 0.02, 3)} for i, t in enumerate(toks)]
+        out.append({**x, "at": round(at, 3), "trim": trim, "dur": dur, "words": ws})
+    return sorted(out, key=lambda s: s["at"])
+
+
+def apply_soundbites(r, words, windows, sbs):
+    """warp the compiled timeline (voice-over time -> reel time) and splice in the soundbite clips"""
+    if not sbs:
+        return r, words, windows
+    # edit events up to 0.12 s before the pause belong to the speech that follows it (phrase_time starts them 0.08 s early)
+    W = lambda t, eps=0.12: round(t + sum(s["dur"] for s in sbs if t >= s["at"] - eps), 3)
+    starts, off = [], 0.0
+    for s in sbs:
+        starts.append(round(s["at"] + off, 3))
+        off += s["dur"]
+    shots = [{**x, "from": W(x["from"])} for x in r["shots"]]
+    for k, s in enumerate(sbs):
+        shots.append({"id": f"sb{k}", "kind": "video", "src": s["src"], "trim": s["trim"], "fit": s.get("fit", "cover"), "from": starts[k],
+                      "enter": s.get("enter", "cut"), **({"label": s["label"]} if s.get("label") else {})})
+    shots.sort(key=lambda x: x["from"])
+    end = round(r["duration"] + off, 3)
+    for j, x in enumerate(shots):
+        x["to"] = shots[j + 1]["from"] if j + 1 < len(shots) else end
+    lay = [{**e, "t": W(e["t"])} for e in r["layouts"]]
+    for k, s in enumerate(sbs):
+        cur = [e for e in r["layouts"] if e["t"] <= s["at"] + 1e-6]
+        back = cur[-1]["layout"] if cur else "off"
+        lay += [{"t": starts[k], "layout": "off"}, {"t": round(starts[k] + s["dur"], 3), "layout": back}]
+    lay.sort(key=lambda e: e["t"])
+    dedup = []
+    for e in lay:
+        if not dedup or dedup[-1]["layout"] != e["layout"]:
+            dedup.append(e)
+    gfx = []
+    for g in r["gfx"]:
+        to = W(g["to"])
+        for k, s in enumerate(sbs):  # a graphic never runs over a soundbite: it ends where the soundbite starts
+            if g["from"] < s["at"] - 0.12 and s["at"] < g["to"]:
+                to = min(to, starts[k])
+        gfx.append({**g, "from": W(g["from"]), "to": to})
+    sfx = [{**c, "t": W(c["t"])} for c in r["sfx"]] + [{"t": max(0, st - 0.05), "name": "whoosh", "vol": 0.22} for st in starts]
+    nw = [{**w, "s": W(w["s"], 1e-3), "e": W(w["s"], 1e-3) + round(w["e"] - w["s"], 3)} for w in words]
+    for k, s in enumerate(sbs):
+        nw += [{"w": w["w"], "s": round(starts[k] + w["s"] - s["trim"], 3), "e": round(starts[k] + w["e"] - s["trim"], 3), "soundbite": True}
+               for w in s["words"]]
+    nw.sort(key=lambda w: w["s"])
+    win = []
+    for w in windows or []:
+        # a window that opens just before the pause (its lead-in pad) moves whole: lips stay on the speech after the soundbite
+        if any(w["start"] < s["at"] - 0.45 and s["at"] < w["end"] for s in sbs):
+            raise SystemExit(f"soundbite inside presenter window {w['start']}-{w['end']}: move it to a moment where the presenter is off")
+        sh = sum(s["dur"] for s in sbs if w["start"] >= s["at"] - 0.45)
+        win.append({**w, "start": round(w["start"] + sh, 3), "end": round(w["end"] + sh, 3)})
+    r2 = {**r, "shots": shots, "layouts": dedup, "gfx": gfx, "sfx": sorted(sfx, key=lambda c: c["t"]), "duration": end,
+          "bounds": {k: (W(a), W(b)) for k, (a, b) in r["bounds"].items()}}
+    return r2, nw, win
+
+
+def soundbite_audio(pub, sbs):
+    """vo_sb.mp3 = the voice-over with each soundbite's own sound spliced in at its pause (vo.mp3 stays untouched)"""
+    import subprocess
+    fmt = "aresample=44100,aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=mono"
+    ins, fc, parts, prev = ["-i", str(pub / "vo.mp3")], [], [], 0.0
+    for k, s in enumerate(sbs):
+        ins += ["-i", str(pub / s["src"])]
+        d = s["dur"]
+        fc.append(f"[0:a]atrim={prev}:{s['at']},asetpts=PTS-STARTPTS,{fmt}[v{k}]")
+        fc.append(f"[{k + 1}:a]atrim={s['trim']}:{s['trim'] + d},asetpts=PTS-STARTPTS,loudnorm=I=-19:TP=-3,volume={float(s.get('gain', 0))}dB,{fmt},"
+                  f"afade=t=in:d=0.05,afade=t=out:st={max(0, d - 0.12):.3f}:d=0.12,apad=whole_dur={d},atrim=0:{d}[s{k}]")
+        parts += [f"[v{k}]", f"[s{k}]"]
+        prev = s["at"]
+    fc.append(f"[0:a]atrim=start={prev},asetpts=PTS-STARTPTS,{fmt}[vend]")
+    parts.append("[vend]")
+    fc.append("".join(parts) + f"concat=n={len(parts)}:v=0:a=1[out]")
+    out = pub / "vo_sb.mp3"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *ins, "-filter_complex", ";".join(fc), "-map", "[out]", "-b:a", "192k", str(out)], check=True)
+    return out.name
+
+
 if __name__ == "__main__":
     ws = [{"w": w, "s": i * 0.5, "e": i * 0.5 + 0.4, "scene": "s1" if i < 6 else "s2"} for i, w in enumerate("OpenAI just put your business inside ChatGPT. Here's how it works".split())]
     sb = {"scenes": [{"id": "s1", "layout": "split", "shots": [{"kind": "color", "bg": "#000"}, {"at": "business", "kind": "color", "bg": "#fff", "enter": "whip"}]},
@@ -219,4 +336,12 @@ if __name__ == "__main__":
     assert r["layouts"][2]["t"] == 4.92, r["layouts"]
     assert presenter_windows(r["layouts"], r["duration"]) == [[0.0, 5.49]], presenter_windows(r["layouts"], r["duration"])
     assert presenter_windows([{"t": 0, "layout": "full"}, {"t": 2, "layout": "off"}, {"t": 8, "layout": "corner"}], 10) == [[0.0, 2.57], [7.85, 10]]
+    # soundbite after "works": everything later shifts by 3 s, the clip is an off-layout shot with its own caption words
+    sbs = [{"after": "it works", "src": "footage/x.mp4", "at": 5.46, "trim": 1.0, "dur": 3.0, "words": [{"w": "wow", "s": 1.2, "e": 1.6}]}]
+    r2, w2, win2 = apply_soundbites(r, ws, [{"start": 0.0, "end": 5.2, "src": "p.webm"}], sbs)
+    assert r2["duration"] == round(r["duration"] + 3, 3) and r2["shots"][-1]["id"] == "sb0" and r2["shots"][-1]["from"] == 5.46, r2["shots"]
+    assert r2["layouts"][-1]["layout"] == "off" and win2 == [{"start": 0.0, "end": 5.2, "src": "p.webm"}], (r2["layouts"], win2)
+    assert [w["w"] for w in w2][-1] == "wow" and w2[-1]["s"] == 5.66, w2[-3:]
+    r3, _, _ = apply_soundbites({**r, "gfx": [{"id": "g", "kind": "label", "from": 4.0, "to": 7.0}]}, ws, [], sbs)
+    assert r3["gfx"][0]["to"] == 5.46, r3["gfx"]  # clipped at the soundbite, not pushed past it
     print("ok")

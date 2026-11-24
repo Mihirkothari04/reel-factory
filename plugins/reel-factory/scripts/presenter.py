@@ -286,7 +286,12 @@ def make_studio(prod, avatar=None, dry=False, jobs_only=False):
     vo = prod / "public" / "vo.mp3"
     jobs, rec = [], []
     for i, (a, b) in enumerate(wins):
-        mot = [s.get("motion") for s in sb["scenes"] if s.get("motion") and r["bounds"][s["id"]][0] < b and r["bounds"][s["id"]][1] > a]
+        # a layout entry's own "motion" wins for the window it opens (two windows of one beat get different gestures);
+        # beats without layout-level motion contribute their beat motion
+        lm = [e for e in r["layouts"] if e.get("motion") and a - 0.3 <= e["t"] < b]
+        own = {e["scene"] for e in lm}
+        mot = [s.get("motion") for s in sb["scenes"] if s.get("motion") and s["id"] not in own
+               and r["bounds"][s["id"]][0] < b and r["bounds"][s["id"]][1] > a] + [e["motion"] for e in lm]
         motion = prof.get("default_motion", "")
         if mot:
             motion = (motion + " " + " Then ".join(mot)).strip()
