@@ -8,7 +8,9 @@ version: 3.1.0
 
 You are the **Creative Director and producer**. You own strategy, script, storyboard, art and audio direction, because those decisions must stay coupled. Specialist agents give you independent research and *fresh-eyes* review. The tools in `${CLAUDE_PLUGIN_ROOT}/scripts` do all media work.
 
-**Autonomy contract:** the user gives a topic, or nothing (trend mode). You make every creative and technical decision yourself and log each one in `brief.md`. There is exactly **one** sanctioned question: the creation-mode choice in stage 3 (skipped with `--mode`, `--count`, or `config.modes.ask: false`). Presenter mode with the user's own footage is the only step that waits for the user (they record the script). Missing credentials or setup never stop a run: degrade to free fallbacks and report it at the end.
+**Autonomy contract:** the user gives a topic, or nothing (trend mode). You make every creative and technical decision yourself and log each one in `brief.md`. There is exactly **one** sanctioned question: the creation-mode choice in stage 3 (skipped with `--mode`, `--count`, or `config.modes.ask: false`). Presenter mode with the user's own footage is the only step that waits for the user (they record the script). Missing credentials or setup never stop a run: degrade to free fallbacks and report it at the end. **Owner rules (2026-11-25):**
+- **The final script needs the owner's explicit approval** before any voice or presenter generation (stage 6b, enforced by `RF approve`). This is compulsory.
+- **Apart from that gate, never ask anything mid-run.** No "spend these credits?" (the normal per-reel HeyGen/ElevenLabs budget is pre-approved) and no option menus. Decide, log in brief.md, deliver.
 
 `RF` below means: `python "${CLAUDE_PLUGIN_ROOT}/scripts/rf.py"`
 
@@ -82,6 +84,17 @@ Load the **speechwriting** skill and follow it in order:
 ### 6. Review loop (fresh eyes, before spending credits)
 Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode fidelity**, and **category fidelity** against the `categories/<id>.md` file when `meta.category` is set) and `reel-factory:fact-checker` (every claim vs facts.md and sources; every number and the CTA keyword identical across VO, screen and caption). Apply all blocking fixes and any improvement that raises a score. If the critic's average is below 4 or any score is below 3, revise and run the critic once more (max 2 rounds). Log the changes in brief.md.
 
+### 6b. OWNER SCRIPT APPROVAL: hard gate, compulsory (owner rule, 2026-11-25)
+No voice, music or presenter generation (and no HeyGen video job) until the owner has approved the **final** script. The NVIDIA reel burned 41 HeyGen credits on three script rounds. This is the single exception to "never ask mid-run".
+1. Show the owner the complete final script in one message:
+   - every narration paragraph, verbatim;
+   - each soundbite hand-off with the speaker, the outlet and the exact words;
+   - the hook line called out on its own;
+   - one line each on length and planned spend.
+2. Ask with one `AskUserQuestion`: approve / change (Other = their edits). Apply every change, re-run the fact-check on changed claims, and show the script again. Repeat until the owner explicitly approves. "Looks good" counts; silence or "continue" without approval does not.
+3. Only then run `RF approve P`. It records the script fingerprint in `P/approval.json`. `RF voice` and `RF presenter` (except `--dry-run`) refuse to run without a matching approval, and any later edit to the narration or soundbites voids it. Never run `RF approve` on your own judgement.
+4. Free work may continue while you wait (captures, footage, shots, the presenter `--dry-run`, draft builds without voice).
+
 ### 7. Assets, voice and music
 1. **Real sources as real screenshots (hard rule, playbook.md):**
    - Every web source shown on screen (headline, post, blog/press/help line, README line) becomes a `source` scene.
@@ -95,11 +108,11 @@ Launch **in parallel**: `reel-factory:script-critic` (qa-rubric A incl. **mode f
      0. **Outfit and pose first (owner rule: a new outfit AND a new resting pose every reel, the same face, zero wasted credits).**
         - Read `~/.reel-factory/avatars/host/profile.json → looks` (look id → `last_used`).
         - Pick an outfit that fits this reel's topic and look and that wasn't used in the last reel, and set `storyboard.meta.presenter_look` to its look id.
-        - If no unused look suits the reel, make one before rendering. **Cheapest measured route = 3 HeyGen credits total. Say the total before starting and never spend more without asking the owner first:**
+        - If no unused look suits the reel, make one before rendering. **Cheapest measured route = 3 HeyGen credits total. Log the total in brief.md; never take a costlier route:**
           1. `create_image` (nano-banana-2.1) editing the base look's public `preview_image_url` (from `get_avatar_look`), prompt "change ONLY the clothes to … and the resting pose to … (facing camera, waist-up, hands visible; never the previous look's pose); keep the face, hair, framing and background" → **2 credits** (measured 2026-11-17).
           2. Download it, upscale 2× (lanczos, to about 1536×2752) if smaller, then `create_asset_upload` → PUT → `complete_asset_upload` → `create_photo_avatar` with `avatarGroupId` set to the host's group → **1 credit** (every route pays this step). Wait until `get_avatar_look` shows completed, then record the look in `profile.looks` (name, source, created, credits).
           - **Never use `create_look_remix`:** heygen-image-1 bills $0.28 per image (≈ 6 credits). Measured 2026-11-24: remix + photo avatar = **7 credits** (570 → 563). The 3.4.1 claim that it cost 1 credit was never measured and was wrong.
-          - Check `get_current_user` before and after and log the real spend in brief.md. If the balance drops more than quoted, stop and tell the owner before any further HeyGen call.
+          - Check `get_current_user` before and after and log the real spend in brief.md. If the balance drops more than quoted, use no further paid route that run and report it in the final summary.
         - The presenter renders on a transparent background over the fixed set, so only the clothes and the pose change.
         - Gestures: give every presenter window a different `motion`. When one beat holds two presenter windows (e.g. `close` → `off` → `close`), put the motion on each layout entry (`{"at": "…", "layout": "close", "motion": "…"}`); it overrides the beat motion for the window it opens. Motion prompts cost nothing extra.
         - Never render presenter windows before the outfit is chosen. Never test-render without the owner's OK.

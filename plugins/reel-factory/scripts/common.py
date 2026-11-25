@@ -28,6 +28,27 @@ def log(prod, msg):
         f.write(f"- {msg}\n")
 
 
+def script_sha(sb):
+    """fingerprint of what gets voiced: narration text/tts + soundbite hand-offs and wording"""
+    import hashlib
+    parts = [[p.get("text", ""), p.get("tts", "")] for p in sb.get("narration") or []]
+    parts += [[s.get("after", ""), s.get("src", ""), s.get("text", "")] for s in sb.get("soundbites") or []]
+    return hashlib.sha256(json.dumps(parts, ensure_ascii=False).encode("utf-8")).hexdigest()[:16]
+
+
+def require_approval(prod, sb):
+    """owner hard rule (2026-11-25): no voice or presenter generation until the owner approved THIS final script.
+    `rf approve P` records it, and only right after the owner says yes in the conversation."""
+    if sb.get("meta", {}).get("mode") == "silent" or (sb.get("voice") or {}).get("none"):
+        return
+    f = Path(prod) / "approval.json"
+    got = load_json(f).get("script_sha") if f.exists() else None
+    if got != script_sha(sb):
+        sys.exit("STOP: the final script is not approved by the owner"
+                 + (" (it changed after approval)" if got else "")
+                 + ". Show the owner the full final script, wait for an explicit approval, then run `rf approve P`.")
+
+
 def run(cmd, check=True, **kw):
     r = subprocess.run(list(map(str, cmd)), capture_output=True, text=True, encoding="utf-8", errors="replace", shell=False, **kw)
     if check and r.returncode != 0:

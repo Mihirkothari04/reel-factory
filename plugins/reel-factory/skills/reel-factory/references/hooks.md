@@ -37,6 +37,7 @@ Always draft **5 hooks** from different formulas, score each 1–5 on *(specific
 Across the corpus (80 hooks, plus the batch-03 openings transcribed 2026-11-16), the reels that hold viewers don't rely on one hook line. Whatever the topic, the first seconds make **three moves**:
 
 1. **STOP (0–4 s):** one specific, surprising, true statement that gives the viewer a reason to stop scrolling. It is the *outcome, consequence or tension*, never the background, a date or a topic announcement.
+   - **News = the NEWEST development in the first words (owner hard rule, 2026-11-25).** Lead with what just happened ("Nvidia just brought Jensen Huang back as CEO…"), then attach the older event as the amplifier ("…only eleven days after he quit over an affair with an alleged Chinese spy"). Never open on an earlier event the viewer may already know is outdated ("Jensen Huang quit Nvidia…" when he is already back). Viewers who know the newer state judge the reel stale in the first second and skip. Test: if the first 5 words were the whole reel, would they report today's news?
 2. **AMPLIFY (≈2–8 s):** makes the stop bigger, more personal or more credible: the cost removed, a proof number, a precedent, an irony, the stakes for *you*, an authority. It is often fused into S1 with ", and…" / "because…" / "after…".
 3. **COMMIT (by ≈11 s):** an explicit or visual promise of what the next seconds deliver, which turns a stop into a watch.
    - Spoken: "Here's what happened." · "Here's how it works." · "…how to use them in 60 seconds." · "Let me show you." · "Save this for later." · "I bet you know fewer than 10."
@@ -55,6 +56,7 @@ Short reels (≤ 30 s) may compress all three into one or two sentences. Long re
 | Tutorial / outcome | "Does your vibe-coded website look like THIS…" | "…when you want it to look like THIS?" (before→after) | the step promise |
 | Money / saving | "Use these 5 free GitHub repos to save over $1,000…" | "…in the AI tools you're probably already paying for." + struck-through receipt | the list preview |
 | Threat / pain | "Your Claude skills might have malicious code hidden inside them, which can even hack your PC." | "And everyone should thank NVIDIA for solving this." (fear → relief) | the fix |
+| News reversal / update | "Nvidia just brought Jensen Huang back as CEO" (the latest state, first words) | "…only eleven days after he quit over an affair with an alleged Chinese spy. And the same board that refused to take him back voted yes, unanimously" | the twist promise ("…and President Trump says he flipped them") |
 | Pain you didn't know | "If your portfolio uses eyebrow labels on top of every header, the hiring manager is going to think it smells like AI." | the viewer instantly self-audits | the fixes |
 | Concept / framework | "There are only 5 problems in AI engineering." | chaos visual (100+ tool names), then order | the numbered buckets |
 | Claim / result | "What happens when you ask Claude to humanize your text so it passes every AI detector?" | "I tried this and it came back 0% AI-generated." (result on screen at 2.5 s) | the method |

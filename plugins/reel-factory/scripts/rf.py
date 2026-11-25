@@ -6,7 +6,7 @@
   python rf.py probe [--json]   system probe (works before setup): capabilities, per-stage plan, blockers, asks
   python rf.py <tool> [args]    run scripts/<tool>.py inside the runtime venv
                                 tools: trends, news, sources, intel, shot, footage, cutout, presenter, modes, voice, music, image, build, render, qa,
-                                       analyze, ingest, kb, sfx_kit, config
+                                       analyze, ingest, kb, sfx_kit, config, approve (owner script approval gate)
 
 Runtime home: $REEL_FACTORY_HOME or ~/.reel-factory  (kept outside the plugin so plugin updates never wipe it)
 """

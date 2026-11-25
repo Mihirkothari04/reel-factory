@@ -19,7 +19,7 @@ Writes public/vo.mp3, words.json [{w, s, e, scene, para}], public/vo_raw.mp3 + w
 """
 import argparse, asyncio, base64, difflib, json, re
 from pathlib import Path
-from common import config, duration, eleven, eleven_ok, load_json, log, norm_tok, run, save_json, wer_score, whisper
+from common import config, duration, eleven, eleven_ok, load_json, log, norm_tok, require_approval, run, save_json, wer_score, whisper
 
 TAG = re.compile(r"\[[^\]]{1,40}\]")
 # corpus targets (89 English reference reels, medians/IQR): see references/voice.md
@@ -510,6 +510,8 @@ def main():
     if sb.get("meta", {}).get("mode") == "silent" or (sb.get("voice") or {}).get("none"):
         save_json(prod / "words.json", [])
         return log(prod, "voice: silent mode -> no voice-over (music + on-screen text carry the reel)")
+    if not a.report:
+        require_approval(prod, sb)  # owner hard rule: no paid voice before the owner approves the final script
     if a.footage:
         return footage(prod, sb, Path(a.footage))
     vcfg = dict(config().get("voice", {}))

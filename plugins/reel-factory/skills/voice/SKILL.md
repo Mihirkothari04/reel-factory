@@ -8,6 +8,8 @@ version: 2.0.0
 
 Tool: `python "${CLAUDE_PLUGIN_ROOT}/scripts/rf.py" voice <prod> [...]`. Input is `storyboard.json` → `narration` (written with the speechwriting skill).
 
+**Gate (owner hard rule, 2026-11-25):** `rf voice` refuses to run until the owner has approved the final script and `rf approve P` has recorded it. Editing the narration or soundbites afterwards voids the approval, so show the owner the change and get approval again.
+
 ## What the pipeline does (and why)
 1. **Segments.** Whole paragraphs are grouped into segments of about 900 characters or less, and a thought is never split. Generating sentence by sentence produces pitch and energy jumps at every join. Generating one 60 s block risks drift on long takes. Paragraph segments with stitching are the balance.
 2. **Stitching.** Each request carries `previous_text` and `next_text` (about 600 characters around it), so intonation continues across joins (ElevenLabs request stitching).

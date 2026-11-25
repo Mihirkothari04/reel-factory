@@ -1,5 +1,35 @@
 # Knowledge-base changelog
 
+## 3.6.5 (2026-11-25): compulsory owner approval of the final script
+
+- Owner rule after the NVIDIA reel needed three script rounds (41 HeyGen credits): **the final script must be explicitly approved by the owner before any voice or presenter generation.**
+- New SKILL stage 6b. Show the full final script (narration verbatim, soundbite hand-offs, the hook called out, length and spend), ask once, apply changes and show it again until approved, then run `rf approve P`.
+- New `rf approve` (scripts/approve.py) writes P/approval.json with a fingerprint of the narration text/tts and the soundbites. `common.require_approval` makes `rf voice` (except `--report`) and `rf presenter` (except `--dry-run`) refuse without a matching approval. Any later script edit voids it.
+- This is the one exception to "never ask mid-run". /reel command and voice skill updated.
+
+## 3.6.4 (2026-11-25): news hooks lead with the newest development
+
+- The owner rejected the NVIDIA v3 opening "Jensen Huang quit Nvidia after…": he was already back, so the first words reported outdated news and viewers skip. hooks.md (opening lock STOP + a "News reversal / update" row), speechwriting and the script-critic hard checks now require the LATEST development in the first ~5 words, with older events after it as the amplifier ("Nvidia just brought Jensen Huang back as CEO, only eleven days after he quit…").
+- `rf render` chunked fallback is leaner: 60-frame chunks, 1 worker, a 600 MB OffthreadVideo cache and 6 tries each. At about 60 MB free RAM the 240-frame / 2-worker chunks failed 4 times on the first chunk; the lean settings rendered.
+
+## 3.6.3 (2026-11-25): speech that a newcomer understands + no mid-run questions
+
+- The owner rejected the NVIDIA reel v1. The hook's promise line ("Here's how a CEO gets his job back in 11 days") read as a tutorial. It passed through NVIDIA's euphemisms ("target of a foreign intelligence effort", "unfaithful"). It left the key person (the alleged spy) unnamed. It dropped the petition / employees / Musk / Kalanick / Trump beat that both reference reels had. The last soundbite clipped its final word.
+- speechwriting SKILL: reference beats are mandatory (cut length elsewhere); plain words instead of source euphemisms, attribution kept; the promise line points at the story or twist, never a how-to.
+- script-critic: new blocking hard checks (newcomer clarity, reference beats, hook promise, names, soundbite ends).
+- studio.soundbite_plan / rf build: warn when a soundbite cut lands inside or within 0.25 s of the last word's end.
+- reel-factory SKILL: never ask the owner anything mid-run (normal per-reel HeyGen/ElevenLabs budget pre-approved); over-quote spend is reported at the end instead of asked.
+
+## 3.6.2 (2026-11-25): low-RAM renders + soundbite-aware QA
+
+- Root cause of the NVIDIA reel's "No frame found" render failures was memory, not a worker race: with ~0.1–0.6 GB free (other apps), OffthreadVideo's frame cache evicts frames before use (Remotion docs). Concurrency 1 and an explicit `--offthreadvideo-cache-size-in-bytes` both still failed; the full render passed in 296 s once RAM was freed. `rf render` drops the 3.6.1 concurrency retry and instead falls back to a chunked render (bundle once, 240-frame muted chunks with 4 tries each, audio pass once, lossless join). If chunks still fail, free RAM (close apps) — that is the real fix.
+- `rf qa` WER: long-form Whisper drifts at a change of speaker and drops whole soundbites (24.8 % false FAIL; each clip transcribed perfectly alone). QA now re-hears every soundbite span on its own and replaces that span's words (→ 4.8 %).
+
+## 3.6.1 (2026-11-25): render resilience
+
+- Full studio renders hit Remotion's compositor race ("No frame found at position…") on different clips/frames at concurrency 3 (NVIDIA reel, 26 shots + 4 soundbites + 7 presenter streams). `rf render` now retries once at `--concurrency=1` when the log shows that error.
+- `rf build` warns when a video shot's on-screen span (+ trim) is longer than its clip — drafts tolerate it, the full render fails. Fix with a longer `rf footage get --dur` or an earlier cut.
+
 ## 3.6.0 (2026-11-24): soundbites (real people speaking with their own voice)
 
 - Owner: "use actual video clips… there was no voice and focus in the video clips." The references let real people speak on camera; our footage was muted b-roll under narration.

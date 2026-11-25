@@ -47,6 +47,14 @@ Read the `narration` aloud in your head at speed before scoring:
 
 Cues must quote the narration in order, and each scene lands on the word it shows. Score "Spoken flow" and give exact rewritten paragraphs, not scene fragments, for anything under 4.
 
+## Hard checks (any failure blocks; owner, 2026-11-25)
+- **Newcomer clarity:** every sentence makes sense to someone who has never heard of the story. Official/legal/PR euphemisms passed through to the viewer ("target of a foreign intelligence effort", "senior levels of the government", "unfaithful") fail; demand the plain meaning with attribution kept.
+- **Reference beats:** if the prompt or the production folder has owner reference reels (transcripts/notes), list their beats; every beat they share, and every person the owner named, must be in the narration unless false.
+- **Hook promise:** the promise line points at the story or twist, never a how-to on a news story; the hook must beat the references' hooks, not copy them.
+- **Newest first (news):** the first ~5 words state the LATEST development as of today. Opening on an earlier, superseded event (e.g. "X quit…" when X is already back) fails, even if the next sentence corrects it.
+- **Names:** the key people the press names are named, with roles.
+- **Soundbite ends:** every soundbite cut ends in the silence after its last word (≥0.25 s); a clipped final word fails.
+
 ## Studio engine (`meta.engine: "studio"`, references/studio.md)
 - **Layout rhythm:** presenter layouts change every 2–6 s, never the same layout more than 3 beats in a row, `close` at most twice, hook opens on a presenter layout. Presenter share is 30–60 % and fits the cost cap.
 - **Shot density:** a new shot every 1–2.5 s of narration in `off`/`split`/`corner` beats. Flag any visual held longer than 3 s without a camera move or highlight.

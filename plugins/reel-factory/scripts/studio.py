@@ -228,6 +228,15 @@ def clip_words(src):
     return ws
 
 
+def _db(src, a, b):
+    """mean loudness (dBFS) of [a, b] s of a clip's audio"""
+    import subprocess
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-ss", f"{max(0, a):.3f}", "-to", f"{b:.3f}", "-i", str(src), "-vn", "-af", "volumedetect",
+                        "-f", "null", "-"], capture_output=True, text=True, timeout=60)
+    m = re.search(r"mean_volume: (-?[\d.]+) dB", r.stderr)
+    return float(m.group(1)) if m else -99.0
+
+
 def soundbite_plan(prod, sb, words, transcribe=True):
     """soundbites in voice-over time: at = end of the `after` phrase; words = the clip's speech inside [trim, trim+dur]"""
     out = []
@@ -240,6 +249,12 @@ def soundbite_plan(prod, sb, words, transcribe=True):
         trim, dur = float(x.get("trim", 0)), float(x["dur"])
         cw = clip_words(Path(prod) / "public" / x["src"]) if transcribe else []
         ws = [w for w in cw if w["s"] >= trim - 0.05 and w["e"] <= trim + dur + 0.05]
+        last = max((w["e"] for w in cw if w["s"] < trim + dur), default=None)  # the speech actually playing at the cut
+        warn = None
+        # owner 2026-11-25: Isaacson's last word "Nvidia" was clipped. Whisper word ends drift (a token can swallow the
+        # pause after it), so only warn when the audio is also loud right before the cut.
+        if last is not None and trim + dur - last < 0.25 and transcribe and _db(Path(prod) / "public" / x["src"], trim + dur - 0.15, trim + dur) > -30:
+            warn = f"cut at {trim + dur:.2f}s is {trim + dur - last:+.2f}s from the last word's end ({last:.2f}s) and still loud: end in the silence after it (>= +0.25 s)"
         if x.get("text") and ws:  # verified wording for the captions on Whisper's timing (ASR mishears names and endings)
             toks = x["text"].split()
             if len(toks) == len(ws):
@@ -248,7 +263,7 @@ def soundbite_plan(prod, sb, words, transcribe=True):
                 a, b = ws[0]["s"], ws[-1]["e"]
                 step = (b - a) / len(toks)
                 ws = [{"w": t, "s": round(a + i * step, 3), "e": round(a + (i + 1) * step - 0.02, 3)} for i, t in enumerate(toks)]
-        out.append({**x, "at": round(at, 3), "trim": trim, "dur": dur, "words": ws})
+        out.append({**x, "at": round(at, 3), "trim": trim, "dur": dur, "words": ws, **({"warn": warn} if warn else {})})
     return sorted(out, key=lambda s: s["at"])
 
 

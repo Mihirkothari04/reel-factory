@@ -38,12 +38,18 @@ Write 5–8 beats in `brief.md`. Each beat is one line saying what the viewer mu
 
 Check the arc: does every beat raise or answer a question the previous beat opened? If two beats say the same thing, merge them.
 
+**Reference beats are mandatory (owner, 2026-11-25).** When the owner supplies reference reels, list every story beat in each one before writing. Every beat the references share, and every person or event the owner names, must be in our narration unless it is false. Cut words elsewhere to fit; never cut a reference beat for length. (The NVIDIA reel v1 dropped the petition / employees / Musk / Kalanick / Trump beat that both references had, and the owner rejected it.)
+
+**Plain words, never the source's euphemism.** Official, legal and PR phrasing ("the target of a foreign intelligence effort", "input from senior levels of the government", "unfaithful") must be translated into what it means for someone who has never heard the story ("an affair with a woman US intelligence reportedly believes works for China"). Keep attribution words (alleged, reportedly, denies), and name the people the press names. Vague wording makes viewers skip.
+
 ### 2. Speak the paragraphs
 One paragraph per beat, usually 1–3 sentences. Write the way the creator would *say* it to a friend who is a bit behind on tech.
 
 - **Hook paragraph.**
   - The first sentence is **complete and carries the stake**, and is often long. Example: "Someone just built a free AI video studio that runs entirely on your laptop, and you don't need a three-thousand-dollar GPU to use it."
   - Never open with a fragment.
+  - **News: the newest development is the first words** ("X just brought Y back…"); older events follow as the amplifier ("…eleven days after he quit…"). Opening on an outdated event makes viewers think the reel is stale (owner hard rule, 2026-11-25).
+  - The promise line ("here's…") promises the **story or the twist** ("and the President says he flipped them", "Here's the full story"), never a how-to the viewer didn't ask for. "Here's how a CEO gets his job back in eleven days" reads as a tutorial on a news story and was rejected (2026-11-25).
   - The second sentence names and defines it. Example: "This is WAN2GP, an open-source video generator built for people who can't afford cloud subscriptions."
   - **The opening lock (every narrated reel):** the first sentences make three moves, by about 11 s (6 s in short reels). Pick the row for the reel type in reel-factory `references/hooks.md`, "The opening lock".
     1. STOP: the most surprising true outcome, consequence or pain, with the thing named.

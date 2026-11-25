@@ -67,7 +67,18 @@ def main():
     frz = sh(["ffmpeg", "-i", str(video), "-vf", "freezedetect=n=0.002:d=2.5", "-an", "-f", "null", "-"]).stderr
     peak = sh(["ffmpeg", "-i", str(video), "-af", "ebur128=peak=true", "-vn", "-f", "null", "-"]).stderr
     tp = re.findall(r"Peak:\s+(-?[\d.]+) dBFS", peak)
-    w = wer(script, [x["w"] for x in tr["words"]]) if script else 0.0
+    hyp = list(tr["words"])
+    if studio and sb.get("soundbites"):  # long-form Whisper drifts at a change of speaker and drops whole soundbites: re-hear each span alone
+        from common import whisper
+        for s in (x for x in scenes if str(x.get("id", "")).startswith("sb")):
+            hyp = [x for x in hyp if not s["from"] + 0.3 <= x["s"] < s["to"] - 0.3]  # keep edge words, re-hear the clip itself
+            wav = qa / f"{s['id']}.wav"
+            sh(["ffmpeg", "-y", "-v", "error", "-ss", f"{s['from']:.3f}", "-to", f"{s['to']:.3f}", "-i", str(video), "-vn", "-ac", "1", "-ar", "16000", str(wav)])
+            segs, _ = whisper().transcribe(str(wav), language=sb.get("language", "en"), word_timestamps=True, vad_filter=False)
+            hyp += [{"w": x.word.strip(), "s": s["from"] + x.start} for g in segs for x in (g.words or [])]
+            wav.unlink()
+        hyp.sort(key=lambda x: x["s"])
+    w = wer(script, [x["w"] for x in hyp]) if script else 0.0
     vr = load_json(prod / "out" / "voice-report.json") if (prod / "out" / "voice-report.json").exists() else {}  # rf voice listening gate
 
     checks = [

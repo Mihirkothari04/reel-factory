@@ -15,7 +15,7 @@ usage: rf build <prod_dir>
 import re, shutil, subprocess, sys
 from pathlib import Path
 import numpy as np
-from common import HOME, PLUGIN, config, consistency_issues, load_json, log, save_json
+from common import HOME, PLUGIN, config, consistency_issues, duration, load_json, log, save_json
 
 TAIL = 1.4  # hold after last word (CTA readable)
 ENTER_SFX = {"push": ("whoosh", 0.28), "slide": ("swipe", 0.35), "pop": ("pop", 0.45), "blur": ("swipe", 0.3), "cut": None}
@@ -154,6 +154,14 @@ def build_studio(prod, sb, cfg):
     if sbs:
         pres["windows"] = wins
         log(prod, "build: soundbites " + ", ".join(f"{s['src']} {s['dur']:.1f}s after '{s['after']}'" for s in sbs))
+        for s in sbs:
+            if s.get("warn"):
+                log(prod, f"build WARNING: soundbite {s['src']}: {s['warn']}")
+    for s in r["shots"]:  # a clip shorter than its on-screen span fails the full render ("No frame found"); drafts hide it
+        if s.get("kind") == "video" and (pub / s["src"]).exists():
+            need, have = s["to"] - s["from"] + float(s.get("trim", 0)), duration(pub / s["src"])
+            if need > have - 0.05:
+                log(prod, f"build WARNING: {s['src']} is {have:.1f}s but shot {s['id']} needs {need:.1f}s -> longer excerpt or earlier cut")
     (pub / "sfx").mkdir(parents=True, exist_ok=True)
     for f in (HOME / "sfx").glob("*.wav"):
         shutil.copy2(f, pub / "sfx" / f.name)

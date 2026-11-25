@@ -4,9 +4,40 @@ usage: rf render <prod_dir> [--draft]      (--draft = half resolution, fast prev
 
 Outputs: out/reel.mp4 (1080x1920 H.264/AAC, -14 LUFS, -1.5 dBTP, faststart), out/cover.jpg, out/caption.txt
 """
-import argparse, json, re, shutil, time
+import argparse, json, math, re, shutil, subprocess, time
 from pathlib import Path
 from common import HOME, WIN, load_json, log, run
+
+
+def chunked(prod, cmd, raw, step=60, tries=6):
+    """Fallback when Remotion's compositor reports "No frame found" (seen with ~0 free RAM: frames get evicted before use).
+    Bundle once, render short muted chunks (each retried), render the audio once (no video decode), join without re-encoding."""
+    eng, tmp = HOME / "engine", raw.parent / "chunks"
+    shutil.rmtree(tmp, ignore_errors=True)
+    tmp.mkdir()
+    lg = open(raw.parent / "render.log", "a", encoding="utf-8", errors="replace")
+    sh = lambda c, t: subprocess.run(list(map(str, c)), cwd=eng, stdout=lg, stderr=subprocess.STDOUT, timeout=t).returncode  # noqa: E731
+    if sh([cmd[0], "remotion", "bundle", "src/index.ts", f"--out-dir={tmp / 'bundle'}", f"--public-dir={prod / 'public'}"], 1800):
+        raise SystemExit("render failed: remotion bundle (see out/render.log)")
+    keep = [c for c in cmd[5:] if c.startswith("--") and not c.startswith(("--public-dir", "--concurrency", "--log"))]
+    base = [cmd[0], "remotion", "render", tmp / "bundle", cmd[4]] + keep + ["--log=error", "--concurrency=1", "--offthreadvideo-cache-size-in-bytes=600000000"]  # ponytail: tuned for ~0.1 GB free RAM; raise step/concurrency on a healthy machine
+    props = load_json(prod / "props.json")
+    total = max(1, math.ceil(props["durationSec"] * props.get("fps", 30)))  # = Root.tsx durationInFrames
+    parts = []
+    for a in range(0, total, step):
+        f = tmp / f"v{a:05d}.mp4"
+        if not any(sh(base + [f, f"--frames={a}-{min(total, a + step) - 1}", "--muted"], 1800) == 0 for _ in range(tries)):
+            raise SystemExit(f"render failed: frames {a}-{min(total, a + step) - 1} after {tries} tries (see out/render.log)")
+        parts.append(f)
+        log(prod, f"render: chunk {len(parts)}/{math.ceil(total / step)}")
+    wav = tmp / "audio.wav"
+    if sh([c for c in base if not c.startswith(("--codec", "--crf", "--audio-codec", "--audio-bitrate"))] + [wav, "--codec=wav"], 1800):
+        raise SystemExit("render failed: audio pass (see out/render.log)")
+    (tmp / "list.txt").write_text("".join(f"file '{p.as_posix()}'\n" for p in parts), encoding="utf-8")
+    run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", tmp / "list.txt", "-i", wav, "-map", "0:v", "-map", "1:a",
+         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", raw])
+    lg.close()
+    shutil.rmtree(tmp, ignore_errors=True)
 
 
 def main():
@@ -41,7 +72,10 @@ def main():
             elif time.time() - last > 900:
                 p.kill()
                 raise SystemExit("render stalled: no progress for 15 min (see out/render.log)")
-    if p.returncode != 0:
+    if p.returncode != 0 and not a.draft and "No frame found" in (out / "render.log").read_text(encoding="utf-8", errors="replace"):
+        log(prod, "render: compositor dropped frames (No frame found; usually low free RAM) -> chunked render")
+        chunked(prod, cmd, raw)
+    elif p.returncode != 0:
         raise SystemExit(f"render failed (see out/render.log): {(out / 'render.log').read_text(encoding='utf-8', errors='replace')[-800:]}")
     log(prod, f"render: {'draft' if a.draft else 'full'} in {time.time() - t0:.0f}s")
     if a.draft:

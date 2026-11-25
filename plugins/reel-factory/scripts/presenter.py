@@ -17,7 +17,7 @@ Disclose the AI presenter in the caption (Instagram "AI info").
 import argparse, json, os, shutil, subprocess, sys, time
 from pathlib import Path
 import requests
-from common import HOME, config, duration, load_json, log, run, save_json
+from common import HOME, config, duration, load_json, log, require_approval, run, save_json
 
 AV = HOME / "avatars"
 MT = HOME / "presenter" / "MuseTalk"
@@ -349,6 +349,8 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="studio engine: print windows, seconds and cost without rendering")
     ap.add_argument("--jobs", action="store_true", help="studio engine: write presenter/jobs.json for HeyGen MCP rendering, no API calls")
     a = ap.parse_args()
+    if not a.dry_run:  # owner hard rule: no presenter jobs/renders before the owner approves the final script
+        require_approval(a.prod, load_json(Path(a.prod) / "storyboard.json"))
     if load_json(Path(a.prod) / "storyboard.json").get("meta", {}).get("engine") == "studio":
         return make_studio(a.prod, a.avatar, a.dry_run, a.jobs)
     make(a.prod, a.provider, a.avatar)
