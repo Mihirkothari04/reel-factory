@@ -146,7 +146,7 @@ No voice, music or presenter generation (and no HeyGen video job) until the owne
 4. Launch `reel-factory:qa-reviewer` with `P`. On `FIX`: edit storyboard props or timing → `RF build P` → `RF render P` → `RF qa P` (max 2 loops). On `REDO`: return to stage 5.
 
 ### 9. Deliver and learn
-1. Final output: `P/out/reel.mp4`, `P/out/cover.jpg`, `P/out/caption.txt`, `P/out/post-kit.md` (what the team posts around the reel: pinned comment, keyword DM, share line, follow promise, 3 story frames) (render also appends the production to `~/.reel-factory/history.jsonl`). Append a short "what worked / what to improve" entry to `~/.reel-factory/learnings.md` (concrete, no duplicates).
+1. Final output: `P/out/reel.mp4`, `P/out/cover.jpg`, `P/out/caption.txt`, `P/out/post-kit.md` (what the team posts around the reel: pinned comment, keyword DM, share line, follow promise, 3 story frames). When `engagement.keyword` is set and the DM worker is configured (`rf dm list` answers), run `RF dm arm P` before handing over; it hosts the deliverable page and arms the follow-gated DM for that keyword. If it is not configured, say so in the report (the team sends the DMs by hand). (render also appends the production to `~/.reel-factory/history.jsonl`). Append a short "what worked / what to improve" entry to `~/.reel-factory/learnings.md` (concrete, no duplicates).
 2. Report to the user: topic and why it was chosen (Mode 1), the **creation mode** (and whether it was the user's pick or AI Select), skeleton, hook, length, theme, the path to the MP4, QA results, credits used (voice chars, music, images), any fallbacks used, and open issues. Keep it short.
 
 ## Guardrails

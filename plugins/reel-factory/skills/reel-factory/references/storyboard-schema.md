@@ -47,6 +47,9 @@ The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voi
     "follow_promise": "Follow: the day the proof is peer-reviewed, I'll break down what changes.",  // a concrete next episode
     "keyword": "PROOF",                            // optional: comment-keyword CTA, only with a real deliverable
     "deliverable": "the full timeline and source links", // what the DM sends (required with keyword)
+    "link": null,                                 // optional URL the DM button opens; else rf dm hosts deliverable_page
+    "deliverable_page": "## Timeline\n- 8 Nov: …\n## Sources\n- https://…", // optional light markdown, hosted at <worker>/d/<id> (default: caption + sources)
+    "keyword_aliases": [],                        // optional extra trigger words (typos, regional spellings)
     "stories": ["teaser + poll: 'AI just did something mathematicians couldn't for 167 years. Scary or exciting?'",
                 "share the reel: 'Here's what actually happened 👇'",
                 "+3 h: 'Would you trust a proof no human understands?' slider"]

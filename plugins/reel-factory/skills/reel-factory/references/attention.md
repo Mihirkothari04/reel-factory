@@ -80,7 +80,7 @@ Every reel ships `out/post-kit.md`. It is written from storyboard `engagement` (
 
 | lever | what top creators do | how we do it |
 |---|---|---|
-| **Comment keyword → DM** | "Comment SKILL and I'll send you the link." 30 of 57 use it, and they get about as many comments as likes. Reels without it get about 1 comment per 50 likes. | Only when there's a real deliverable: a source pack, full timeline, tool links, cheat sheet. One keyword, the topic word, UPPERCASE. |
+| **Comment keyword → DM** | "Comment SKILL and I'll send you the link." 30 of 57 use it, and they get about as many comments as likes. Reels without it get about 1 comment per 50 likes. | Only when there's a real deliverable: a source pack, full timeline, tool links, cheat sheet. One keyword per reel: the reel's most important topic word, UPPERCASE. `rf dm arm P` runs it (private reply → "I'm following ✅" button → follower check → link). |
 | **Follow-gated DM** | "Follow first so my DM reaches you." / "Comment FOUNDER **and follow**." | Add it to every keyword CTA. It turns commenters into followers. |
 | **Pinned comment holds the payload** | "All app names are in the pinned comment." / "The repo is pinned." | `engagement.pinned_comment`: the list, the link, or a two-sided debate question. Pin it right after posting. |
 | **Caption = second act** | Extra quotes and facts not in the video, the fairness caveat, then a personal, identity-targeted question: "If you're a student right now: what would you do with four years…?" / "How many did you know?" / "Which layer does your team always skip?" | First line = the hook restated. Then 2–4 facts or quotes that didn't fit. Then ONE easy question about the **viewer** (answerable in one word or a number), not about the news. |

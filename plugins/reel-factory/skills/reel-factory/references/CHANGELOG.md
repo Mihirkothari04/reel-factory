@@ -1,5 +1,23 @@
 # Knowledge-base changelog
 
+## 3.8.1 (2026-11-26): schema example fix
+
+- The `deliverable_page` example in storyboard-schema.md is back on one line (backslash-n escapes).
+
+## 3.8.0 (2026-11-26): follow-gated comment → DM automation (`rf dm`, free)
+
+- New `dm-worker/worker.mjs`, a Cloudflare Worker on the free tier using Meta's official Instagram API with Instagram Login. The flow:
+  1. A keyword comment arrives.
+  2. One private reply goes out with an "I'm following ✅" quick-reply button. If quick replies are refused, a text asks the viewer to reply DONE.
+  3. When the viewer taps the button or replies DONE, `is_user_follow_business` is checked.
+  4. A follower gets a link card; anyone else gets the follow prompt again.
+- Optional public reply on the comment.
+- Webhooks are primary. A cron poller (every 2 min, only while webhooks are silent) covers apps without comment-webhook access. It never answers comments that existed before it first saw the post.
+- Tokens refresh weekly. Webhooks are verified with X-Hub-Signature-256. Admin API with a bearer token. Privacy and data-deletion pages for the Meta app. Hosted deliverable pages at /d/<id>.
+- New `rf dm setup | subscribe | arm P | list | off | health | poll`. Secrets come from ~/.reel-factory/secrets/ig-dm.env and are uploaded as Worker secrets, never through chat.
+- `engagement` gains `link`, `deliverable_page` and `keyword_aliases`. SKILL stage 9 runs `rf dm arm P` when a keyword is set.
+- Tests: `node --test dm-worker/test.mjs` (8 cases: signature, matching, dedupe, fallback, gate, admin, poller).
+
 ## 3.7.1 (2026-11-26): hook check at 8 fps
 
 - `hook_motion` now measures the first 5 s at 8 fps (at 4 fps, caption words and crowd motion made our static NVIDIA hook look like it changed). Calibrated: 8 of 15 top reels cut by 0.8 s; NVIDIA v4 = no change (warn), Riemann = 1.25 s (pass).

@@ -105,7 +105,7 @@ def main():
                "## Pin this comment right after posting", "", e.get("pinned_comment", ""), ""]
         if e.get("keyword"):
             kit += ["## Comment keyword -> DM", "", f"Keyword **{e['keyword']}** -> DM: {e.get('deliverable', '')}. "
-                    "Commenters must follow first (auto-DM tool or by hand within the hour).", ""]
+                    "Commenters must follow first; `rf dm arm P` runs it automatically (else by hand within the hour).", ""]
         kit += ["## Share line / follow promise", "", f"- {e.get('share_line', '')}", f"- {e.get('follow_promise', '')}", "",
                 "## Stories (funnel)", ""] + [f"{i}. {s}" for i, s in enumerate(e.get("stories") or [], 1)]
         (out / "post-kit.md").write_text("\n".join(kit) + "\n", encoding="utf-8")
