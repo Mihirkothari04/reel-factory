@@ -1,5 +1,37 @@
 # Knowledge-base changelog
 
+## 3.7.1 (2026-11-26): hook check at 8 fps
+
+- `hook_motion` now measures the first 5 s at 8 fps (at 4 fps, caption words and crowd motion made our static NVIDIA hook look like it changed). Calibrated: 8 of 15 top reels cut by 0.8 s; NVIDIA v4 = no change (warn), Riemann = 1.25 s (pass).
+
+## 3.7.0 (2026-11-26): attention and spread (hook, hold, loop, post kit)
+
+- Evidence:
+  - The owner's first two published reels (83 s and 94 s) had a 61–62 % skip rate, 7–10 s average watch time, about 75 % of viewers gone by 3–5 s, and 0 comments.
+  - 60 recent AI/tech reels with likes, comments and follower counts, watched whole: small pages break out (3.2K followers → 27K likes), the median length is 50 s, keyword CTAs reach comments ≈ likes, callback endings, open-loop ladders, a caption as a second act.
+- New `references/attention.md` (read every run):
+  - STOP: emotion or stake in the first 2–5 words, S1 ≤ ~12 words, a picture change within ~1 s;
+  - HOLD: an open question every ≤10 s, a protagonist, audience-native scale, a mid-reel question;
+  - END: a callback loop and a one-line CTA;
+  - BEYOND: the post kit.
+- New storyboard `engagement` (required). Render writes `out/post-kit.md` and appends the caption question to caption.txt.
+- `rf approve` refuses:
+  - a script over the mode length +10 % (estimate: words ÷ 3.3 + soundbites), unless `--long "<reason>"`;
+  - a script with an incomplete `engagement`.
+
+  It warns when the first sentence runs over 14 words.
+- QA:
+  - `length_vs_mode` is blocking;
+  - `hook_motion` warns (first big picture change after 2 s).
+- Newsroom mode length: 45–80 s → 35–60 s, with a new beat template.
+- Updated docs:
+  - hooks: attribution-first and long-S1 hook killers, follow-promise and callback CTAs, follow-gated DM;
+  - playbook: length is enforced;
+  - speechwriting: first words, open-loop ladder, protagonist, audience scale, mid-reel question, callback ending;
+  - script-critic: attention hard checks;
+  - qa-reviewer: hook frames and post kit;
+  - SKILL: stage 6b also shows the length and post kit.
+
 ## 3.6.5 (2026-11-25): compulsory owner approval of the final script
 
 - Owner rule after the NVIDIA reel needed three script rounds (41 HeyGen credits): **the final script must be explicitly approved by the owner before any voice or presenter generation.**

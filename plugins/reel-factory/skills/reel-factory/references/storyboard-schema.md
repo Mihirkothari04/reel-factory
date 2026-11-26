@@ -36,10 +36,21 @@ The Creative Director writes `<prod>/storyboard.json`. Every tool reads it: `voi
       "assets": []                                 // [{"kind":"image","prompt":"…","out":"img/s1.png","aspect":"4:5"}]
     }
   ],
-  "caption": "Instagram caption (hook line + 2–4 value lines + CTA)",
+  "caption": "Instagram caption = second act (attention.md §4): hook restated + 2–4 facts/quotes NOT in the video + fairness caveat + engagement.caption_question",
   "hashtags": ["ai", "opensource", "cybersecurity"],
   "sources_in_caption": ["github.com/usestrix/strix"],
-  "cover_at": 1.2                                  // seconds: frame used for cover.jpg
+  "cover_at": 1.2,                                 // seconds: frame used for cover.jpg
+  "engagement": {                                  // REQUIRED for every reel (attention.md §4) -> out/post-kit.md; rf approve refuses without it
+    "caption_question": "If you're a student right now, would you still pick maths? Yes or no 👇", // about the VIEWER, one-word answer
+    "pinned_comment": "Full timeline + all 6 sources: …  /  or a two-sided debate question",
+    "share_line": "Send this to the friend who still says AI can't do real maths.",                // a specific person they know
+    "follow_promise": "Follow: the day the proof is peer-reviewed, I'll break down what changes.",  // a concrete next episode
+    "keyword": "PROOF",                            // optional: comment-keyword CTA, only with a real deliverable
+    "deliverable": "the full timeline and source links", // what the DM sends (required with keyword)
+    "stories": ["teaser + poll: 'AI just did something mathematicians couldn't for 167 years. Scary or exciting?'",
+                "share the reel: 'Here's what actually happened 👇'",
+                "+3 h: 'Would you trust a proof no human understands?' slider"]
+  }
 }
 ```
 

@@ -30,7 +30,7 @@ Always draft **5 hooks** from different formulas, score each 1–5 on *(specific
 - **End open loop (retention for 60–100 s reels):** "Stay to the end and I'll show you how to build one in under 60 seconds" / "…I'll give you a tool that does it." Only if the end delivers it.
 - **Series tag:** "Day 1 of…" / "DEBUG WITHOUT DEPLOY · 07" under the title builds a habit (follow CTA).
 
-**Hook killers (never):** greetings, channel intros, "in today's video", "let me tell you about", starting with the product name and no outcome, a question with an obvious answer, a hook the reel doesn't pay off, a title that promises something else than the content (batch-02 "lifetime free AI tools" over animation libraries).
+**Hook killers (never):** attribution first ("An Anthropic mathematician says…", "According to Reuters…"; put the source on screen and the emotion or stake in the first words), a first sentence over ~12 words or three facts in one breath (attention.md §1), greetings, channel intros, "in today's video", "let me tell you about", starting with the product name and no outcome, a question with an obvious answer, a hook the reel doesn't pay off, a title that promises something else than the content (batch-02 "lifetime free AI tools" over animation libraries).
 
 ## The opening lock: stop → amplify → commit (first ~4–11 s, every narrated reel)
 
@@ -110,6 +110,7 @@ Short reels (≤ 30 s) may compress all three into one or two sentences. Long re
 | Share-to-friend | Niche-useful | "Send this to a friend who's about to launch." | `cta` kind `save` + `line` |
 | Question | Comparisons, frameworks | "Which one would you use? / Which first — comment a number." | `title` |
 | Series follow | Series | "Follow so you don't miss Day 6." | `cta` kind `follow` |
-| None | News, story twist endings | End on the verdict or punchline | `title` / `punch` |
+| Follow promise | News, series, developing stories | "Follow, because the moment X happens, I'll break down what changes." A concrete next episode, never "for more content". | `cta` kind `follow` |
+| Callback + verdict | News, story twist endings | The last line echoes the first (loop), then the one-line CTA | `title` / `punch` |
 
-The comment-keyword CTA implies the account owner will send links by DM (manual or ManyChat-style automation). If that's not set up, prefer save/share or "link in the caption/bio".
+The comment-keyword CTA implies the account owner will send links by DM (manual or ManyChat-style automation). If that's not set up, prefer save/share or "link in the caption/bio". Add "follow first so my DM reaches you" (it turns commenters into followers). Every reel also carries the post kit (`engagement`, attention.md §4): caption question about the viewer, pinned comment, named share target, follow promise, 3 story frames.

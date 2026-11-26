@@ -4,6 +4,8 @@ Full evidence: `corpus-analysis.md` (synthesis) and `corpus-notes.md` (one secti
 
 ## The non-negotiables
 
+**Attention and spread (attention.md) governs the hook, the hold, the ending and the post kit for every reel.**
+
 1. **Payoff in the first sentence, spoken at 0.0 s.** Every narrated reel in the corpus starts talking on frame 1. No greeting, no "hey guys", no "in this video", no logo sting.
 2. **The visual hook lands with the verbal hook.** At 0–1 s the screen shows the thing itself (the result, the number, the famous logo, the headline building word by word). Never show an empty or slow intro.
 3. **One claim, one visual.** A new composition every **1.5–3 s**. Nothing static for more than about 4 s.
@@ -17,7 +19,7 @@ Full evidence: `corpus-analysis.md` (synthesis) and `corpus-notes.md` (one secti
 
 ## Length
 
-- Default **35–55 s** (corpus median 51 s, middle half 35–60 s).
+- Default **35–55 s** (corpus median 51 s, middle half 35–60 s; the 60-reel engagement set 2026-11-26: median 50 s). **Enforced:** `rf approve` refuses a script over the mode range +10 % and QA blocks the render (owner's 83–96 s reels lost ~75 % of viewers by 5 s and averaged 7–10 s watched). Facts that do not fit go into the caption.
 - Single-tool spotlight: 30–45 s. Listicles: 45–60 s (about 7–9 s per item). Story or problem-ladder explainers may run 60–120 s *only* if every beat escalates.
 - Ultra-short lists (12–20 s, names only) suit loopable "save this" content.
 

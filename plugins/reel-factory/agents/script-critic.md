@@ -23,7 +23,7 @@ Inputs in your prompt: production path `P` and plugin root. Read:
 ## Return
 ```
 VERDICT: PASS | REVISE
-SCORES: hook x · promise x · structure x · pacing x · clarity x · specificity x · variety x · on-screen text x · credibility x · CTA x · voice-readiness x · mode fidelity x  (avg y)
+SCORES: hook x · attention x · promise x · structure x · pacing x · clarity x · specificity x · variety x · on-screen text x · credibility x · CTA x · voice-readiness x · mode fidelity x  (avg y)
 TOP 3 PROBLEMS: …
 FIXES (exact, by scene id):
 - s1.vo → "…"            (why)
@@ -54,6 +54,17 @@ Cues must quote the narration in order, and each scene lands on the word it show
 - **Newest first (news):** the first ~5 words state the LATEST development as of today. Opening on an earlier, superseded event (e.g. "X quit…" when X is already back) fails, even if the next sentence corrects it.
 - **Names:** the key people the press names are named, with roles.
 - **Soundbite ends:** every soundbite cut ends in the silence after its last word (≥0.25 s); a clipped final word fails.
+
+## Attention and spread hard checks (any failure blocks; owner, 2026-11-26; references/attention.md)
+Also read `<plugin_root>/skills/reel-factory/references/attention.md`.
+- **First words:** the first 2–5 words carry emotion or stake; S1 ≤ ~12 words and lands in about 3 s; no attribution-first, no three facts in one breath. Give 2 rewritten openings when it fails.
+- **Hook picture:** the storyboard shows a real face or real proof at 0 s and a new picture within ~1 s (or one shot that visibly moves). A single static shot under the whole hook fails.
+- **Open-loop ladder:** no stretch over ~10 s without a new open question; name the dead stretch and give the line.
+- **Mid-reel question** to the viewer at 40–60 % (or a self-scoring device).
+- **Callback ending:** the last line echoes the opening; the CTA is one sentence of 3 s or less; no sign-off.
+- **Length:** estimated seconds (words ÷ 3.3 + soundbites) inside the mode range (news/explainer 35–60 s). Over it, list exactly which beats move to the caption.
+- **Scale:** big numbers are compared to something `config.audience` feels.
+- **Post kit (`engagement`):** the caption question is about the viewer and answerable in one word; the pinned comment carries a payload or a two-sided question; the share line names a specific person; the follow promise names a concrete next episode; 3 story frames; a keyword only with a real deliverable.
 
 ## Studio engine (`meta.engine: "studio"`, references/studio.md)
 - **Layout rhythm:** presenter layouts change every 2–6 s, never the same layout more than 3 beats in a row, `close` at most twice, hook opens on a presenter layout. Presenter share is 30–60 % and fits the cost cap.

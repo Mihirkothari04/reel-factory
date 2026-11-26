@@ -36,7 +36,12 @@ def edit_metrics(video):
     for s in still:
         run = run + 1 if s else 0
         best = max(best, run)
-    return {"changes_per_min": round(float((d > 12).sum()) / (len(a) / 4) * 60, 1), "static_pct": round(float(still.mean()) * 100, 1), "longest_still_s": int(best)}
+    # hook window 0-5 s at 8 fps (attention.md §1; calibrated 2026-11-26: 8 of 15 top reels cut by 0.8 s, our static NVIDIA hook = none)
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-t", "5", "-i", str(video), "-vf", "fps=8,scale=72:128,format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout
+    h = np.frombuffer(raw, np.uint8).reshape(-1, 128, 72).astype(np.int16)
+    big = [(i + 1) / 8 for i, x in enumerate(np.abs(np.diff(h, axis=0)).mean(axis=(1, 2))) if x > 12]
+    return {"changes_per_min": round(float((d > 12).sum()) / (len(a) / 4) * 60, 1), "static_pct": round(float(still.mean()) * 100, 1), "longest_still_s": int(best),
+            "hook_first_change_s": big[0] if big else None, "hook_changes_5s": len(big)}
 
 
 def main():
@@ -80,12 +85,15 @@ def main():
         hyp.sort(key=lambda x: x["s"])
     w = wer(script, [x["w"] for x in hyp]) if script else 0.0
     vr = load_json(prod / "out" / "voice-report.json") if (prod / "out" / "voice-report.json").exists() else {}  # rf voice listening gate
+    approval = load_json(prod / "approval.json") if (prod / "approval.json").exists() else {}
 
     checks = [
         ("loudness", T["lufs"][0] <= (m["lufs"] or -99) <= T["lufs"][1], f"{m['lufs']} LUFS (target -14)", True),
         ("vo_starts_immediately", (m["first_word_at"] if m["first_word_at"] is not None else 9) <= T["first_word_max"], f"first word at {m['first_word_at']}s", True),
         ("pace", T["wpm"][0] <= m["wpm"] <= T["wpm"][1], f"{m['wpm']} wpm (target {T['wpm'][0]}-{T['wpm'][1]} for mode {spec['id']})", False),
         ("duration", T["dur"][0] <= m["dur"] <= T["dur"][1], f"{m['dur']}s (corpus median 51s)", False),
+        ("length_vs_mode", m["dur"] <= (spec.get("defaults") or {}).get("length", [0, 999])[1] * 1.1 or bool(approval.get("long_reason")),
+         f"{m['dur']}s vs mode max {(spec.get('defaults') or {}).get('length', [0, 999])[1]}s" + (f" (long: {approval['long_reason']})" if approval.get("long_reason") else ""), True),
         ("longest_scene", max(lens) <= T["max_scene"], f"longest scene {max(lens):.1f}s (visual change needed every <=6.5s)", False),
         ("avg_scene", T["avg_scene"][0] <= sum(lens) / len(lens) <= T["avg_scene"][1], f"avg scene {sum(lens) / len(lens):.2f}s", False),
         ("no_black_frames", "black_start" not in blk, "black frames detected" if "black_start" in blk else "none", True),
@@ -103,6 +111,7 @@ def main():
             ("edit_change_rate", em["changes_per_min"] >= 40, f"{em['changes_per_min']} big picture changes/min (references 48-129, floor 40)", True),
             ("edit_static", em["static_pct"] <= 3.0, f"{em['static_pct']}% static seconds (references 0-6%, max 3%)", True),
             ("edit_longest_still", em["longest_still_s"] <= 2, f"longest still stretch {em['longest_still_s']}s", False),
+            ("hook_motion", (em["hook_first_change_s"] or 9) <= 2.0, f"first big picture change at {em['hook_first_change_s']}s, {em['hook_changes_5s']} in 0-5 s (8/15 top reels cut by 0.8 s)", False),
             ("presenter_share", not props.get("presenter") or 0.2 <= pres / props["durationSec"] <= 0.75, f"presenter on screen {pres:.1f}s of {props['durationSec']:.1f}s", False),
         ]
     ci = consistency_issues(sb)

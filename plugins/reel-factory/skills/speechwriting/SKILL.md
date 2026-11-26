@@ -46,7 +46,8 @@ Check the arc: does every beat raise or answer a question the previous beat open
 One paragraph per beat, usually 1–3 sentences. Write the way the creator would *say* it to a friend who is a bit behind on tech.
 
 - **Hook paragraph.**
-  - The first sentence is **complete and carries the stake**, and is often long. Example: "Someone just built a free AI video studio that runs entirely on your laptop, and you don't need a three-thousand-dollar GPU to use it."
+  - The first sentence is **complete and carries the stake**. Example: "Someone just built a free AI video studio that runs entirely on your laptop, and you don't need a three-thousand-dollar GPU to use it."
+  - **The first 2–5 words carry the emotion or stake, and S1 lands in about 3 s (~12 words or fewer; attention.md §1).** Lead with a human reaction, a vivid "you" scene, a blunt verdict or a famous person's line: "Mathematicians are crying, and the reason is this PDF." / "Java is broken." / "'Elon, please hire Jensen,' one tweet said." Never attribution first ("An Anthropic mathematician says…"); the source goes on screen. Never three facts in one breath; move the rest to S2.
   - Never open with a fragment.
   - **News: the newest development is the first words** ("X just brought Y back…"); older events follow as the amplifier ("…eleven days after he quit…"). Opening on an outdated event makes viewers think the reel is stale (owner hard rule, 2026-11-25).
   - The promise line ("here's…") promises the **story or the twist** ("and the President says he flipped them", "Here's the full story"), never a how-to the viewer didn't ask for. "Here's how a CEO gets his job back in eleven days" reads as a tutorial on a news story and was rejected (2026-11-25).
@@ -68,8 +69,13 @@ One paragraph per beat, usually 1–3 sentences. Write the way the creator would
 - **Lists live inside sentences** as comma series ("text to video, image to video, restoration, music and sound effects"), not one item per line, unless the format is a listicle with "Number one…" signposts.
 - **Spoken texture.** Use contractions always (it's, you're, don't). Allow one or two natural fillers per reel ("basically", "literally", "honestly", "OK"). Use second person. Use concrete nouns and numbers written the way they're said ("three thousand dollars", "one point two billion").
 - **Re-hook at 40–60 %.** A short signpost sentence ("But here's what actually makes this insane.") followed immediately by the payload.
+- **Open-loop ladder (attention.md §2).** A new small question opens at least every 10 s, before the last one closes: "Everyone thought that was the worst of it. It wasn't." / "Here's what most people miss." / a callback question to the hook at about 70 %.
+- **A protagonist or recurring scenario** where the topic allows (the person who lost the most, a company AI that breaks again at every layer). The problem → fix → new problem rhythm escalates by itself.
+- **Scale the viewer feels.** Compare big numbers to something native to `config.audience` (an Indian audience: "more than Reliance's entire value", rupees, IPL, cricket-stadium crowds). Never a bare "$X billion".
+- **Mid-reel question at 40–60 %** to the viewer ("Would you trust a proof no human understands? Hold that thought.") or a self-scoring device ("count how many you knew").
 - **Honesty beat.** One sentence, plainly said ("It's still in beta, so expect a few rough edges.").
-- **CTA as speech.** Example: "Comment SETUP and I'll send you the whole guide." Not a fragment.
+- **Callback ending.** The last line echoes the first, so the reel loops ("…but this time they got replaced by a PDF"). Then the CTA as speech, 3 s or less, with no sign-off. Example: "Comment SETUP, follow so my DM reaches you, and I'll send you the whole guide." / "Follow, because the day the board names a new CEO, I'll break down what changes."
+- **Length = escalation, not research.** News and explainers 35–60 s (about 115–190 words plus soundbites). Facts that don't escalate go into the caption's second act.
 
 ### 3. Mark pauses and emphasis with punctuation (the voice reads punctuation)
 - A period gives a sentence pause of about 0.25 s, and a comma a short breath. Put commas where a speaker breathes, not where grammar demands them.

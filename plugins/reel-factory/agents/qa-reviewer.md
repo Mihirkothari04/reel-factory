@@ -18,6 +18,11 @@ Inputs in your prompt: production path `P` and plugin root. Read:
    `ffmpeg -v error -y -ss <t> -i P/out/reel.mp4 -frames:v 1 -vf scale=540:-1 P/out/qa/still_<t>.png`
 3. Check: the hook frame is informative at 0.3 s; no text overflow, clipping, or overlap (captions vs content vs hook sticker vs handle); headline and body legible at phone size; safe zones (nothing key in the bottom 380 px or right 120 px at full res); one consistent theme; generated images match each other; the CTA is readable; visuals match what the VO says at that time (compare with words.json); the mode's devices render correctly (banner, slate, progress chips, hook sticker; walkthrough cursor/arrows land on the element the VO names at that moment).
 
+## Attention (references/attention.md)
+- Extract frames at 0.0, 0.4, 0.8, 1.2, 2.0, 3.0 and 5.0 s: is there a real face or proof at 0 s, and a new picture within ~1 s (or a visibly moving shot)? QA `hook_motion` warns when not; a static hook is a FIX (add a shot change or a pop-in on the hook phrase, no new voice).
+- `length_vs_mode` failing is blocking: REDO to cut beats (the script must be re-approved).
+- `P/out/post-kit.md` exists and is complete (pinned comment, caption question, share line, follow promise, 3 story frames).
+
 ## Return
 ```
 VERDICT: SHIP | FIX | REDO

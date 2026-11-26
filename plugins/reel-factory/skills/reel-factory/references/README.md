@@ -9,6 +9,7 @@ The plugin is never finished. Every batch of reference reels goes through `/reel
 | Creation modes | `modes/INDEX.md`, `modes/<id>.md`, `modes/modes.json` | the ways a reel is *constructed*; selection rubric; per-mode playbooks; machine defaults and QA overrides |
 | Storytelling frameworks | `formats.md` | story skeletons (beat order) with ids |
 | Hooks, retention, CTAs | `hooks.md` | hook formulas with counts, re-hooks, honesty beats, CTA patterns |
+| Attention and spread | `attention.md` | stop the scroll in 1.5 s, open-loop ladder, callback ending, post kit (pinned comment, caption question, share line, follow promise, story funnel, keyword DM); from 60 engagement-tracked reels + the owner's own insights |
 | Strategy and production rules | `playbook.md` | the corpus-derived rules every reel follows |
 | Visual presentation and animation | `art-direction.md` | themes, captions, layouts, overlays, style locks, annotation grammar, sourcing priority |
 | Audio, voice and sound design | `playbook.md` (§audio), `art-direction.md` (§audio), `tools.md` | levels, pace, bed, SFX, providers |

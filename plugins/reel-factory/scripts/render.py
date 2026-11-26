@@ -2,7 +2,7 @@
 
 usage: rf render <prod_dir> [--draft]      (--draft = half resolution, fast preview)
 
-Outputs: out/reel.mp4 (1080x1920 H.264/AAC, -14 LUFS, -1.5 dBTP, faststart), out/cover.jpg, out/caption.txt
+Outputs: out/reel.mp4 (1080x1920 H.264/AAC, -14 LUFS, -1.5 dBTP, faststart), out/cover.jpg, out/caption.txt, out/post-kit.md
 """
 import argparse, json, math, re, shutil, subprocess, time
 from pathlib import Path
@@ -96,7 +96,19 @@ def main():
     tags = " ".join("#" + re.sub(r"[^A-Za-z0-9_]", "", h) for h in sb.get("hashtags", []))
     credits = (prod / "credits.txt").read_text(encoding="utf-8").strip() if (prod / "credits.txt").exists() else ""
     sources = "\n".join(f"Source: {s}" for s in sb.get("sources_in_caption", []))
+    e = sb.get("engagement") or {}
+    if e.get("caption_question") and e["caption_question"] not in cap:
+        cap = f"{cap}\n\n{e['caption_question']}".strip()
     (out / "caption.txt").write_text("\n\n".join(x for x in [cap, sources, credits, tags] if x), encoding="utf-8")
+    if e:  # attention.md §4: what the team posts around the reel
+        kit = ["# Post kit", "", "## Caption", "", (out / "caption.txt").read_text(encoding="utf-8"), "",
+               "## Pin this comment right after posting", "", e.get("pinned_comment", ""), ""]
+        if e.get("keyword"):
+            kit += ["## Comment keyword -> DM", "", f"Keyword **{e['keyword']}** -> DM: {e.get('deliverable', '')}. "
+                    "Commenters must follow first (auto-DM tool or by hand within the hour).", ""]
+        kit += ["## Share line / follow promise", "", f"- {e.get('share_line', '')}", f"- {e.get('follow_promise', '')}", "",
+                "## Stories (funnel)", ""] + [f"{i}. {s}" for i, s in enumerate(e.get("stories") or [], 1)]
+        (out / "post-kit.md").write_text("\n".join(kit) + "\n", encoding="utf-8")
     log(prod, f"render: final -> {final}")
     # production history: lets the next run vary mode/theme (rf modes shows it)
     m = sb.get("meta", {})
